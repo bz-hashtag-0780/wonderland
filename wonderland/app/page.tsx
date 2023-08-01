@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function Home() {
 	return (
-		<main
+		<div
 			className="min-h-screen flex items-center justify-center bg-center bg-no-repeat bg-cover"
 			style={{ backgroundImage: `url(/background/landscape.png)` }}
 		>
@@ -15,6 +15,6 @@ export default function Home() {
 					Wonderland
 				</h1>
 			</header>
-		</main>
+		</div>
 	);
 }

@@ -23,7 +23,7 @@ export default function Dashboard() {
 			}
 			onClick={() => setActiveTab(item.name)}
 		>
-			<div className="flex items-center mr-4">
+			<div className="flex items-center">
 				<div className="font-semibold text-lg whitespace-nowrap">
 					{item.name}
 				</div>
@@ -46,7 +46,7 @@ export default function Dashboard() {
 			style={{ backgroundImage: `url(/background/landscape.png)` }}
 		>
 			<div className="w-full max-w-4xl bg-black bg-opacity-50 p-5 rounded-lg mx-2 text-white">
-				<div className="flex border-b">
+				<div className="flex border-b border-white border-opacity-20 gap-4">
 					{tabItems.map((item) => (
 						<TabItem key={item.name} item={item} />
 					))}

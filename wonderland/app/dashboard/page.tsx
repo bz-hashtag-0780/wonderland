@@ -5,59 +5,55 @@ import React, { useState } from 'react';
 const Tab = ({ children }: any) => <div>{children}</div>;
 
 export default function Dashboard() {
-	const [activeTab, setActiveTab] = useState('beasts');
+	const [activeTab, setActiveTab] = useState('Beasts');
+
+	const tabItems = [
+		{ name: 'Beasts' },
+		{ name: 'Rewards' },
+		{ name: 'Random' },
+	];
+
+	const TabItem = ({ item }: any) => (
+		<button
+			className={
+				activeTab === item.name
+					? 'border-b-2 border-white text-white'
+					: 'text-gray-200 text-opacity-50'
+			}
+			onClick={() => setActiveTab(item.name)}
+		>
+			<div className="flex items-center mr-4">
+				<div className="font-semibold text-lg whitespace-nowrap">
+					{item.name}
+				</div>
+				<div
+					className={
+						activeTab === item.name
+							? 'flex items-center justify-center border border-white bg-white ml-1.5 px-2 text-xs font-semibold text-black rounded-lg'
+							: 'flex items-center justify-center border border-white border-opacity-50 ml-1.5 px-2 text-xs font-semibold text-gray-200 text-opacity-50 rounded-lg'
+					}
+				>
+					1
+				</div>
+			</div>
+		</button>
+	);
 
 	return (
 		<div
 			className="min-h-screen flex items-center justify-center bg-center bg-no-repeat bg-cover"
 			style={{ backgroundImage: `url(/background/landscape.png)` }}
 		>
-			<header className="p-5 text-center">
-				<h1
-					className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-wonderland text-white"
-					style={{ textShadow: '2px 2px #000' }}
-				>
-					Dashboard
-				</h1>
-
-				<div className="bg-white bg-opacity-50 p-5 rounded-lg">
-					<div className="flex border-b">
-						<button
-							className={
-								activeTab === 'beasts'
-									? 'border-b-2 border-blue-500'
-									: ''
-							}
-							onClick={() => setActiveTab('beasts')}
-						>
-							Beasts
-						</button>
-						<button
-							className={
-								activeTab === 'rewards'
-									? 'border-b-2 border-blue-500'
-									: ''
-							}
-							onClick={() => setActiveTab('rewards')}
-						>
-							Rewards
-						</button>
-						<button
-							className={
-								activeTab === 'random'
-									? 'border-b-2 border-blue-500'
-									: ''
-							}
-							onClick={() => setActiveTab('random')}
-						>
-							Random
-						</button>
-					</div>
-					{activeTab === 'beasts' && <Tab>Beasts Content</Tab>}
-					{activeTab === 'rewards' && <Tab>Rewards Content</Tab>}
-					{activeTab === 'random' && <Tab>Random Content</Tab>}
+			<div className="w-full max-w-5xl bg-black bg-opacity-50 p-5 rounded-lg mx-2 text-white">
+				<div className="flex border-b">
+					{tabItems.map((item) => (
+						<TabItem key={item.name} item={item} />
+					))}
 				</div>
-			</header>
+				{activeTab === 'Beasts' && <Tab>Beasts Content</Tab>}
+				{activeTab === 'Rewards' && <Tab>Rewards Content</Tab>}
+				{activeTab === 'Random' && <Tab>Random Content</Tab>}
+			</div>
 		</div>
 	);
 }

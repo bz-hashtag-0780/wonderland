@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Beasts from '@/components/DashboardTabs/Beasts';
 
 const Tab = ({ children }: any) => <div>{children}</div>;
 
@@ -44,13 +45,13 @@ export default function Dashboard() {
 			className="min-h-screen flex items-center justify-center bg-center bg-no-repeat bg-cover"
 			style={{ backgroundImage: `url(/background/landscape.png)` }}
 		>
-			<div className="w-full max-w-5xl bg-black bg-opacity-50 p-5 rounded-lg mx-2 text-white">
+			<div className="w-full max-w-4xl bg-black bg-opacity-50 p-5 rounded-lg mx-2 text-white">
 				<div className="flex border-b">
 					{tabItems.map((item) => (
 						<TabItem key={item.name} item={item} />
 					))}
 				</div>
-				{activeTab === 'Beasts' && <Tab>Beasts Content</Tab>}
+				{activeTab === 'Beasts' && <Beasts />}
 				{activeTab === 'Rewards' && <Tab>Rewards Content</Tab>}
 				{activeTab === 'Random' && <Tab>Random Content</Tab>}
 			</div>

@@ -3,13 +3,6 @@ const nextConfig = {};
 
 module.exports = {
 	images: {
-		remotePatterns: [
-			{
-				protocol: 'https',
-				hostname: 'basicbeasts.mypinata.cloud',
-				port: '',
-				pathname: '/ipfs/**',
-			},
-		],
+		domains: ['basicbeasts.mypinata.cloud'],
 	},
 };

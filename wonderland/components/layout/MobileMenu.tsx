@@ -1,6 +1,26 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+const navItems = [
+	{ name: 'Home', href: '/' },
+	{ name: 'Dashboard', href: '/dashboard' },
+	{ name: 'Raids', href: '/raids' },
+];
+
+const ConnectButton = () => (
+	<button className="mt-4 rounded-full border border-white p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black">
+		Connect
+	</button>
+);
+
+const NavItem = ({ item }: any) => (
+	<Link href={item.href}>
+		<span className="cursor-pointer block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white">
+			{item.name}
+		</span>
+	</Link>
+);
+
 export default function MobileMenu() {
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -47,24 +67,10 @@ export default function MobileMenu() {
 					className="flex flex-col items-center"
 					onClick={() => setIsOpen(false)}
 				>
-					<Link href="/">
-						<span className="cursor-pointer block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4">
-							Home
-						</span>
-					</Link>
-					<Link href="/dashboard">
-						<span className="cursor-pointer block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4">
-							Dashboard
-						</span>
-					</Link>
-					<Link href="/raids">
-						<span className="cursor-pointer block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4">
-							Raids
-						</span>
-					</Link>
-					<button className="rounded-full border border-white p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black">
-						Connect
-					</button>
+					{navItems.map((item) => (
+						<NavItem key={item.name} item={item} />
+					))}
+					<ConnectButton />
 				</div>
 			</div>
 		</>

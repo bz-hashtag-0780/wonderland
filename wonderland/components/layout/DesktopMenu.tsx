@@ -1,5 +1,24 @@
 import Link from 'next/link';
 
+const navItems = [
+	{ name: 'Dashboard', href: '/dashboard' },
+	{ name: 'Raids', href: '/raids' },
+];
+
+const ConnectButton = () => (
+	<button className="rounded-full border border-white p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black">
+		Connect
+	</button>
+);
+
+const NavItem = ({ item }: any) => (
+	<Link href={item.href}>
+		<span className="cursor-pointer block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4">
+			{item.name}
+		</span>
+	</Link>
+);
+
 export default function DesktopMenu() {
 	return (
 		<div className="hidden lg:flex items-center justify-between w-full">
@@ -15,20 +34,11 @@ export default function DesktopMenu() {
 					</div>
 				</span>
 			</Link>
-			<div className="text-sm lg:flex-grow flex justify-end">
-				<Link href="/dashboard">
-					<span className="cursor-pointer block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4">
-						Dashboard
-					</span>
-				</Link>
-				<Link href="/raids">
-					<span className="cursor-pointer block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4">
-						Raids
-					</span>
-				</Link>
-				<button className="rounded-full border border-white p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black">
-					Connect
-				</button>
+			<div className="text-sm lg:flex-grow flex items-center justify-end">
+				{navItems.map((item) => (
+					<NavItem key={item.name} item={item} />
+				))}
+				<ConnectButton />
 			</div>
 		</div>
 	);

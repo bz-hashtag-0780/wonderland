@@ -1,6 +1,6 @@
-import NonFungibleToken from "./NonFungibleToken.cdc"
-import MetadataViews from "./MetadataViews.cdc"
-import BasicBeasts from "./BasicBeasts.cdc"
+import NonFungibleToken from "./utility/NonFungibleToken.cdc"
+import MetadataViews from "./utility/MetadataViews.cdc"
+import BasicBeasts from "./utility/BasicBeasts.cdc"
 
 pub contract BasicBeastsNFTStaking {
 

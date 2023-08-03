@@ -34,6 +34,15 @@
 				"testnet": "0x631e88ae7f1d7c20",
 				"emulator": "f8d6e0586b0a20c7"
 			}
+		},
+		"BasicBeasts": {
+			"aliases": {
+				"mainnet": "0xde7a5daf9df48c65",
+				"testnet": "0xfa252d0aa22bf86a"
+			}
+		},
+		"BasicBeastsNFTStaking": {
+			"source": "./cadence/contracts/BasicBeastsNFTStaking.cdc"
 		}
 	},
 	"networks": {
@@ -45,6 +54,10 @@
 		"emulator-account": {
 			"address": "f8d6e0586b0a20c7",
 			"key": "6d12eebfef9866c9b6fa92b97c6e705c26a1785b1e7944da701fc545a51d4673"
+		},
+		"testnet-account": {
+			"address": "0x4c74cb420f4eaa84",
+			"key": "$PRIVATE_KEY"
 		}
 	}
 }

@@ -2,7 +2,21 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
-import { query } from '@onflow/fcl';
+import {
+	query,
+	send,
+	transaction,
+	args,
+	arg,
+	payer,
+	proposer,
+	authorizations,
+	limit,
+	authz,
+	decode,
+	tx,
+} from '@onflow/fcl';
+import * as t from '@onflow/types';
 import '../../flow-config.js';
 
 const Beasts = () => {
@@ -117,6 +131,33 @@ const Beasts = () => {
 	useEffect(() => {
 		fetchUserBeasts();
 	}, []);
+
+	const quest = async () => {
+		try {
+			const res = await send([
+				transaction(`
+    
+            transaction() {
+            
+                prepare(acct: AuthAccount) {}
+            
+                execute {}
+            
+            }
+            `),
+				args([
+					arg('125368043', t.UInt64),
+					arg('0x4742010dbfe107da', t.Address),
+				]),
+				payer(authz),
+				proposer(authz),
+				authorizations([authz]),
+				limit(9999),
+			]).then(decode);
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
 	return (
 		<div className="pt-6">

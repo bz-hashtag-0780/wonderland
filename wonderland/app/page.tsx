@@ -1,7 +1,28 @@
-import React from 'react';
-import Image from 'next/image';
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import * as fcl from '@onflow/fcl';
+
+fcl.config({
+	'accessNode.api': 'https://rest-testnet.onflow.org',
+	'flow.network': 'testnet',
+	'discovery.wallet': 'https://flow-wallet-testnet.blocto.app/authn',
+});
 
 export default function Home() {
+	const [user, setUser] = useState({ addr: null });
+
+	const logIn = () => {
+		fcl.authenticate();
+	};
+
+	const logOut = () => {
+		fcl.unauthenticate();
+	};
+	useEffect(() => {
+		fcl.currentUser().subscribe(setUser);
+	}, []);
+
 	return (
 		<div
 			className="min-h-screen flex items-center justify-center bg-center bg-no-repeat bg-cover"
@@ -14,6 +35,14 @@ export default function Home() {
 				>
 					Wonderland
 				</h1>
+				{user?.addr != null ? (
+					<div>
+						<div>{user?.addr}</div>
+						<button onClick={() => logOut()}>log out</button>
+					</div>
+				) : (
+					<button onClick={() => logIn()}>logIn</button>
+				)}
 			</header>
 		</div>
 	);

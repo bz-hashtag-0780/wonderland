@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Navbar from '@/components/layout/navbar';
+import '../flow-config.js';
 
 const inter = Inter({ subsets: ['latin'] });
 

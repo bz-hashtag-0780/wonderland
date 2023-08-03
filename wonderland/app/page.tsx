@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import * as fcl from '@onflow/fcl';
 
-fcl.config({
-	'accessNode.api': 'https://rest-testnet.onflow.org',
-	'flow.network': 'testnet',
-	'discovery.wallet': 'https://flow-wallet-testnet.blocto.app/authn',
-});
+// fcl.config({
+// 	'accessNode.api': 'https://rest-testnet.onflow.org',
+// 	'flow.network': 'testnet',
+// 	'discovery.wallet': 'https://flow-wallet-testnet.blocto.app/authn',
+// });
 
 export default function Home() {
 	const [user, setUser] = useState({ addr: null });

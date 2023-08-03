@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { query } from '@onflow/fcl';
 
 const Beasts = () => {
 	const dummyData = [
@@ -72,6 +73,63 @@ const Beasts = () => {
 			</div>
 		</div>
 	);
+
+	const fetchUserBeasts = async () => {
+		try {
+			let res = await query({
+				cadence: `
+            import BasicBeasts from 0xBasicBeasts
+            
+            pub fun main(acct: Address): [AnyStruct] {
+                var beastCollection: [AnyStruct] = []
+            
+                let collectionRef = getAccount(acct).getCapability(BasicBeasts.CollectionPublicPath)
+                    .borrow<&{BasicBeasts.BeastCollectionPublic}>()
+    
+                if(collectionRef != nil) {
+                    let beastIDs = collectionRef!.getIDs()
+            
+                    for id in beastIDs {
+                        let borrowedBeast = collectionRef!.borrowBeast(id: id)!
+                        beastCollection.append(borrowedBeast)
+                    }
+                }
+              return beastCollection
+            }
+            `,
+
+				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
+			});
+			let mappedCollection: any = [];
+			for (let item in res) {
+				const element = res[item];
+				var beast = {
+					id: element.id,
+					serialNumber: element.serialNumber,
+					beastTemplateID: element.beastTemplateID,
+					nickname: element.nickname,
+					firstOwner: element.firstOwner,
+					sex: element.sex,
+					matron: element.matron,
+					sire: element.sire,
+					name: element.name,
+					starLevel: element.starLevel,
+					data: element.data,
+					skin: element.skin,
+					evolvedFrom: element.evolvedFrom,
+					maxAdminMintAllowed: element.maxAdminMintAllowed,
+					dexNumber: element.dexNumber,
+					description: element.description,
+					elements: element.elements,
+					basicSkills: element.basicSkills,
+					ultimateSkill: element.ultimateSkill,
+				};
+				mappedCollection.push(beast);
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
 	return (
 		<div className="pt-6">

@@ -1,6 +1,9 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { query } from '@onflow/fcl';
+import '../../flow-config.js';
 
 const Beasts = () => {
 	const dummyData = [
@@ -43,7 +46,10 @@ const Beasts = () => {
 						/>
 					</div>
 					<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-						<button className="justify-center bg-white bg-opacity-80 h-5 px-3 hover:opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100">
+						<button
+							onClick={() => fetchUserBeasts()}
+							className="justify-center bg-white bg-opacity-80 h-5 px-3 hover:opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
+						>
 							Quest
 						</button>
 					</div>
@@ -98,38 +104,19 @@ const Beasts = () => {
             }
             `,
 
-				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
+				args: (arg: any, t: any) => [
+					arg('0x4742010dbfe107da', t.Address),
+				],
 			});
-			let mappedCollection: any = [];
-			for (let item in res) {
-				const element = res[item];
-				var beast = {
-					id: element.id,
-					serialNumber: element.serialNumber,
-					beastTemplateID: element.beastTemplateID,
-					nickname: element.nickname,
-					firstOwner: element.firstOwner,
-					sex: element.sex,
-					matron: element.matron,
-					sire: element.sire,
-					name: element.name,
-					starLevel: element.starLevel,
-					data: element.data,
-					skin: element.skin,
-					evolvedFrom: element.evolvedFrom,
-					maxAdminMintAllowed: element.maxAdminMintAllowed,
-					dexNumber: element.dexNumber,
-					description: element.description,
-					elements: element.elements,
-					basicSkills: element.basicSkills,
-					ultimateSkill: element.ultimateSkill,
-				};
-				mappedCollection.push(beast);
-			}
+			console.log(res);
 		} catch (err) {
 			console.log(err);
 		}
 	};
+
+	useEffect(() => {
+		fetchUserBeasts();
+	}, []);
 
 	return (
 		<div className="pt-6">

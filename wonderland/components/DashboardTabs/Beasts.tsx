@@ -150,7 +150,7 @@ const Beasts = () => {
 
 	return (
 		<div className="pt-6">
-			<div className="grid grid-cols-4 gap-x-4 gap-y-6 overflow-auto">
+			<div className="grid grid-cols-4 gap-x-4 gap-y-2 overflow-auto">
 				{beasts != null && (
 					<>
 						{beasts.map((item: any) => (

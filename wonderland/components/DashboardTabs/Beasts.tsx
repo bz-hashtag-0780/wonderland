@@ -18,6 +18,7 @@ import {
 } from '@onflow/fcl';
 import * as t from '@onflow/types';
 import '../../flow-config.js';
+import { STAKE } from '../../flow/txns/stake.js';
 
 const Beasts = () => {
 	const dummyData = [
@@ -135,47 +136,7 @@ const Beasts = () => {
 	const quest = async () => {
 		try {
 			const res = await send([
-				transaction(`
-import BasicBeastsNFTStaking from 0xBasicBeastsNFTStaking
-import BasicBeasts from 0xBasicBeasts
-
-pub fun hasStakingCollection(_ address: Address): Bool {
-		return getAccount(address).capabilities.get<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>(BasicBeastsNFTStaking.CollectionPublicPath) == nil
-	}
-
-transaction(nftID: UInt64) {
-
-	let stakingCollectionRef: &BasicBeastsNFTStaking.Collection
-	let nftCollectionRef: &BasicBeasts.Collection
-
-	prepare(signer: AuthAccount) {
-
-		// create staking collection
-		if !hasStakingCollection(signer.address) {
-			if signer.borrow<&BasicBeastsNFTStaking.Collection>(from: BasicBeastsNFTStaking.CollectionStoragePath) == nil {
-				signer.save(<-BasicBeastsNFTStaking.createEmptyCollection(), to: BasicBeastsNFTStaking.CollectionStoragePath)
-			}
-
-			signer.capabilities.unpublish(BasicBeastsNFTStaking.CollectionPublicPath)
-
-			signer.capabilities.publish(signer.capabilities.storage.issue<&BasicBeastsNFTStaking.Collection>(BasicBeastsNFTStaking.CollectionStoragePath), at: BasicBeastsNFTStaking.CollectionPublicPath)
-		}
-
-		self.stakingCollectionRef = signer.borrow<&BasicBeastsNFTStaking.Collection>(from: BasicBeastsNFTStaking.CollectionStoragePath)??panic("Couldn't borrow staking collection")
-
-		self.nftCollectionRef = signer.borrow<&BasicBeasts.Collection>(from: BasicBeasts.CollectionStoragePath)??panic("Couldn't borrow staking collection")
-
-	}
-
-	execute {
-
-		let nft <-self.nftCollectionRef.withdraw(withdrawID: nftID) as! @BasicBeasts.NFT
-
-		self.stakingCollectionRef.stake(nft: <-nft)
-
-	}
-}
-            `),
+				transaction(STAKE),
 				args([arg('125368043', t.UInt64)]),
 				payer(authz),
 				proposer(authz),

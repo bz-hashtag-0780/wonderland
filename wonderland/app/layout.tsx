@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Navbar from '@/components/layout/navbar';
 import '../flow-config.js';
+import { ToastContainer } from 'react-toastify';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,8 +19,9 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
+			<ToastContainer position="bottom-right" pauseOnFocusLoss={false} />
+			<Navbar />
 			<body className={inter.className}>
-				<Navbar />
 				<main>{children}</main>
 			</body>
 		</html>

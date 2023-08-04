@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
 	query,
@@ -24,6 +24,8 @@ import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
 
 const Beasts = () => {
+	const [beasts, setBeasts] = useState([]);
+
 	const dummyData = [
 		{
 			name: 'Beasts',
@@ -46,7 +48,10 @@ const Beasts = () => {
 					<div>
 						<Image
 							alt={item.name}
-							src={item.image}
+							src={
+								'https://basicbeasts.mypinata.cloud/ipfs/' +
+								item.beastTemplate.image
+							}
 							width={400}
 							height={400}
 							priority={true}
@@ -54,8 +59,8 @@ const Beasts = () => {
 					</div>
 					<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 						<button
-							onClick={() => quest()}
-							className="justify-center bg-white bg-opacity-80 h-5 px-3 hover:opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
+							onClick={() => quest(item.id)}
+							className="justify-center bg-white bg-opacity-70 h-5 px-3 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 						>
 							Quest
 						</button>
@@ -66,7 +71,7 @@ const Beasts = () => {
 				<div className="truncate mt-1">
 					<div className="flex items-center justify-between gap-x-2 flex-wrap h-7 overflow-hidden">
 						<span className="flex items-center gap-1 font-bold text-white-2 min-w-0 min-h-[28px]">
-							#69
+							{item.nickname} #{item.serialNumber}
 						</span>
 						<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
 							4/7d
@@ -96,6 +101,7 @@ const Beasts = () => {
 				],
 			});
 			console.log(res);
+			setBeasts(res);
 		} catch (err) {
 			console.log(err);
 		}
@@ -105,13 +111,13 @@ const Beasts = () => {
 		fetchUserBeasts();
 	}, []);
 
-	const quest = async () => {
+	const quest = async (nftID: number) => {
 		const id = toast.loading('Initializing...');
 
 		try {
 			const res = await send([
 				transaction(STAKE),
-				args([arg('125368043', t.UInt64)]),
+				args([arg(nftID, t.UInt64)]),
 				payer(authz),
 				proposer(authz),
 				authorizations([authz]),
@@ -145,9 +151,13 @@ const Beasts = () => {
 	return (
 		<div className="pt-6">
 			<div className="grid grid-cols-4 gap-x-4 gap-y-6 overflow-auto">
-				{dummyData.map((item) => (
-					<NFT key={item.name} item={item} />
-				))}
+				{beasts != null && (
+					<>
+						{beasts.map((item: any) => (
+							<NFT key={item.uuid} item={item} />
+						))}
+					</>
+				)}
 			</div>
 		</div>
 	);

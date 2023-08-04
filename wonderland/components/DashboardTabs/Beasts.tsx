@@ -61,7 +61,7 @@ const Beasts = () => {
 					</div>
 					<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 						<button
-							onClick={() => fetchUserBeasts()}
+							onClick={() => quest()}
 							className="justify-center bg-white bg-opacity-80 h-5 px-3 hover:opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 						>
 							Quest
@@ -136,24 +136,55 @@ const Beasts = () => {
 		try {
 			const res = await send([
 				transaction(`
-    
-            transaction() {
-            
-                prepare(acct: AuthAccount) {}
-            
-                execute {}
-            
-            }
+import BasicBeastsNFTStaking from 0xBasicBeastsNFTStaking
+import BasicBeasts from 0xBasicBeasts
+
+pub fun hasStakingCollection(_ address: Address): Bool {
+		return getAccount(address).capabilities.get<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>(BasicBeastsNFTStaking.CollectionPublicPath) == nil
+	}
+
+transaction(nftID: UInt64) {
+
+	let stakingCollectionRef: &BasicBeastsNFTStaking.Collection
+	let nftCollectionRef: &BasicBeasts.Collection
+
+	prepare(signer: AuthAccount) {
+
+		// create staking collection
+		if !hasStakingCollection(signer.address) {
+			if signer.borrow<&BasicBeastsNFTStaking.Collection>(from: BasicBeastsNFTStaking.CollectionStoragePath) == nil {
+				signer.save(<-BasicBeastsNFTStaking.createEmptyCollection(), to: BasicBeastsNFTStaking.CollectionStoragePath)
+			}
+
+			signer.capabilities.unpublish(BasicBeastsNFTStaking.CollectionPublicPath)
+
+			signer.capabilities.publish(signer.capabilities.storage.issue<&BasicBeastsNFTStaking.Collection>(BasicBeastsNFTStaking.CollectionStoragePath), at: BasicBeastsNFTStaking.CollectionPublicPath)
+		}
+
+		self.stakingCollectionRef = signer.borrow<&BasicBeastsNFTStaking.Collection>(from: BasicBeastsNFTStaking.CollectionStoragePath)??panic("Couldn't borrow staking collection")
+
+		self.nftCollectionRef = signer.borrow<&BasicBeasts.Collection>(from: BasicBeasts.CollectionStoragePath)??panic("Couldn't borrow staking collection")
+
+	}
+
+	execute {
+
+		let nft <-self.nftCollectionRef.withdraw(withdrawID: nftID) as! @BasicBeasts.NFT
+
+		self.stakingCollectionRef.stake(nft: <-nft)
+
+	}
+}
             `),
-				args([
-					arg('125368043', t.UInt64),
-					arg('0x4742010dbfe107da', t.Address),
-				]),
+				args([arg('125368043', t.UInt64)]),
 				payer(authz),
 				proposer(authz),
 				authorizations([authz]),
 				limit(9999),
 			]).then(decode);
+			tx(res).subscribe((res: any) => {
+				console.log(res.status);
+			});
 		} catch (err) {
 			console.log(err);
 		}

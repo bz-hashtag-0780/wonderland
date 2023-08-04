@@ -19,6 +19,7 @@ import {
 import * as t from '@onflow/types';
 import '../../flow-config.js';
 import { STAKE } from '../../flow/txns/stake.js';
+import { FETCH_BEASTS } from '../../flow/scripts/fetch_beasts.js';
 
 const Beasts = () => {
 	const dummyData = [
@@ -28,6 +29,42 @@ const Beasts = () => {
 		},
 		{
 			name: 'Rewards',
+			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
+		},
+		{
+			name: 'Random',
+			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
+		},
+		{
+			name: 'Random',
+			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
+		},
+		{
+			name: 'Random',
+			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
+		},
+		{
+			name: 'Random',
+			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
+		},
+		{
+			name: 'Random',
+			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
+		},
+		{
+			name: 'Random',
+			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
+		},
+		{
+			name: 'Random',
+			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
+		},
+		{
+			name: 'Random',
+			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
+		},
+		{
+			name: 'Random',
 			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
 		},
 		{
@@ -98,27 +135,7 @@ const Beasts = () => {
 	const fetchUserBeasts = async () => {
 		try {
 			let res = await query({
-				cadence: `
-            import BasicBeasts from 0xBasicBeasts
-            
-            pub fun main(acct: Address): [AnyStruct] {
-                var beastCollection: [AnyStruct] = []
-            
-                let collectionRef = getAccount(acct).getCapability(BasicBeasts.CollectionPublicPath)
-                    .borrow<&{BasicBeasts.BeastCollectionPublic}>()
-    
-                if(collectionRef != nil) {
-                    let beastIDs = collectionRef!.getIDs()
-            
-                    for id in beastIDs {
-                        let borrowedBeast = collectionRef!.borrowBeast(id: id)!
-                        beastCollection.append(borrowedBeast)
-                    }
-                }
-              return beastCollection
-            }
-            `,
-
+				cadence: FETCH_BEASTS,
 				args: (arg: any, t: any) => [
 					arg('0x4742010dbfe107da', t.Address),
 				],

@@ -20,6 +20,8 @@ import * as t from '@onflow/types';
 import '../../flow-config.js';
 import { STAKE } from '../../flow/txns/stake.js';
 import { FETCH_BEASTS } from '../../flow/scripts/fetch_beasts.js';
+import { toast } from 'react-toastify';
+import { toastStatus } from '@/framework/toastStatus';
 
 const Beasts = () => {
 	const dummyData = [
@@ -29,54 +31,6 @@ const Beasts = () => {
 		},
 		{
 			name: 'Rewards',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
 			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
 		},
 		{
@@ -95,6 +49,7 @@ const Beasts = () => {
 							src={item.image}
 							width={400}
 							height={400}
+							priority={true}
 						/>
 					</div>
 					<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -151,6 +106,8 @@ const Beasts = () => {
 	}, []);
 
 	const quest = async () => {
+		const id = toast.loading('Initializing...');
+
 		try {
 			const res = await send([
 				transaction(STAKE),
@@ -161,9 +118,26 @@ const Beasts = () => {
 				limit(9999),
 			]).then(decode);
 			tx(res).subscribe((res: any) => {
+				toastStatus(id, res.status);
 				console.log(res.status);
 			});
+			await tx(res)
+				.onceSealed()
+				.then(() => {
+					toast.update(id, {
+						render: 'Transaction Sealed',
+						type: 'success',
+						isLoading: false,
+						autoClose: 5000,
+					});
+				});
 		} catch (err) {
+			toast.update(id, {
+				render: () => <div>Error, try again later...</div>,
+				type: 'error',
+				isLoading: false,
+				autoClose: 5000,
+			});
 			console.log(err);
 		}
 	};

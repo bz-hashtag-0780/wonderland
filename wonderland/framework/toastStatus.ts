@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 
-export default function toastStatus(id: any, status: number) {
+function toastStatus(id: any, status: number) {
 	if (status >= 1 && status <= 3) {
 		const messages: string[] = [
 			'Pending...',
@@ -15,3 +15,5 @@ export default function toastStatus(id: any, status: number) {
 		});
 	}
 }
+
+export { toastStatus };

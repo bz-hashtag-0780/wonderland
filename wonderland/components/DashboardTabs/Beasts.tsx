@@ -125,7 +125,7 @@ const Beasts = () => {
 			]).then(decode);
 			tx(res).subscribe((res: any) => {
 				toastStatus(id, res.status);
-				console.log(res.status);
+				console.log(res);
 			});
 			await tx(res)
 				.onceSealed()

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useAuth } from 'providers/AuthProvider';
+import UserLoggedInDropdown from './UserLoggedInDropdown';
 
 const navItems = [
 	{ name: 'Dashboard', href: '/dashboard' },
@@ -47,7 +48,7 @@ export default function DesktopMenu() {
 				{!loggedIn ? (
 					<ConnectButton logIn={logIn} />
 				) : (
-					<button onClick={() => logOut()}>Sign out</button>
+					<UserLoggedInDropdown user={user} logOut={logOut} />
 				)}
 			</div>
 		</div>

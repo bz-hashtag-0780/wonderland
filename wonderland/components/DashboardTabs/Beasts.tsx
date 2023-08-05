@@ -47,7 +47,7 @@ const Beasts = () => {
 				<div className="rounded-xl overflow-hidden flex items-center relative">
 					<div>
 						<Image
-							alt={item.name}
+							alt={item.nickname}
 							src={
 								'https://basicbeasts.mypinata.cloud/ipfs/' +
 								item.beastTemplate.image

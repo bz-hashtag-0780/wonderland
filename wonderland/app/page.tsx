@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import * as fcl from '@onflow/fcl';
+import { useAuth } from 'providers/AuthProvider';
 
 // fcl.config({
 // 	'accessNode.api': 'https://rest-testnet.onflow.org',
@@ -10,18 +11,7 @@ import * as fcl from '@onflow/fcl';
 // });
 
 export default function Home() {
-	const [user, setUser] = useState({ addr: null });
-
-	const logIn = () => {
-		fcl.authenticate();
-	};
-
-	const logOut = () => {
-		fcl.unauthenticate();
-	};
-	useEffect(() => {
-		fcl.currentUser().subscribe(setUser);
-	}, []);
+	const { user, logIn, logOut } = useAuth();
 
 	return (
 		<div

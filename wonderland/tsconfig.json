@@ -8,6 +8,7 @@
 		"paths": {
 			"@/components/*": ["components/*"],
 			"@/framework/*": ["framework/*"],
+			"@/hooks/*": ["hooks/*"],
 			"@/pages/*": ["pages/*"],
 			"@/app/*": ["app/*"],
 			"@/lib/*": ["lib/*"],

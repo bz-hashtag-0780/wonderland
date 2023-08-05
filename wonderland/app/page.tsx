@@ -25,14 +25,6 @@ export default function Home() {
 				>
 					Wonderland
 				</h1>
-				{user?.addr != null ? (
-					<div>
-						<div>{user?.addr}</div>
-						<button onClick={() => logOut()}>log out</button>
-					</div>
-				) : (
-					<button onClick={() => logIn()}>logIn</button>
-				)}
 			</header>
 		</div>
 	);

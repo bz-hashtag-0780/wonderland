@@ -1,11 +1,6 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import { useAuth } from 'providers/AuthProvider';
+import React from 'react';
 
 export default function Home() {
-	const { user, logIn, logOut } = useAuth();
-
 	return (
 		<div
 			className="min-h-screen flex items-center justify-center bg-center bg-no-repeat bg-cover"

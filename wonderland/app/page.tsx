@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import * as fcl from '@onflow/fcl';
 import { useAuth } from 'providers/AuthProvider';
 
 export default function Home() {

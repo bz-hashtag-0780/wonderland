@@ -44,10 +44,10 @@ export default function DesktopMenu() {
 				{navItems.map((item) => (
 					<NavItem key={item.name} item={item} />
 				))}
-				{loggedIn ? (
-					<button onClick={() => logOut()}>Sign out</button>
-				) : (
+				{!loggedIn ? (
 					<ConnectButton logIn={logIn} />
+				) : (
+					<button onClick={() => logOut()}>Sign out</button>
 				)}
 			</div>
 		</div>

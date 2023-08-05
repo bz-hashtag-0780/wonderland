@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from 'providers/AuthProvider';
 
 const navItems = [
 	{ name: 'Home', href: '/' },
@@ -7,8 +8,11 @@ const navItems = [
 	{ name: 'Raids', href: '/raids' },
 ];
 
-const ConnectButton = () => (
-	<button className="mt-4 rounded-full border border-white p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black">
+const ConnectButton = ({ logIn }: any) => (
+	<button
+		onClick={() => logIn()}
+		className="mt-4 rounded-full border border-white p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black"
+	>
 		Connect
 	</button>
 );
@@ -23,6 +27,7 @@ const NavItem = ({ item }: any) => (
 
 export default function MobileMenu() {
 	const [isOpen, setIsOpen] = useState(false);
+	const { user, loggedIn, logIn, logOut } = useAuth();
 
 	return (
 		<>
@@ -70,7 +75,11 @@ export default function MobileMenu() {
 					{navItems.map((item) => (
 						<NavItem key={item.name} item={item} />
 					))}
-					<ConnectButton />
+					{!loggedIn ? (
+						<ConnectButton logIn={logIn} />
+					) : (
+						<button onClick={() => logOut()}>Sign out</button>
+					)}
 				</div>
 			</div>
 		</>

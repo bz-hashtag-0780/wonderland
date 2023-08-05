@@ -4,12 +4,6 @@ import React, { useEffect, useState } from 'react';
 import * as fcl from '@onflow/fcl';
 import { useAuth } from 'providers/AuthProvider';
 
-// fcl.config({
-// 	'accessNode.api': 'https://rest-testnet.onflow.org',
-// 	'flow.network': 'testnet',
-// 	'discovery.wallet': 'https://flow-wallet-testnet.blocto.app/authn',
-// });
-
 export default function Home() {
 	const { user, logIn, logOut } = useAuth();
 

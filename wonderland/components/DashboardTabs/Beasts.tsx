@@ -20,7 +20,7 @@ import { STAKE } from '@/flow/transactions/stake';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
 
-const Beasts = ({ beasts }: any) => {
+const Beasts = ({ beasts, unstakedBeasts }: any) => {
 	const dummyData = [
 		{
 			name: 'Beasts',
@@ -53,12 +53,23 @@ const Beasts = ({ beasts }: any) => {
 						/>
 					</div>
 					<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-						<button
-							onClick={() => quest(item.id)}
-							className="justify-center bg-white bg-opacity-70 h-5 px-3 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
-						>
-							Quest
-						</button>
+						{unstakedBeasts.some(
+							(unstakedBeast: any) => unstakedBeast.id === item.id
+						) ? (
+							<button
+								onClick={() => quest(item.id)}
+								className="justify-center bg-white bg-opacity-70 h-5 px-3 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
+							>
+								Quest
+							</button>
+						) : (
+							<button
+								onClick={() => quest(item.id)}
+								className="justify-center bg-white bg-opacity-70 h-5 px-3 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
+							>
+								Quit quest
+							</button>
+						)}
 					</div>
 				</div>
 			</div>

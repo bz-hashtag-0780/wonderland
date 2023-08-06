@@ -13,6 +13,8 @@ const Tab = ({ children }: any) => <div>{children}</div>;
 
 export default function Dashboard() {
 	const [activeTab, setActiveTab] = useState('Rewards');
+	const [stakedBeasts, setStakedBeasts] = useState([]);
+	const [unstakedBeasts, setUnstakedBeasts] = useState([]);
 	const [beasts, setBeasts] = useState([]);
 	const { user } = useAuth();
 
@@ -48,13 +50,6 @@ export default function Dashboard() {
 		</button>
 	);
 
-	const fetchUserStakedBeasts = async () => {
-		try {
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
 	const fetchUserBeasts = async () => {
 		try {
 			let beastCollection = await query({
@@ -68,6 +63,8 @@ export default function Dashboard() {
 			let joinedCollection = stakingCollection.concat(beastCollection);
 			console.log(joinedCollection);
 			setBeasts(joinedCollection);
+			setStakedBeasts(stakingCollection);
+			setUnstakedBeasts(beastCollection);
 		} catch (err) {
 			console.log(err);
 		}
@@ -76,7 +73,6 @@ export default function Dashboard() {
 	useEffect(() => {
 		if (user?.addr != null) {
 			fetchUserBeasts();
-			// fetchUserStakedBeasts();
 		} else {
 			setBeasts([]);
 		}
@@ -93,7 +89,9 @@ export default function Dashboard() {
 						<TabItem key={item.name} item={item} />
 					))}
 				</div>
-				{activeTab === 'Beasts' && <Beasts beasts={beasts} />}
+				{activeTab === 'Beasts' && (
+					<Beasts beasts={beasts} unstakedBeasts={unstakedBeasts} />
+				)}
 				{activeTab === 'Rewards' && <Rewards />}
 				{activeTab === 'Random' && <Tab>Random Content</Tab>}
 			</div>

@@ -90,7 +90,11 @@ export default function Dashboard() {
 					))}
 				</div>
 				{activeTab === 'Beasts' && (
-					<Beasts beasts={beasts} unstakedBeasts={unstakedBeasts} />
+					<Beasts
+						beasts={beasts}
+						unstakedBeasts={unstakedBeasts}
+						fetchUserBeasts={fetchUserBeasts}
+					/>
 				)}
 				{activeTab === 'Rewards' && <Rewards />}
 				{activeTab === 'Random' && <Tab>Random Content</Tab>}

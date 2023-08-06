@@ -17,10 +17,11 @@ import {
 } from '@onflow/fcl';
 import * as t from '@onflow/types';
 import { STAKE } from '@/flow/transactions/stake';
+import { UNSTAKE } from '@/flow/transactions/unstake';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
 
-const Beasts = ({ beasts, unstakedBeasts }: any) => {
+const Beasts = ({ beasts, unstakedBeasts, fetchUserBeasts }: any) => {
 	const dummyData = [
 		{
 			name: 'Beasts',
@@ -58,14 +59,14 @@ const Beasts = ({ beasts, unstakedBeasts }: any) => {
 						) ? (
 							<button
 								onClick={() => quest(item.id)}
-								className="justify-center bg-white bg-opacity-70 h-5 px-3 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
+								className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 							>
 								Quest
 							</button>
 						) : (
 							<button
-								onClick={() => quest(item.id)}
-								className="justify-center bg-white bg-opacity-70 h-5 px-3 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
+								onClick={() => quitQuest(item.id)}
+								className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 							>
 								Quit quest
 							</button>
@@ -124,6 +125,45 @@ const Beasts = ({ beasts, unstakedBeasts }: any) => {
 						autoClose: 5000,
 					});
 				});
+			fetchUserBeasts();
+		} catch (err) {
+			toast.update(id, {
+				render: () => <div>Error, try again later...</div>,
+				type: 'error',
+				isLoading: false,
+				autoClose: 5000,
+			});
+			console.log(err);
+		}
+	};
+
+	const quitQuest = async (nftID: number) => {
+		const id = toast.loading('Initializing...');
+
+		try {
+			const res = await send([
+				transaction(UNSTAKE),
+				args([arg(nftID, t.UInt64)]),
+				payer(authz),
+				proposer(authz),
+				authorizations([authz]),
+				limit(9999),
+			]).then(decode);
+			tx(res).subscribe((res: any) => {
+				toastStatus(id, res.status);
+				console.log(res);
+			});
+			await tx(res)
+				.onceSealed()
+				.then(() => {
+					toast.update(id, {
+						render: 'Transaction Sealed',
+						type: 'success',
+						isLoading: false,
+						autoClose: 5000,
+					});
+				});
+			fetchUserBeasts();
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,

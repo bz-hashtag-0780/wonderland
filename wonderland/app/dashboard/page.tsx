@@ -7,6 +7,8 @@ import '../../flow-config.js';
 import { query } from '@onflow/fcl';
 import { FETCH_BEASTS } from '@/flow/scripts/fetch_beasts';
 import { FETCH_STAKED_BEASTS } from '@/flow/scripts/fetch_staked_beasts';
+import { GET_ALL_STAKING_START_DATES } from '@/flow/scripts/get_all_staking_start_dates';
+import { GET_ALL_ADJUSTED_STAKING_DATES } from '@/flow/scripts/get_all_adjusted_staking_dates.js';
 import { useAuth } from 'providers/AuthProvider';
 
 const Tab = ({ children }: any) => <div>{children}</div>;
@@ -16,6 +18,8 @@ export default function Dashboard() {
 	const [stakedBeasts, setStakedBeasts] = useState([]);
 	const [unstakedBeasts, setUnstakedBeasts] = useState([]);
 	const [beasts, setBeasts] = useState([]);
+	const [stakingStartDates, setStakingStartDates] = useState(null);
+	const [adjustedStakingDates, setAdjustedStakingDates] = useState(null);
 	const { user } = useAuth();
 
 	const tabItems = [
@@ -70,12 +74,29 @@ export default function Dashboard() {
 		}
 	};
 
+	const getStakingDates = async () => {
+		try {
+			let adjustedStakingDates = await query({
+				cadence: GET_ALL_ADJUSTED_STAKING_DATES,
+			});
+			let stakingStartDates = await query({
+				cadence: GET_ALL_STAKING_START_DATES,
+			});
+			setAdjustedStakingDates(adjustedStakingDates);
+			setStakingStartDates(stakingStartDates);
+			console.log(adjustedStakingDates);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	useEffect(() => {
 		if (user?.addr != null) {
 			fetchUserBeasts();
 		} else {
 			setBeasts([]);
 		}
+		getStakingDates();
 	}, [user]);
 
 	return (
@@ -94,6 +115,7 @@ export default function Dashboard() {
 						beasts={beasts}
 						unstakedBeasts={unstakedBeasts}
 						fetchUserBeasts={fetchUserBeasts}
+						adjustedStakingDates={adjustedStakingDates}
 					/>
 				)}
 				{activeTab === 'Rewards' && <Rewards />}

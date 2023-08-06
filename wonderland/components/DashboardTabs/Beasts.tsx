@@ -18,8 +18,8 @@ import {
 } from '@onflow/fcl';
 import * as t from '@onflow/types';
 import '../../flow-config.js';
-import { STAKE } from '../../flow/txns/stake.js';
-import { FETCH_BEASTS } from '../../flow/scripts/fetch_beasts.js';
+import { STAKE } from '@/flow/transactions/stake.js';
+import { FETCH_BEASTS } from '@/flow/scripts/fetch_beasts.js';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
 

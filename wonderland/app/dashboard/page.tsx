@@ -6,6 +6,7 @@ import Rewards from '@/components/DashboardTabs/Rewards';
 import '../../flow-config.js';
 import { query } from '@onflow/fcl';
 import { FETCH_BEASTS } from '@/flow/scripts/fetch_beasts';
+import { FETCH_STAKED_BEASTS } from '@/flow/scripts/fetch_staked_beasts';
 import { useAuth } from 'providers/AuthProvider';
 
 const Tab = ({ children }: any) => <div>{children}</div>;
@@ -47,6 +48,13 @@ export default function Dashboard() {
 		</button>
 	);
 
+	const fetchUserStakedBeasts = async () => {
+		try {
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	const fetchUserBeasts = async () => {
 		try {
 			let beastCollection = await query({
@@ -54,11 +62,12 @@ export default function Dashboard() {
 				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
 			});
 			let stakingCollection = await query({
-				cadence: FETCH_BEASTS,
+				cadence: FETCH_STAKED_BEASTS,
 				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
 			});
-			console.log(beastCollection);
-			setBeasts(beastCollection);
+			let joinedCollection = stakingCollection.concat(beastCollection);
+			console.log(joinedCollection);
+			setBeasts(joinedCollection);
 		} catch (err) {
 			console.log(err);
 		}
@@ -67,6 +76,7 @@ export default function Dashboard() {
 	useEffect(() => {
 		if (user?.addr != null) {
 			fetchUserBeasts();
+			// fetchUserStakedBeasts();
 		} else {
 			setBeasts([]);
 		}

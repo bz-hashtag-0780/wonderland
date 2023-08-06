@@ -14,7 +14,7 @@ import { useAuth } from 'providers/AuthProvider';
 const Tab = ({ children }: any) => <div>{children}</div>;
 
 export default function Dashboard() {
-	const [activeTab, setActiveTab] = useState('Rewards');
+	const [activeTab, setActiveTab] = useState('Beasts');
 	const [stakedBeasts, setStakedBeasts] = useState([]);
 	const [unstakedBeasts, setUnstakedBeasts] = useState([]);
 	const [beasts, setBeasts] = useState([]);

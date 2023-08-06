@@ -1,13 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Beasts from '@/components/DashboardTabs/Beasts';
 import Rewards from '@/components/DashboardTabs/Rewards';
+import '../../flow-config.js';
+import { query } from '@onflow/fcl';
+import { FETCH_BEASTS } from '@/flow/scripts/fetch_beasts';
+import { useAuth } from 'providers/AuthProvider';
 
 const Tab = ({ children }: any) => <div>{children}</div>;
 
 export default function Dashboard() {
-	const [activeTab, setActiveTab] = useState('Beasts');
+	const [activeTab, setActiveTab] = useState('Rewards');
+	const [beasts, setBeasts] = useState([]);
+	const { user } = useAuth();
 
 	const tabItems = [
 		{ name: 'Beasts' },
@@ -35,11 +41,36 @@ export default function Dashboard() {
 							: 'flex items-center justify-center border border-white border-opacity-50 ml-1.5 px-2 text-xs font-semibold text-gray-200 text-opacity-50 rounded-lg'
 					}
 				>
-					1
+					{item.name === 'Beasts' ? beasts.length : 0}
 				</div>
 			</div>
 		</button>
 	);
+
+	const fetchUserBeasts = async () => {
+		try {
+			let beastCollection = await query({
+				cadence: FETCH_BEASTS,
+				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
+			});
+			let stakingCollection = await query({
+				cadence: FETCH_BEASTS,
+				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
+			});
+			console.log(beastCollection);
+			setBeasts(beastCollection);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	useEffect(() => {
+		if (user?.addr != null) {
+			fetchUserBeasts();
+		} else {
+			setBeasts([]);
+		}
+	}, [user]);
 
 	return (
 		<div
@@ -52,7 +83,7 @@ export default function Dashboard() {
 						<TabItem key={item.name} item={item} />
 					))}
 				</div>
-				{activeTab === 'Beasts' && <Beasts />}
+				{activeTab === 'Beasts' && <Beasts beasts={beasts} />}
 				{activeTab === 'Rewards' && <Rewards />}
 				{activeTab === 'Random' && <Tab>Random Content</Tab>}
 			</div>

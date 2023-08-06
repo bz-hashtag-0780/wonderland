@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import {
-	query,
 	send,
 	transaction,
 	args,
@@ -17,15 +16,11 @@ import {
 	tx,
 } from '@onflow/fcl';
 import * as t from '@onflow/types';
-import '../../flow-config.js';
-import { STAKE } from '@/flow/transactions/stake.js';
-import { FETCH_BEASTS } from '@/flow/scripts/fetch_beasts.js';
+import { STAKE } from '@/flow/transactions/stake';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
 
-const Beasts = () => {
-	const [beasts, setBeasts] = useState([]);
-
+const Beasts = ({ beasts }: any) => {
 	const dummyData = [
 		{
 			name: 'Beasts',
@@ -91,25 +86,6 @@ const Beasts = () => {
 			</div>
 		</div>
 	);
-
-	const fetchUserBeasts = async () => {
-		try {
-			let res = await query({
-				cadence: FETCH_BEASTS,
-				args: (arg: any, t: any) => [
-					arg('0x4742010dbfe107da', t.Address),
-				],
-			});
-			console.log(res);
-			setBeasts(res);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	useEffect(() => {
-		fetchUserBeasts();
-	}, []);
 
 	const quest = async (nftID: number) => {
 		const id = toast.loading('Initializing...');

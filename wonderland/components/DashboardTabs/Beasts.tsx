@@ -21,7 +21,12 @@ import { UNSTAKE } from '@/flow/transactions/unstake';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
 
-const Beasts = ({ beasts, unstakedBeasts, fetchUserBeasts }: any) => {
+const Beasts = ({
+	beasts,
+	unstakedBeasts,
+	fetchUserBeasts,
+	adjustedStakingDates,
+}: any) => {
 	const dummyData = [
 		{
 			name: 'Beasts',
@@ -80,9 +85,14 @@ const Beasts = ({ beasts, unstakedBeasts, fetchUserBeasts }: any) => {
 						<span className="flex items-center gap-1 font-bold text-white-2 min-w-0 min-h-[28px]">
 							{item.nickname} #{item.serialNumber}
 						</span>
-						<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
-							4/7d
-						</span>
+						{adjustedStakingDates[item.id] != null && (
+							<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
+								{calculateDaysElapsed(
+									adjustedStakingDates[item.id]
+								)}
+								/7d
+							</span>
+						)}
 					</div>
 				</div>
 				<div className="truncate mt-1">
@@ -98,6 +108,16 @@ const Beasts = ({ beasts, unstakedBeasts, fetchUserBeasts }: any) => {
 			</div>
 		</div>
 	);
+
+	function calculateDaysElapsed(timestamp: number): number {
+		const timestampInMilliseconds = timestamp * 1000;
+		const dateFromTimestamp = new Date(timestampInMilliseconds);
+		const currentDate = new Date();
+		const diffInMilliseconds =
+			currentDate.getTime() - dateFromTimestamp.getTime();
+		const diffInDays = diffInMilliseconds / (1000 * 60 * 60 * 24);
+		return Math.floor(diffInDays);
+	}
 
 	const quest = async (nftID: number) => {
 		const id = toast.loading('Initializing...');

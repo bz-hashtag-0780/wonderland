@@ -26,6 +26,7 @@ const Beasts = ({
 	unstakedBeasts,
 	fetchUserBeasts,
 	adjustedStakingDates,
+	stakingStartDates,
 }: any) => {
 	const dummyData = [
 		{
@@ -46,13 +47,13 @@ const Beasts = ({
 		<div className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden">
 			<div className="flex-auto flex flex-col w-full group relative">
 				<div className="rounded-xl overflow-hidden flex items-center relative">
-					{adjustedStakingDates[item.id] != null && (
+					{stakingStartDates[item.id] != null && (
 						<div className="flex w-full absolute z-10 top-2">
 							<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
 								<span style={{ fontSize: '10px' }}>⏳</span>
 								&nbsp;
 								{calculateDaysElapsed(
-									adjustedStakingDates[item.id]
+									stakingStartDates[item.id]
 								)}
 								d
 							</div>
@@ -210,7 +211,7 @@ const Beasts = ({
 
 	return (
 		<div className="pt-6">
-			<div className="grid grid-cols-4 gap-x-4 gap-y-2 overflow-auto">
+			<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2 overflow-auto">
 				{beasts != null && (
 					<>
 						{beasts.map((item: any) => (

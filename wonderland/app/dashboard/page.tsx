@@ -104,7 +104,7 @@ export default function Dashboard() {
 			className="min-h-screen flex pt-20 pb-20 justify-center bg-center bg-no-repeat bg-cover"
 			style={{ backgroundImage: `url(/background/landscape.png)` }}
 		>
-			<div className="w-full max-w-4xl bg-black bg-opacity-75 p-5 rounded-lg mx-2 text-white">
+			<div className="w-full max-w-5xl bg-black bg-opacity-75 p-5 rounded-lg mx-2 text-white">
 				<div className="flex border-b border-white border-opacity-20 gap-4">
 					{tabItems.map((item) => (
 						<TabItem key={item.name} item={item} />
@@ -116,6 +116,7 @@ export default function Dashboard() {
 						unstakedBeasts={unstakedBeasts}
 						fetchUserBeasts={fetchUserBeasts}
 						adjustedStakingDates={adjustedStakingDates}
+						stakingStartDates={stakingStartDates}
 					/>
 				)}
 				{activeTab === 'Rewards' && <Rewards />}

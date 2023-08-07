@@ -120,6 +120,10 @@ pub contract BasicBeastsNFTStaking {
         return self.adjustedStakingDates
     }
 
+    pub fun getStakers(): [Address] {
+        return self.stakers
+    }
+
     init() {
         self.stakers = []
         self.stakingStartDates = {}

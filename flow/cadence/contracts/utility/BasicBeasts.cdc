@@ -1,7 +1,7 @@
-import FungibleToken from "../flow/FungibleToken.cdc"
-import NonFungibleToken from "../flow/NonFungibleToken.cdc"
-import MetadataViews from "../flow/MetadataViews.cdc"
-import FlowToken from "../flow/FlowToken.cdc"
+import FungibleToken from "./FungibleToken.cdc"
+import NonFungibleToken from "./NonFungibleToken.cdc"
+import MetadataViews from "./MetadataViews.cdc"
+import FlowToken from "./FlowToken.cdc"
 
 pub contract BasicBeasts: NonFungibleToken {
 

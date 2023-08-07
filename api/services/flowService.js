@@ -8,8 +8,6 @@ fcl.config()
 	.put('0xBasicBeastsNFTStaking', '0x4c74cb420f4eaa84')
 	.put('0xBasicBeastsNFTStakingRewards', '0x4c74cb420f4eaa84');
 
-const AdminAddress = '0x4c74cb420f4eaa84';
-
 class flowService {
 	static encryptPrivateKey(key) {
 		const secret = process.env.SECRET_PASSPHRASE;

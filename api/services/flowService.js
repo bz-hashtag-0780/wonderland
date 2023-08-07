@@ -1,4 +1,6 @@
 const fcl = require('@onflow/fcl');
+const CryptoJS = require('crypto-js');
+require('dotenv').config();
 
 fcl.config()
 	.put('flow.network', 'testnet')
@@ -9,6 +11,34 @@ fcl.config()
 const AdminAddress = '0x4c74cb420f4eaa84';
 
 class flowService {
+	static encryptPrivateKey(key) {
+		const secret = process.env.SECRET_PASSPHRASE;
+		const encrypted = CryptoJS.AES.encrypt(key, secret).toString();
+		return encrypted;
+	}
+
+	static decryptPrivateKey(encrypted) {
+		const secret = process.env.SECRET_PASSPHRASE;
+		const decrypted = CryptoJS.AES.decrypt(encrypted, secret).toString(
+			CryptoJS.enc.Utf8
+		);
+		return decrypted;
+	}
+
+	static async getAdminAccountWithKeyIndex(keyIndex) {
+		const FlowSigner = (await import('../utils/signer.mjs')).default;
+		const key = this.decryptPrivateKey(
+			process.env.ADMIN_ENCRYPTED_PRIVATE_KEY
+		);
+
+		const signer = new FlowSigner(
+			process.env.ADMIN_ADDRESS,
+			key,
+			keyIndex,
+			{}
+		);
+		return signer;
+	}
 	static async getRewardEligibleNFTs() {
 		let script = `
 import BasicBeastsNFTStaking from 0xBasicBeastsNFTStaking

@@ -20,7 +20,7 @@ export default function Dashboard() {
 	const [beasts, setBeasts] = useState([]);
 	const [stakingStartDates, setStakingStartDates] = useState(null);
 	const [adjustedStakingDates, setAdjustedStakingDates] = useState(null);
-	const { user } = useAuth();
+	const { user, loggedIn, logIn } = useAuth();
 
 	const tabItems = [
 		{ name: 'Beasts' },
@@ -105,22 +105,33 @@ export default function Dashboard() {
 			style={{ backgroundImage: `url(/background/landscape.png)` }}
 		>
 			<div className="w-full max-w-5xl bg-black bg-opacity-75 p-5 rounded-lg mx-2 text-white">
-				<div className="flex border-b border-white border-opacity-20 gap-4">
-					{tabItems.map((item) => (
-						<TabItem key={item.name} item={item} />
-					))}
-				</div>
-				{activeTab === 'Beasts' && (
-					<Beasts
-						beasts={beasts}
-						unstakedBeasts={unstakedBeasts}
-						fetchUserBeasts={fetchUserBeasts}
-						adjustedStakingDates={adjustedStakingDates}
-						stakingStartDates={stakingStartDates}
-					/>
+				{!loggedIn ? (
+					<button
+						onClick={() => logIn()}
+						className="text-lg hover:underline"
+					>
+						Connect your wallet to see Dashboard
+					</button>
+				) : (
+					<>
+						<div className="flex border-b border-white border-opacity-20 gap-4">
+							{tabItems.map((item) => (
+								<TabItem key={item.name} item={item} />
+							))}
+						</div>
+						{activeTab === 'Beasts' && (
+							<Beasts
+								beasts={beasts}
+								unstakedBeasts={unstakedBeasts}
+								fetchUserBeasts={fetchUserBeasts}
+								adjustedStakingDates={adjustedStakingDates}
+								stakingStartDates={stakingStartDates}
+							/>
+						)}
+						{activeTab === 'Rewards' && <Rewards />}
+						{activeTab === 'Random' && <Tab>Random Content</Tab>}
+					</>
 				)}
-				{activeTab === 'Rewards' && <Rewards />}
-				{activeTab === 'Random' && <Tab>Random Content</Tab>}
 			</div>
 		</div>
 	);

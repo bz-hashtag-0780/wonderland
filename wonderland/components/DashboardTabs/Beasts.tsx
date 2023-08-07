@@ -109,6 +109,8 @@ const Beasts = ({
 						)}
 					</div>
 				</div>
+
+				{/*Only show if it has rewards*/}
 				<div className="truncate mt-1">
 					<div className="flex items-center justify-between gap-x-2 flex-wrap h-7 overflow-hidden">
 						<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">

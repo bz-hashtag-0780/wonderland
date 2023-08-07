@@ -31,7 +31,8 @@
 				"testnet": "0xfa252d0aa22bf86a"
 			}
 		},
-		"BasicBeastsNFTStaking": "./cadence/contracts/BasicBeastsNFTStaking.cdc"
+		"BasicBeastsNFTStaking": "./cadence/contracts/BasicBeastsNFTStaking.cdc",
+		"BasicBeastsNFTStakingRewards": "./cadence/contracts/BasicBeastsNFTStakingRewards.cdc"
 	},
 	"networks": {
 		"emulator": "127.0.0.1:3569",
@@ -50,7 +51,10 @@
 	},
 	"deployments": {
 		"testnet": {
-			"testnet-account": ["BasicBeastsNFTStaking"]
+			"testnet-account": [
+				"BasicBeastsNFTStaking",
+				"BasicBeastsNFTStakingRewards"
+			]
 		}
 	}
 }

@@ -3,10 +3,10 @@ const CryptoJS = require('crypto-js');
 require('dotenv').config();
 
 fcl.config()
-	.put('flow.network', 'testnet')
-	.put('accessNode.api', 'https://rest-testnet.onflow.org')
-	.put('0xBasicBeastsNFTStaking', '0x4c74cb420f4eaa84')
-	.put('0xBasicBeastsNFTStakingRewards', '0x4c74cb420f4eaa84');
+	.put('flow.network', process.env.FLOW_NETWORK)
+	.put('accessNode.api', process.env.ACCESS_NODE_API)
+	.put('0xBasicBeastsNFTStaking', process.env.ADMIN_ADDRESS)
+	.put('0xBasicBeastsNFTStakingRewards', process.env.ADMIN_ADDRESS);
 
 class flowService {
 	static encryptPrivateKey(key) {

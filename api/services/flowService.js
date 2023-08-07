@@ -82,6 +82,59 @@ pub fun main(): [UInt64] {
 
 		return eligibleNFTs;
 	}
+
+	static AdminKeys = {
+		0: false,
+		1: false,
+		2: false,
+		3: false,
+		4: false,
+		5: false,
+		6: false,
+		7: false,
+		8: false,
+		9: false,
+		10: false,
+	};
+
+	static async giveRewards(IDs) {
+		let transaction = `
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.AdminKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(IDs, t.Array(t.Address)),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.AdminKeys[keyIndex] = false;
+				let event = tx.events.find(
+					(e) => e.type == 'flow.RewardItemAdded'
+				);
+				if (!event) {
+					console.log('No rewards given');
+					return;
+				}
+				console.log('Rewards added');
+			}
+		} catch (e) {
+			this.AdminKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
 }
 
 module.exports = flowService;

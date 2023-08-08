@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import {
 	send,
@@ -30,6 +30,8 @@ const Beasts = ({
 	rewards,
 	rewardPerSecond,
 }: any) => {
+	const [rerender, setRerender] = useState(false);
+
 	const dummyData = [
 		{
 			name: 'Beasts',
@@ -49,18 +51,21 @@ const Beasts = ({
 		<div className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden">
 			<div className="flex-auto flex flex-col w-full group relative">
 				<div className="rounded-xl overflow-hidden flex items-center relative">
-					{stakingStartDates[item.id] != null && (
-						<div className="flex w-full absolute z-10 top-2">
-							<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
-								<span style={{ fontSize: '10px' }}>⏳</span>
-								&nbsp;
-								{calculateDaysElapsed(
-									stakingStartDates[item.id]
-								)}
-								d
+					{stakingStartDates[item.id] != null &&
+						!unstakedBeasts.some(
+							(unstakedBeast: any) => unstakedBeast.id === item.id
+						) && (
+							<div className="flex w-full absolute z-10 top-2">
+								<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
+									<span style={{ fontSize: '10px' }}>⏳</span>
+									&nbsp;
+									{calculateDaysElapsed(
+										stakingStartDates[item.id]
+									)}
+									d
+								</div>
 							</div>
-						</div>
-					)}
+						)}
 
 					<div>
 						<Image
@@ -101,28 +106,38 @@ const Beasts = ({
 						<span className="flex items-center gap-1 font-bold text-white-2 min-w-0 min-h-[28px]">
 							{item.nickname} #{item.serialNumber}
 						</span>
-						{adjustedStakingDates[item.id] != null && (
-							<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
-								{calculateDaysElapsed(
-									adjustedStakingDates[item.id]
-								)}
-								/{Math.floor(rewardPerSecond / 60 / 60 / 24)}d
-							</span>
-						)}
+						{adjustedStakingDates[item.id] != null &&
+							!unstakedBeasts.some(
+								(unstakedBeast: any) =>
+									unstakedBeast.id === item.id
+							) && (
+								<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
+									{calculateDaysElapsed(
+										adjustedStakingDates[item.id]
+									)}
+									/
+									{Math.floor(rewardPerSecond / 60 / 60 / 24)}
+									d
+								</span>
+							)}
 					</div>
 				</div>
 
 				{/*Only show if it has rewards*/}
+
 				<div className="truncate mt-1">
 					<div className="flex items-center justify-between gap-x-2 flex-wrap h-7 overflow-hidden">
 						<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
 							Rewards:{' '}
-							{rewards[item.id] != null &&
-								Object.keys(rewards[item.id]).length}
+							{rewards[item.id] != null
+								? Object.keys(rewards[item.id]).length
+								: 0}
 						</span>
-						<button className="text-sm text-pink-primary border border-solid shadow \ border-white hover:bg-white hover:border-white hover:text-black \ px-1.5 py-0.5 rounded transition-[background-color,border-color,color] ease-in-out duration-100 xs:block">
-							Details
-						</button>
+						{rewards[item.id] != null && (
+							<button className="text-sm text-pink-primary border border-solid shadow \ border-white hover:bg-white hover:border-white hover:text-black \ px-1.5 py-0.5 rounded transition-[background-color,border-color,color] ease-in-out duration-100 xs:block">
+								Details
+							</button>
+						)}
 					</div>
 				</div>
 			</div>
@@ -166,6 +181,7 @@ const Beasts = ({
 					});
 				});
 			fetchUserBeasts();
+			setRerender(true);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -204,6 +220,7 @@ const Beasts = ({
 					});
 				});
 			fetchUserBeasts();
+			setRerender(true);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,

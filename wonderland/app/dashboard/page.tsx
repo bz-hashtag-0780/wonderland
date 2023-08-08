@@ -10,6 +10,7 @@ import { FETCH_STAKED_BEASTS } from '@/flow/scripts/fetch_staked_beasts';
 import { GET_ALL_STAKING_START_DATES } from '@/flow/scripts/get_all_staking_start_dates';
 import { GET_ALL_ADJUSTED_STAKING_DATES } from '@/flow/scripts/get_all_adjusted_staking_dates.js';
 import { GET_ALL_REWARDS } from '@/flow/scripts/get_all_rewards.js';
+import { GET_REWARD_PER_SECOND } from '@/flow/scripts/get_reward_per_second.js';
 import { useAuth } from 'providers/AuthProvider';
 
 const Tab = ({ children }: any) => <div>{children}</div>;
@@ -21,6 +22,8 @@ export default function Dashboard() {
 	const [beasts, setBeasts] = useState([]);
 	const [stakingStartDates, setStakingStartDates] = useState(null);
 	const [adjustedStakingDates, setAdjustedStakingDates] = useState(null);
+	const [rewards, setRewards] = useState(null);
+	const [rewardPerSecond, setRewardPerSecond] = useState(604800.0);
 	const { user, loggedIn, logIn } = useAuth();
 
 	const tabItems = [
@@ -97,6 +100,18 @@ export default function Dashboard() {
 				cadence: GET_ALL_REWARDS,
 			});
 			console.log('rewards: ', rewards);
+			setRewards(rewards);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const getRewardPerSecond = async () => {
+		try {
+			let res = await query({
+				cadence: GET_REWARD_PER_SECOND,
+			});
+			setRewardPerSecond(res);
 		} catch (err) {
 			console.log(err);
 		}
@@ -110,6 +125,7 @@ export default function Dashboard() {
 		}
 		getStakingDates();
 		getRewards();
+		getRewardPerSecond();
 	}, [user]);
 
 	return (
@@ -139,6 +155,8 @@ export default function Dashboard() {
 								fetchUserBeasts={fetchUserBeasts}
 								adjustedStakingDates={adjustedStakingDates}
 								stakingStartDates={stakingStartDates}
+								rewards={rewards}
+								rewardPerSecond={rewardPerSecond}
 							/>
 						)}
 						{activeTab === 'Rewards' && <Rewards />}

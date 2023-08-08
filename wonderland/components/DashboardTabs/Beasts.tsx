@@ -27,6 +27,8 @@ const Beasts = ({
 	fetchUserBeasts,
 	adjustedStakingDates,
 	stakingStartDates,
+	rewards,
+	rewardPerSecond,
 }: any) => {
 	const dummyData = [
 		{
@@ -104,7 +106,7 @@ const Beasts = ({
 								{calculateDaysElapsed(
 									adjustedStakingDates[item.id]
 								)}
-								/7d
+								/{Math.floor(rewardPerSecond / 60 / 60 / 24)}d
 							</span>
 						)}
 					</div>
@@ -114,7 +116,9 @@ const Beasts = ({
 				<div className="truncate mt-1">
 					<div className="flex items-center justify-between gap-x-2 flex-wrap h-7 overflow-hidden">
 						<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
-							Rewards:
+							Rewards:{' '}
+							{rewards[item.id] != null &&
+								Object.keys(rewards[item.id]).length}
 						</span>
 						<button className="text-sm text-pink-primary border border-solid shadow \ border-white hover:bg-white hover:border-white hover:text-black \ px-1.5 py-0.5 rounded transition-[background-color,border-color,color] ease-in-out duration-100 xs:block">
 							Details

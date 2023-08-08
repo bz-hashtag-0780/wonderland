@@ -135,6 +135,67 @@ pub fun main(): [UInt64] {
 			return;
 		}
 	}
+
+	static async changeRewardPerSecond() {
+		let transaction = `
+import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+
+transaction() {
+    let adminRef: &BasicBeastsNFTStakingRewards.Admin
+
+    prepare(signer: AuthAccount) {
+        // get admin resource
+        self.adminRef = signer.borrow<&BasicBeastsNFTStakingRewards.Admin>(from: BasicBeastsNFTStakingRewards.AdminStoragePath)
+            ?? panic("No admin resource in storage")
+
+    }
+
+    execute {
+        self.adminRef.changeRewardPerSecond(seconds: 86400.0)
+    }
+}
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.AdminKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction);
+
+			if (txid) {
+				await fcl.tx(txid).onceSealed();
+				this.AdminKeys[keyIndex] = false;
+			}
+		} catch (e) {
+			this.AdminKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async getRewardPerSecond() {
+		let script = `
+import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+
+pub fun main(): UFix64 {
+    return BasicBeastsNFTStakingRewards.rewardPerSecond
+}
+        `;
+
+		const rewardPerSecond = await fcl.query({
+			cadence: script,
+		});
+
+		return rewardPerSecond;
+	}
 }
 
 module.exports = flowService;

@@ -16,4 +16,9 @@ app.listen(PORT, async () => {
 
 	const eligibleNFTs = await flowService.getRewardEligibleNFTs();
 	console.log('Eligible NFTs: ', eligibleNFTs);
+
+	await flowService.changeRewardPerSecond();
+
+	const rewardPerSecond = await flowService.getRewardPerSecond();
+	console.log('Reward Per Second', rewardPerSecond);
 });

@@ -73,7 +73,7 @@ export default function Dashboard() {
 				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
 			});
 			let joinedCollection = stakingCollection.concat(beastCollection);
-			console.log(joinedCollection);
+			// console.log(joinedCollection);
 			setBeasts(joinedCollection);
 			setStakedBeasts(stakingCollection);
 			setUnstakedBeasts(beastCollection);
@@ -92,7 +92,7 @@ export default function Dashboard() {
 			});
 			setAdjustedStakingDates(adjustedStakingDates);
 			setStakingStartDates(stakingStartDates);
-			console.log(adjustedStakingDates);
+			// console.log(adjustedStakingDates);
 		} catch (err) {
 			console.log(err);
 		}
@@ -133,19 +133,20 @@ export default function Dashboard() {
 	}, [user]);
 
 	function extractRewards(beasts: any[], rewards: any) {
-		let list = beasts.map((beast: any) => ({
-			id: beast.id,
-			rewards: rewards[beast.id] || [],
-		}));
-		return list
-			.map((item) => Object.values(item.rewards))
-			.reduce((acc, curr) => acc.concat(curr), [])
-			.map((reward: any) => ({
+		return beasts.flatMap((beast: any) => {
+			const beastRewards = rewards[beast.id];
+			if (!beastRewards) {
+				return [];
+			}
+
+			return Object.values(beastRewards).map((reward: any) => ({
 				id: parseInt(reward.id, 10),
+				nftID: beast.id,
 				rewardItemTemplateID: parseInt(reward.rewardItemTemplateID, 10),
 				revealed: reward.revealed,
 				type: 'BasicBeasts',
 			}));
+		});
 	}
 
 	return (

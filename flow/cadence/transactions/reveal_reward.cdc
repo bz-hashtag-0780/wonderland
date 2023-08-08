@@ -1,5 +1,4 @@
-export const REVEAL = `
-import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+ import BasicBeastsNFTStakingRewards from "../contracts/BasicBeastsNFTStakingRewards.cdc"
 
 transaction(nftID: UInt64, rewardItemID: UInt32) {
     let revealerRef: &BasicBeastsNFTStakingRewards.Revealer
@@ -20,4 +19,3 @@ transaction(nftID: UInt64, rewardItemID: UInt32) {
         self.revealerRef.revealRewardItem(nftID: nftID, rewardItemID: rewardItemID)
     }
 }
-`;

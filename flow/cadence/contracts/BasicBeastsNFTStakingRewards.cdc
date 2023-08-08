@@ -73,8 +73,13 @@ pub contract BasicBeastsNFTStakingRewards {
             let revealerAddress = self.owner!.address
 
             // Check if NFT holder has the NFT in the staking collection
-            let collectionRef = getAccount(revealerAddress).getCapability(BasicBeastsNFTStaking.CollectionPublicPath)
-                                                            .borrow<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>()
+            let cap: Capability<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>? = getAccount(revealerAddress).capabilities.get<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>(BasicBeastsNFTStaking.CollectionPublicPath)
+    
+            var collectionRef:&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}?  = nil
+            
+            if(cap != nil) {
+                collectionRef = cap!.borrow()
+            }
 
             if(collectionRef != nil) {
                 let IDs = collectionRef!.getIDs()

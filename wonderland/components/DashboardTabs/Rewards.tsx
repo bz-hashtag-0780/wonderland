@@ -46,7 +46,7 @@ const Rewards = ({ rewards, getRewards }: any) => {
 					</div>
 					<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 						<button
-							onClick={() => reveal(item.id)}
+							onClick={() => reveal(item.nftID, item.id)}
 							className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 						>
 							Reveal
@@ -69,13 +69,18 @@ const Rewards = ({ rewards, getRewards }: any) => {
 		</div>
 	);
 
-	const reveal = async (nftID: number) => {
+	const reveal = async (nftID: number, rewardItemID: number) => {
 		const id = toast.loading('Initializing...');
+		console.log('nftID: ', nftID);
+		console.log('rewardItemID: ', rewardItemID);
 
 		try {
 			const res = await send([
 				transaction(REVEAL),
-				args([arg(nftID, t.UInt64)]),
+				args([
+					arg(String(nftID), t.UInt64),
+					arg(String(rewardItemID), t.UInt32),
+				]),
 				payer(authz),
 				proposer(authz),
 				authorizations([authz]),
@@ -113,12 +118,7 @@ const Rewards = ({ rewards, getRewards }: any) => {
 				{rewards
 					.filter((item: any) => !item.revealed)
 					.map((item: any) => (
-						<Reward
-							key={item.id}
-							item={rewardTemplates.find(
-								(item: any) => item.type === 'BasicBeasts'
-							)}
-						/>
+						<Reward key={item.id} item={item} />
 					))}
 			</div>
 		</div>

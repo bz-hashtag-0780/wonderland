@@ -22,7 +22,7 @@ export default function Dashboard() {
 	const [beasts, setBeasts] = useState([]);
 	const [stakingStartDates, setStakingStartDates] = useState(null);
 	const [adjustedStakingDates, setAdjustedStakingDates] = useState(null);
-	const [rewards, setRewards] = useState(null);
+	const [rewards, setRewards] = useState<any>({});
 	const [rewardPerSecond, setRewardPerSecond] = useState(604800.0);
 	const { user, loggedIn, logIn } = useAuth();
 
@@ -52,7 +52,11 @@ export default function Dashboard() {
 							: 'flex items-center justify-center border border-white border-opacity-50 ml-1.5 px-2 text-xs font-semibold text-gray-200 text-opacity-50 rounded-lg'
 					}
 				>
-					{item.name === 'Beasts' ? beasts.length : 0}
+					{item.name === 'Beasts'
+						? beasts.length
+						: item.name === 'Rewards'
+						? extractRewards(beasts, rewards).length
+						: 0}
 				</div>
 			</div>
 		</button>
@@ -128,6 +132,22 @@ export default function Dashboard() {
 		getRewardPerSecond();
 	}, [user]);
 
+	function extractRewards(beasts: any[], rewards: any) {
+		let list = beasts.map((beast: any) => ({
+			id: beast.id,
+			rewards: rewards[beast.id] || [],
+		}));
+		return list
+			.map((item) => Object.values(item.rewards))
+			.reduce((acc, curr) => acc.concat(curr), [])
+			.map((reward: any) => ({
+				id: parseInt(reward.id, 10),
+				rewardItemTemplateID: parseInt(reward.rewardItemTemplateID, 10),
+				revealed: reward.revealed,
+				type: 'BasicBeasts',
+			}));
+	}
+
 	return (
 		<div
 			className="min-h-screen flex pt-20 pb-20 justify-center bg-center bg-no-repeat bg-cover"
@@ -144,6 +164,7 @@ export default function Dashboard() {
 				) : (
 					<>
 						<div className="flex border-b border-white border-opacity-20 gap-4">
+							{/* TODO: Add reveal all, quest all, and info pop up */}
 							{tabItems.map((item) => (
 								<TabItem key={item.name} item={item} />
 							))}
@@ -159,7 +180,12 @@ export default function Dashboard() {
 								rewardPerSecond={rewardPerSecond}
 							/>
 						)}
-						{activeTab === 'Rewards' && <Rewards />}
+						{activeTab === 'Rewards' && (
+							<Rewards
+								rewards={extractRewards(beasts, rewards)}
+								getRewards={getRewards}
+							/>
+						)}
 						{activeTab === 'Random' && <Tab>Random Content</Tab>}
 					</>
 				)}

@@ -99,6 +99,24 @@ pub fun main(): [UInt64] {
 
 	static async giveRewards(IDs) {
 		let transaction = `
+import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+
+transaction(IDs: [UInt64]) {
+    let adminRef: &BasicBeastsNFTStakingRewards.Admin
+
+    prepare(signer: AuthAccount) {
+        // get admin resource
+        self.adminRef = signer.borrow<&BasicBeastsNFTStakingRewards.Admin>(from: BasicBeastsNFTStakingRewards.AdminStoragePath)
+            ?? panic("No admin resource in storage")
+
+    }
+
+    execute {
+        for id in IDs {
+            self.adminRef.giveReward(toID: id)
+        }
+    }
+}
         `;
 		let keyIndex = null;
 		for (const [key, value] of Object.entries(this.AdminKeys)) {
@@ -114,14 +132,16 @@ pub fun main(): [UInt64] {
 		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
 		try {
 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
-				arg(IDs, t.Array(t.Address)),
+				arg(IDs, t.Array(t.UInt64)),
 			]);
 
 			if (txid) {
 				let tx = await fcl.tx(txid).onceSealed();
 				this.AdminKeys[keyIndex] = false;
 				let event = tx.events.find(
-					(e) => e.type == 'flow.RewardItemAdded'
+					(e) =>
+						e.type ==
+						'A.4c74cb420f4eaa84.BasicBeastsNFTStakingRewards.RewardItemAdded'
 				);
 				if (!event) {
 					console.log('No rewards given');

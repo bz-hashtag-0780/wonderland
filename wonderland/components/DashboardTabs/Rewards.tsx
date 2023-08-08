@@ -100,6 +100,7 @@ const Rewards = ({ rewards, getRewards }: any) => {
 						autoClose: 5000,
 					});
 				});
+			getRewards();
 			setRerender(true);
 		} catch (err) {
 			toast.update(id, {

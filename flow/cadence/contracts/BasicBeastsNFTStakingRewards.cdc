@@ -67,18 +67,17 @@ pub contract BasicBeastsNFTStakingRewards {
         pub fun revealRewardItem(nftID: UInt64, rewardItemID: UInt32) {
             pre {
                 self.owner != nil: "Can't reveal rewardItem: self.owner is nil"
+                getAccount(self.owner!.address).capabilities.get<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>(BasicBeastsNFTStaking.CollectionPublicPath) != nil: "Can't reveal: address don't have the NFT staked"
             }
 
             // Verify NFT holder
             let revealerAddress = self.owner!.address
 
             // Check if NFT holder has the NFT in the staking collection
-            let cap: Capability<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>? = getAccount(revealerAddress).capabilities.get<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>(BasicBeastsNFTStaking.CollectionPublicPath)
-    
             var collectionRef:&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}?  = nil
             
-            if(cap != nil) {
-                collectionRef = cap!.borrow()
+            if let cap = getAccount(revealerAddress).capabilities.get<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>(BasicBeastsNFTStaking.CollectionPublicPath) {
+                collectionRef = cap.borrow()
             }
 
             if(collectionRef != nil) {
@@ -87,10 +86,8 @@ pub contract BasicBeastsNFTStakingRewards {
             }
 
             // Reveal NFT
-            if(BasicBeastsNFTStakingRewards.rewards[nftID] != nil) {
-                let rewardItems = BasicBeastsNFTStakingRewards.rewards[nftID]!
-                if(rewardItems[rewardItemID] != nil) {
-                    let rewardItem = rewardItems[rewardItemID]!
+            if let rewardItems = BasicBeastsNFTStakingRewards.rewards[nftID] {
+                if let rewardItem = rewardItems[rewardItemID] {
                     rewardItem.reveal()
                 }
             }

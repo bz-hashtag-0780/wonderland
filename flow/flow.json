@@ -46,7 +46,7 @@
 		},
 		"testnet-account": {
 			"address": "0x4c74cb420f4eaa84",
-			"key": "$PRIVATE_KEY"
+			"key": "$PRIVATE_KEYd"
 		}
 	},
 	"deployments": {

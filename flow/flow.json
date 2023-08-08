@@ -1,38 +1,38 @@
 {
 	"contracts": {
-		"NonFungibleToken": {
-			"source": "./cadence/contracts/utility/NonFungibleToken.cdc",
+		"BasicBeasts": {
+			"source": "./cadence/contracts/utility/BasicBeasts.cdc",
 			"aliases": {
-				"mainnet": "0x1d7e57aa55817448",
-				"testnet": "0x631e88ae7f1d7c20",
-				"emulator": "f8d6e0586b0a20c7"
+				"mainnet": "de7a5daf9df48c65",
+				"testnet": "fa252d0aa22bf86a"
 			}
 		},
+		"BasicBeastsNFTStaking": "./cadence/contracts/BasicBeastsNFTStaking.cdc",
+		"BasicBeastsNFTStakingRewards": "./cadence/contracts/BasicBeastsNFTStakingRewards.cdc",
 		"FungibleToken": {
 			"source": "./cadence/contracts/utility/FungibleToken.cdc",
 			"aliases": {
-				"mainnet": "0xf233dcee88fe0abe",
-				"testnet": "0x9a0766d93b6608b7",
-				"emulator": "ee82856bf20e2aa6"
+				"emulator": "ee82856bf20e2aa6",
+				"mainnet": "f233dcee88fe0abe",
+				"testnet": "9a0766d93b6608b7"
 			}
 		},
 		"MetadataViews": {
 			"source": "./cadence/contracts/utility/MetadataViews.cdc",
 			"aliases": {
-				"mainnet": "0x1d7e57aa55817448",
-				"testnet": "0x631e88ae7f1d7c20",
-				"emulator": "f8d6e0586b0a20c7"
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
 			}
 		},
-		"BasicBeasts": {
-			"source": "./cadence/contracts/utility/BasicBeasts.cdc",
+		"NonFungibleToken": {
+			"source": "./cadence/contracts/utility/NonFungibleToken.cdc",
 			"aliases": {
-				"mainnet": "0xde7a5daf9df48c65",
-				"testnet": "0xfa252d0aa22bf86a"
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
 			}
-		},
-		"BasicBeastsNFTStaking": "./cadence/contracts/BasicBeastsNFTStaking.cdc",
-		"BasicBeastsNFTStakingRewards": "./cadence/contracts/BasicBeastsNFTStakingRewards.cdc"
+		}
 	},
 	"networks": {
 		"emulator": "127.0.0.1:3569",
@@ -45,8 +45,8 @@
 			"key": "6d12eebfef9866c9b6fa92b97c6e705c26a1785b1e7944da701fc545a51d4673"
 		},
 		"testnet-account": {
-			"address": "0x4c74cb420f4eaa84",
-			"key": "$PRIVATE_KEYd"
+			"address": "4c74cb420f4eaa84",
+			"key": "$PRIVATE_KEY"
 		}
 	},
 	"deployments": {

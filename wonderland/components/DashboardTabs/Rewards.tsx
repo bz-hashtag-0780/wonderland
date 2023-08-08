@@ -31,7 +31,22 @@ const Rewards = ({ rewards, getRewards }: any) => {
 						{item.revealed ? (
 							<Image
 								alt={item.name}
-								src={item.image}
+								src={
+									(
+										rewardTemplates.find(
+											(template: any) =>
+												template.rewardItemTemplateID ===
+													item.rewardItemTemplateID &&
+												template.type === 'BasicBeasts'
+										) || {
+											type: 'BasicBeasts',
+											rewardItemTemplateID: 1,
+											name: 'Unrevealed',
+											description: '',
+											image: '/images/basicBeasts/unknown.jpeg',
+										}
+									).image
+								}
 								width={400}
 								height={400}
 							/>
@@ -44,14 +59,16 @@ const Rewards = ({ rewards, getRewards }: any) => {
 							/>
 						)}
 					</div>
-					<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-						<button
-							onClick={() => reveal(item.nftID, item.id)}
-							className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
-						>
-							Reveal
-						</button>
-					</div>
+					{!item.revealed && (
+						<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+							<button
+								onClick={() => reveal(item.nftID, item.id)}
+								className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
+							>
+								Reveal
+							</button>
+						</div>
+					)}
 				</div>
 			</div>
 			<div className="flex flex-initial flex-col p-2">
@@ -61,7 +78,22 @@ const Rewards = ({ rewards, getRewards }: any) => {
 							Reward
 						</span>
 						<p className="text-xs px-2 rounded-lg leading-snug text-white bg-white bg-opacity-30 border border-transparent">
-							{item.reveald ? item.name : 'Unrevealed'}
+							{item.revealed
+								? (
+										rewardTemplates.find(
+											(template: any) =>
+												template.rewardItemTemplateID ===
+													item.rewardItemTemplateID &&
+												template.type === 'BasicBeasts'
+										) || {
+											type: 'BasicBeasts',
+											rewardItemTemplateID: 1,
+											name: 'Unrevealed',
+											description: '',
+											image: '/images/basicBeasts/unknown.jpeg',
+										}
+								  ).name
+								: 'Unrevealed'}
 						</p>
 					</div>
 				</div>
@@ -118,6 +150,11 @@ const Rewards = ({ rewards, getRewards }: any) => {
 			<div className="grid grid-cols-5 gap-x-4 gap-y-6 overflow-auto">
 				{rewards
 					.filter((item: any) => !item.revealed)
+					.map((item: any) => (
+						<Reward key={item.id} item={item} />
+					))}
+				{rewards
+					.filter((item: any) => item.revealed)
 					.map((item: any) => (
 						<Reward key={item.id} item={item} />
 					))}

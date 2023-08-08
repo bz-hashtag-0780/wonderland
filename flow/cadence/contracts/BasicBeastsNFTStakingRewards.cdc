@@ -86,10 +86,10 @@ pub contract BasicBeastsNFTStakingRewards {
             }
 
             // Reveal NFT
-            if let rewardItems = BasicBeastsNFTStakingRewards.rewards[nftID] {
-                if let rewardItem = rewardItems[rewardItemID] {
-                    rewardItem.reveal()
-                }
+            if(BasicBeastsNFTStakingRewards.rewards[nftID] != nil && BasicBeastsNFTStakingRewards.rewards[nftID]![rewardItemID] != nil) {
+            BasicBeastsNFTStakingRewards.rewards[nftID]![rewardItemID]!.reveal()
+            } else {
+                panic("NFT or reward item does not exist")
             }
 
         }

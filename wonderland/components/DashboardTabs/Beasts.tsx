@@ -181,7 +181,7 @@ const Beasts = ({
 					});
 				});
 			fetchUserBeasts();
-			setRerender(true);
+			setRerender(!rerender);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -220,7 +220,7 @@ const Beasts = ({
 					});
 				});
 			fetchUserBeasts();
-			setRerender(true);
+			setRerender(!rerender);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,

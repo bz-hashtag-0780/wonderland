@@ -133,7 +133,7 @@ const Rewards = ({ rewards, getRewards }: any) => {
 					});
 				});
 			getRewards();
-			setRerender(true);
+			setRerender(!rerender);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,

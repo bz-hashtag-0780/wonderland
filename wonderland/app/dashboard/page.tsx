@@ -9,6 +9,7 @@ import { FETCH_BEASTS } from '@/flow/scripts/fetch_beasts';
 import { FETCH_STAKED_BEASTS } from '@/flow/scripts/fetch_staked_beasts';
 import { GET_ALL_STAKING_START_DATES } from '@/flow/scripts/get_all_staking_start_dates';
 import { GET_ALL_ADJUSTED_STAKING_DATES } from '@/flow/scripts/get_all_adjusted_staking_dates.js';
+import { GET_ALL_REWARDS } from '@/flow/scripts/get_all_rewards.js';
 import { useAuth } from 'providers/AuthProvider';
 
 const Tab = ({ children }: any) => <div>{children}</div>;
@@ -90,6 +91,17 @@ export default function Dashboard() {
 		}
 	};
 
+	const getRewards = async () => {
+		try {
+			let rewards = await query({
+				cadence: GET_ALL_REWARDS,
+			});
+			console.log('rewards: ', rewards);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	useEffect(() => {
 		if (user?.addr != null) {
 			fetchUserBeasts();
@@ -97,6 +109,7 @@ export default function Dashboard() {
 			setBeasts([]);
 		}
 		getStakingDates();
+		getRewards();
 	}, [user]);
 
 	return (

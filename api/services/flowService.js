@@ -3,6 +3,7 @@ const CryptoJS = require('crypto-js');
 require('dotenv').config();
 
 fcl.config()
+	.put('fcl.limit', 9999)
 	.put('flow.network', process.env.FLOW_NETWORK)
 	.put('accessNode.api', process.env.ACCESS_NODE_API)
 	.put('0xBasicBeastsNFTStaking', process.env.ADMIN_ADDRESS)

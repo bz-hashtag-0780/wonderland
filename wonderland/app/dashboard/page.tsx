@@ -77,6 +77,7 @@ export default function Dashboard() {
 			setBeasts(joinedCollection);
 			setStakedBeasts(stakingCollection);
 			setUnstakedBeasts(beastCollection);
+			getStakingDates();
 		} catch (err) {
 			console.log(err);
 		}
@@ -127,7 +128,6 @@ export default function Dashboard() {
 		} else {
 			setBeasts([]);
 		}
-		getStakingDates();
 		getRewards();
 		getRewardPerSecond();
 	}, [user]);

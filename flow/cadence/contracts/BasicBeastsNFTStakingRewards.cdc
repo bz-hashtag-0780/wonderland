@@ -188,33 +188,26 @@ pub contract BasicBeastsNFTStakingRewards {
     }
 
     access(account) fun moveReward(fromID: UInt64, toID: UInt64, rewardItemID: UInt32) {
-
         // Get the reward
-        if(BasicBeastsNFTStakingRewards.rewards[fromID] != nil) {
-            let rewardItems = BasicBeastsNFTStakingRewards.rewards[fromID]!
-
-            if(rewardItems[rewardItemID] != nil) {
-                let rewardItem = rewardItems[rewardItemID]!
+        if let fromRewardItems = BasicBeastsNFTStakingRewards.rewards[fromID] {
+            if let rewardItem = fromRewardItems[rewardItemID] {
                 let rewardItemTemplateID = rewardItem.rewardItemTemplateID
 
                 // Remove the reward from the NFT (fromID)
-                rewardItems[rewardItemID] = nil
-                rewardItems.remove(key: rewardItemID)
+                fromRewardItems.remove(key: rewardItemID)
+                BasicBeastsNFTStakingRewards.rewards[fromID] = fromRewardItems // Re-assign modified dictionary back
 
                 // Add the reward to the other NFT (toID)
-                if(BasicBeastsNFTStakingRewards.rewards[toID] != nil) { //if NFT has rewards
-                    let rewardItems = BasicBeastsNFTStakingRewards.rewards[toID]!
-                    rewardItems[rewardItem.id] = rewardItem //TODO: Test if it's added correctly
+                if var toRewardItems = BasicBeastsNFTStakingRewards.rewards[toID] { //if NFT has rewards
+                    toRewardItems[rewardItem.id] = rewardItem
+                    BasicBeastsNFTStakingRewards.rewards[toID] = toRewardItems // Re-assign modified dictionary back
                 } else { //if NFT does not have rewards
                     BasicBeastsNFTStakingRewards.rewards[toID] = {rewardItem.id: rewardItem}
                 }
 
                 emit RewardItemMoved(fromID: fromID, toID: toID, rewardItemID: rewardItemID, rewardItemTemplateID: rewardItemTemplateID)
-
             }
-
         }
-
     }
 
     pub fun createNewRevealer(): @Revealer {

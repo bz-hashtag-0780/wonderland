@@ -22,7 +22,7 @@ app.listen(PORT, async () => {
 		// await flowService.giveRewards([]);
 	}
 
-	await flowService.changeRewardPerSecond('86400.0');
+	// await flowService.changeRewardPerSecond('86400.0');
 
 	const rewardPerSecond = await flowService.getRewardPerSecond();
 	console.log('Reward Per Second', rewardPerSecond);

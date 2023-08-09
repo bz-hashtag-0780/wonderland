@@ -20,6 +20,7 @@ import { STAKE } from '@/flow/transactions/stake';
 import { UNSTAKE } from '@/flow/transactions/unstake';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
+import DetailsModal from '../ui/DetailsModal';
 
 const Beasts = ({
 	beasts,
@@ -31,6 +32,8 @@ const Beasts = ({
 	rewardPerSecond,
 }: any) => {
 	const [rerender, setRerender] = useState(false);
+	const [currentBeast, setCurrentBeast] = useState(null);
+	const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
 	const dummyData = [
 		{
@@ -134,7 +137,13 @@ const Beasts = ({
 								: 0}
 						</span>
 						{rewards[item.id] != null && (
-							<button className="text-sm text-pink-primary border border-solid shadow \ border-white hover:bg-white hover:border-white hover:text-black \ px-1.5 py-0.5 rounded transition-[background-color,border-color,color] ease-in-out duration-100 xs:block">
+							<button
+								onClick={() => {
+									setCurrentBeast(item);
+									setOpenDetailsModal(true);
+								}}
+								className="text-sm text-pink-primary border border-solid shadow \ border-white hover:bg-white hover:border-white hover:text-black \ px-1.5 py-0.5 rounded transition-[background-color,border-color,color] ease-in-out duration-100 xs:block"
+							>
 								Details
 							</button>
 						)}
@@ -233,17 +242,29 @@ const Beasts = ({
 	};
 
 	return (
-		<div className="pt-6 h-[640px] overflow-y-auto">
-			<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
-				{beasts != null && (
-					<>
-						{beasts.map((item: any) => (
-							<NFT key={item.uuid} item={item} />
-						))}
-					</>
-				)}
+		<>
+			<div className="pt-6 h-[640px] overflow-y-auto">
+				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
+					{beasts != null && (
+						<>
+							{beasts.map((item: any) => (
+								<NFT key={item.uuid} item={item} />
+							))}
+						</>
+					)}
+				</div>
 			</div>
-		</div>
+			{openDetailsModal && (
+				<DetailsModal
+					beast={currentBeast}
+					onClose={() => {
+						setOpenDetailsModal(false);
+						setCurrentBeast(null);
+					}}
+					rewards={rewards}
+				/>
+			)}
+		</>
 	);
 };
 

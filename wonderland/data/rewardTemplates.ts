@@ -5,6 +5,7 @@ const rewardTemplates = [
 		name: 'Sushi',
 		description: '',
 		image: '/images/basicBeasts/sushi.png',
+		emoji: '🍣',
 	},
 	{
 		type: 'BasicBeasts',
@@ -12,6 +13,7 @@ const rewardTemplates = [
 		name: 'Ice Cream',
 		description: '',
 		image: '/images/basicBeasts/poop.png',
+		emoji: '🍦',
 	},
 	{
 		type: 'BasicBeasts',
@@ -19,6 +21,7 @@ const rewardTemplates = [
 		name: 'Noodles',
 		description: '',
 		image: '/images/basicBeasts/poop.png',
+		emoji: '🍜',
 	},
 	{
 		type: 'BasicBeasts',
@@ -26,6 +29,7 @@ const rewardTemplates = [
 		name: 'Empty Potion Bottle',
 		description: '',
 		image: '/images/basicBeasts/empty_potion_bottle.png',
+		emoji: '🫙',
 	},
 	{
 		type: 'BasicBeasts',
@@ -33,6 +37,7 @@ const rewardTemplates = [
 		name: 'Poop',
 		description: '',
 		image: '/images/basicBeasts/poop.png',
+		emoji: '💩',
 	},
 ];
 

@@ -156,7 +156,8 @@ pub contract BasicBeastsNFTStakingRewards {
         }
     }
 
-    //TODO: Test this function
+    //TODO: Test these functions
+    
     access(account) fun addReward(nftID: UInt64, rewardItemTemplateID: UInt32) {
         var newRewardItem = RewardItem(rewardItemTemplateID: rewardItemTemplateID)
 

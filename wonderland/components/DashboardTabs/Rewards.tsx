@@ -30,7 +30,22 @@ const Rewards = ({ rewards, getRewards }: any) => {
 					<div>
 						{item.revealed ? (
 							<Image
-								alt={item.name}
+								alt={
+									(
+										rewardTemplates.find(
+											(template: any) =>
+												template.rewardItemTemplateID ===
+													item.rewardItemTemplateID &&
+												template.type === 'BasicBeasts'
+										) || {
+											type: 'BasicBeasts',
+											rewardItemTemplateID: 1,
+											name: 'Unrevealed',
+											description: '',
+											image: '/images/basicBeasts/unknown.jpeg',
+										}
+									).name
+								}
 								src={
 									(
 										rewardTemplates.find(

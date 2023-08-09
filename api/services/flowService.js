@@ -157,11 +157,11 @@ transaction(IDs: [UInt64]) {
 		}
 	}
 
-	static async changeRewardPerSecond() {
+	static async changeRewardPerSecond(rewardPerSecond) {
 		let transaction = `
 import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
 
-transaction() {
+transaction(rewardPerSecond: UFix64) {
     let adminRef: &BasicBeastsNFTStakingRewards.Admin
 
     prepare(signer: AuthAccount) {
@@ -172,7 +172,7 @@ transaction() {
     }
 
     execute {
-        self.adminRef.changeRewardPerSecond(seconds: 86400.0)
+        self.adminRef.changeRewardPerSecond(seconds: rewardPerSecond)
     }
 }
         `;
@@ -189,7 +189,9 @@ transaction() {
 
 		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
 		try {
-			const txid = await signer.sendTransaction(transaction);
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(rewardPerSecond, t.UFix64),
+			]);
 
 			if (txid) {
 				await fcl.tx(txid).onceSealed();

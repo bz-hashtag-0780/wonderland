@@ -19,11 +19,11 @@ app.listen(PORT, async () => {
 
 	if (eligibleNFTs.length > 0) {
 		// Split the array if 100 and run multiple txns
-		await flowService.giveRewards([]);
+		// await flowService.giveRewards([]);
 	}
 
-	// await flowService.changeRewardPerSecond();
+	await flowService.changeRewardPerSecond('86400.0');
 
-	// const rewardPerSecond = await flowService.getRewardPerSecond();
-	// console.log('Reward Per Second', rewardPerSecond);
+	const rewardPerSecond = await flowService.getRewardPerSecond();
+	console.log('Reward Per Second', rewardPerSecond);
 });

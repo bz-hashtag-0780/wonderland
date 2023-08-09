@@ -12,6 +12,7 @@ import { GET_ALL_ADJUSTED_STAKING_DATES } from '@/flow/scripts/get_all_adjusted_
 import { GET_ALL_REWARDS } from '@/flow/scripts/get_all_rewards.js';
 import { GET_REWARD_PER_SECOND } from '@/flow/scripts/get_reward_per_second.js';
 import { useAuth } from 'providers/AuthProvider';
+import RewardTableModal from '@/components/ui/RewardTableModal';
 
 const Tab = ({ children }: any) => <div>{children}</div>;
 
@@ -25,6 +26,7 @@ export default function Dashboard() {
 	const [rewards, setRewards] = useState<any>({});
 	const [rewardPerSecond, setRewardPerSecond] = useState(604800.0);
 	const { user, loggedIn, logIn } = useAuth();
+	const [isModalOpen, setModalOpen] = useState(false);
 
 	const tabItems = [
 		{ name: 'Beasts' },
@@ -150,47 +152,62 @@ export default function Dashboard() {
 	}
 
 	return (
-		<div
-			className="min-h-screen flex pt-20 pb-20 justify-center bg-center bg-no-repeat bg-cover"
-			style={{ backgroundImage: `url(/background/landscape.png)` }}
-		>
-			<div className="w-full max-w-5xl bg-black bg-opacity-80 p-5 rounded-lg mx-2 text-white">
-				{!loggedIn ? (
-					<button
-						onClick={() => logIn()}
-						className="text-lg hover:underline"
-					>
-						Connect your wallet to see Dashboard
-					</button>
-				) : (
-					<>
-						<div className="flex border-b border-white border-opacity-20 gap-4">
-							{/* TODO: Add reveal all, quest all, and info pop up */}
-							{tabItems.map((item) => (
-								<TabItem key={item.name} item={item} />
-							))}
-						</div>
-						{activeTab === 'Beasts' && (
-							<Beasts
-								beasts={beasts}
-								unstakedBeasts={unstakedBeasts}
-								fetchUserBeasts={fetchUserBeasts}
-								adjustedStakingDates={adjustedStakingDates}
-								stakingStartDates={stakingStartDates}
-								rewards={rewards}
-								rewardPerSecond={rewardPerSecond}
-							/>
-						)}
-						{activeTab === 'Rewards' && (
-							<Rewards
-								rewards={extractRewards(beasts, rewards)}
-								getRewards={getRewards}
-							/>
-						)}
-						{activeTab === 'Random' && <Tab>Random Content</Tab>}
-					</>
-				)}
+		<>
+			<RewardTableModal
+				isOpen={isModalOpen}
+				onClose={() => setModalOpen(false)}
+			/>
+			<div
+				className="min-h-screen flex pt-20 pb-20 justify-center bg-center bg-no-repeat bg-cover"
+				style={{ backgroundImage: `url(/background/landscape.png)` }}
+			>
+				<div className="w-full max-w-5xl bg-black bg-opacity-80 p-5 rounded-lg mx-2 text-white">
+					{!loggedIn ? (
+						<button
+							onClick={() => logIn()}
+							className="text-lg hover:underline"
+						>
+							Connect your wallet to see Dashboard
+						</button>
+					) : (
+						<>
+							<div className="flex border-b border-white border-opacity-20 gap-4">
+								{/* TODO: Add reveal all, quest all, and info pop up */}
+								{tabItems.map((item) => (
+									<TabItem key={item.name} item={item} />
+								))}
+								{/* This div will grow and push the button to the right */}
+								<div className="flex-grow"></div>
+
+								{/* Your question mark button */}
+								<button onClick={() => setModalOpen(true)}>
+									?
+								</button>
+							</div>
+							{activeTab === 'Beasts' && (
+								<Beasts
+									beasts={beasts}
+									unstakedBeasts={unstakedBeasts}
+									fetchUserBeasts={fetchUserBeasts}
+									adjustedStakingDates={adjustedStakingDates}
+									stakingStartDates={stakingStartDates}
+									rewards={rewards}
+									rewardPerSecond={rewardPerSecond}
+								/>
+							)}
+							{activeTab === 'Rewards' && (
+								<Rewards
+									rewards={extractRewards(beasts, rewards)}
+									getRewards={getRewards}
+								/>
+							)}
+							{activeTab === 'Random' && (
+								<Tab>Random Content</Tab>
+							)}
+						</>
+					)}
+				</div>
 			</div>
-		</div>
+		</>
 	);
 }

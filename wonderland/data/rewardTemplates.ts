@@ -26,7 +26,7 @@ const rewardTemplates = [
 	{
 		type: 'BasicBeasts',
 		rewardItemTemplateID: 4,
-		name: 'Empty Potion Bottle',
+		name: 'Empty Bottle',
 		description: '',
 		image: '/images/basicBeasts/empty_potion_bottle.png',
 		emoji: '🫙',

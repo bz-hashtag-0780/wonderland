@@ -179,10 +179,15 @@ export default function Dashboard() {
 								{/* This div will grow and push the button to the right */}
 								<div className="flex-grow"></div>
 
-								{/* Your question mark button */}
-								<button onClick={() => setModalOpen(true)}>
-									?
-								</button>
+								{/* Question mark button */}
+								<div className="p-1">
+									<button
+										onClick={() => setModalOpen(true)}
+										className="px-2 border border-solid bg-transparent text-white rounded-full hover:bg-white hover:text-black transition-colors duration-150 focus:outline-none"
+									>
+										?
+									</button>
+								</div>
 							</div>
 							{activeTab === 'Beasts' && (
 								<Beasts

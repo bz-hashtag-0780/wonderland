@@ -7,6 +7,40 @@ interface DetailsModalProps {
 	rewards: any;
 }
 
+const computeRewards = (beastId: string, rewards: any) => {
+	const count: { [key: string]: number } = {};
+
+	// Create a lookup object for reward templates
+	const rewardNameLookup: { [key: number]: string } = {};
+	rewardTemplates.forEach((template) => {
+		rewardNameLookup[template.rewardItemTemplateID] = template.emoji;
+	});
+
+	Object.values(rewards[beastId]).forEach((rewardItem: any) => {
+		if (rewardItem.revealed) {
+			count[rewardItem.rewardItemTemplateID] =
+				(count[rewardItem.rewardItemTemplateID] || 0) + 1;
+		} else {
+			count['unknown'] = (count['unknown'] || 0) + 1;
+		}
+	});
+
+	const sortedEntries = Object.entries(count).sort(([keyA], [keyB]) => {
+		if (keyA === 'unknown') return -1;
+		if (keyB === 'unknown') return 1;
+		return 0;
+	});
+
+	return sortedEntries.map(([templateID, countValue]) => (
+		<p key={templateID}>
+			{templateID === 'unknown'
+				? '❓'
+				: rewardNameLookup[Number(templateID)]}
+			: {countValue}x
+		</p>
+	));
+};
+
 const DetailsModal: React.FC<DetailsModalProps> = ({
 	beast,
 	onClose,
@@ -49,57 +83,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
 
 						{/* Add more beast details as needed */}
 						{rewards[beast.id] ? (
-							(() => {
-								const count: { [key: string]: number } = {};
-
-								// Create a lookup object for reward templates
-								const rewardNameLookup: {
-									[key: number]: string;
-								} = {};
-								rewardTemplates.forEach((template) => {
-									rewardNameLookup[
-										template.rewardItemTemplateID
-									] = template.emoji;
-								});
-
-								Object.values(rewards[beast.id]).forEach(
-									(rewardItem: any) => {
-										if (rewardItem.revealed) {
-											count[
-												rewardItem.rewardItemTemplateID
-											] =
-												(count[
-													rewardItem
-														.rewardItemTemplateID
-												] || 0) + 1;
-										} else {
-											count['unknown'] =
-												(count['unknown'] || 0) + 1;
-										}
-									}
-								);
-
-								const sortedEntries = Object.entries(
-									count
-								).sort(([keyA], [keyB]) => {
-									if (keyA === 'unknown') return -1;
-									if (keyB === 'unknown') return 1;
-									return 0;
-								});
-
-								return sortedEntries.map(
-									([templateID, countValue]) => (
-										<p key={templateID}>
-											{templateID === 'unknown'
-												? '❓'
-												: rewardNameLookup[
-														Number(templateID)
-												  ]}
-											: {countValue}x
-										</p>
-									)
-								);
-							})()
+							computeRewards(beast.id, rewards)
 						) : (
 							<p>No rewards found for this beast.</p>
 						)}

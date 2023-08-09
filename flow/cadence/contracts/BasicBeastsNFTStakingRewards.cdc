@@ -173,14 +173,14 @@ pub contract BasicBeastsNFTStakingRewards {
     }
 
     access(account) fun removeReward(nftID: UInt64, rewardItemID: UInt32) {
-        if(BasicBeastsNFTStakingRewards.rewards[nftID] != nil) {
-            let rewardItems = BasicBeastsNFTStakingRewards.rewards[nftID]!
-            if(rewardItems[rewardItemID] != nil) {
+        if let rewardItems = BasicBeastsNFTStakingRewards.rewards[nftID] {
+            if rewardItems[rewardItemID] != nil {
                 let rewardItem = rewardItems[rewardItemID]!
                 let rewardItemTemplateID = rewardItem.rewardItemTemplateID
-                
-                rewardItems[rewardItemID] = nil
+                        
                 rewardItems.remove(key: rewardItemID)
+                BasicBeastsNFTStakingRewards.rewards[nftID] = rewardItems // Re-assign modified dictionary back
+                
                 BasicBeastsNFTStakingRewards.burned = BasicBeastsNFTStakingRewards.burned + 1
                 emit RewardItemRemoved(nftID: nftID, rewardItemID: rewardItemID, rewardItemTemplateID: rewardItemTemplateID)
             }

@@ -146,8 +146,8 @@ const Rewards = ({ rewards, getRewards }: any) => {
 	};
 
 	return (
-		<div className="pt-6">
-			<div className="grid grid-cols-5 gap-x-4 gap-y-6 overflow-auto">
+		<div className="pt-6 h-[640px] overflow-y-auto">
+			<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
 				{rewards
 					.filter((item: any) => !item.revealed)
 					.map((item: any) => (

@@ -162,9 +162,9 @@ pub contract BasicBeastsNFTStakingRewards {
 
         BasicBeastsNFTStakingRewards.totalSupply = BasicBeastsNFTStakingRewards.totalSupply + 1
 
-        if(BasicBeastsNFTStakingRewards.rewards[nftID] != nil) { //if NFT has rewards
-            let rewardItems = BasicBeastsNFTStakingRewards.rewards[nftID]!
-            rewardItems[newRewardItem.id] = newRewardItem //TODO: Test if it's added correctly
+        if let rewardItems = BasicBeastsNFTStakingRewards.rewards[nftID] { //if NFT has rewards
+            rewardItems[newRewardItem.id] = newRewardItem
+            BasicBeastsNFTStakingRewards.rewards[nftID] = rewardItems
         } else { //if NFT does not have rewards
             BasicBeastsNFTStakingRewards.rewards[nftID] = {newRewardItem.id: newRewardItem}
         }

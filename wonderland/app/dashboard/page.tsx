@@ -20,8 +20,8 @@ export default function Dashboard() {
 	const [stakedBeasts, setStakedBeasts] = useState([]);
 	const [unstakedBeasts, setUnstakedBeasts] = useState([]);
 	const [beasts, setBeasts] = useState([]);
-	const [stakingStartDates, setStakingStartDates] = useState(null);
-	const [adjustedStakingDates, setAdjustedStakingDates] = useState(null);
+	const [stakingStartDates, setStakingStartDates] = useState({});
+	const [adjustedStakingDates, setAdjustedStakingDates] = useState({});
 	const [rewards, setRewards] = useState<any>({});
 	const [rewardPerSecond, setRewardPerSecond] = useState(604800.0);
 	const { user, loggedIn, logIn } = useAuth();

@@ -1,5 +1,7 @@
- import BasicBeastsNFTStakingRewards from "../contracts/BasicBeastsNFTStakingRewards.cdc"
-transaction(IDs: [{UInt64:UInt32}], maxQuantity: Int) {
+export const REVEAL_MULTIPLE = `
+import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+
+transaction(IDs: [[UInt64]], maxQuantity: Int) {
     let revealerRef: &BasicBeastsNFTStakingRewards.Revealer
 
     prepare(signer: AuthAccount) {
@@ -20,10 +22,9 @@ transaction(IDs: [{UInt64:UInt32}], maxQuantity: Int) {
 
         while i < limit {
             let mappedReward = IDs[i]
-            let nftID = mappedReward.keys[0]
-            let rewardItemID = mappedReward[nftID]!
-            self.revealerRef.revealRewardItem(nftID: nftID, rewardItemID: rewardItemID)
+            self.revealerRef.revealRewardItem(nftID: mappedReward[0], rewardItemID: UInt32(mappedReward[1]))
             i = i + 1
         }
     }
 }
+`;

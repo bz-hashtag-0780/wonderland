@@ -19,6 +19,7 @@ import * as t from '@onflow/types';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
 import { REVEAL } from '@/flow/transactions/reveal';
+import { REVEAL_MULTIPLE } from '@/flow/transactions/reveal_multiple';
 import ActionHeader from '../ActionHeader';
 
 const Rewards = ({ rewards, getRewards }: any) => {
@@ -165,9 +166,61 @@ const Rewards = ({ rewards, getRewards }: any) => {
 		}
 	};
 
+	const revealAll = async () => {
+		const id = toast.loading('Initializing...');
+		const unrevealedRewards = rewards.filter(
+			(reward: any) => !reward.revealed
+		);
+
+		const mappedRewards = unrevealedRewards.map((reward: any) => [
+			String(reward.nftID),
+			String(reward.id),
+		]);
+
+		console.log(mappedRewards);
+
+		try {
+			const res = await send([
+				transaction(REVEAL_MULTIPLE),
+				args([
+					arg(mappedRewards, t.Array(t.Array(t.UInt64))),
+					arg('10', t.Int),
+				]),
+				payer(authz),
+				proposer(authz),
+				authorizations([authz]),
+				limit(9999),
+			]).then(decode);
+			tx(res).subscribe((res: any) => {
+				toastStatus(id, res.status);
+				console.log(res);
+			});
+			await tx(res)
+				.onceSealed()
+				.then(() => {
+					toast.update(id, {
+						render: 'Transaction Sealed',
+						type: 'success',
+						isLoading: false,
+						autoClose: 5000,
+					});
+				});
+			getRewards();
+			setRerender(!rerender);
+		} catch (err) {
+			toast.update(id, {
+				render: () => <div>Error, try again later...</div>,
+				type: 'error',
+				isLoading: false,
+				autoClose: 5000,
+			});
+			console.log(err);
+		}
+	};
+
 	return (
 		<div>
-			<ActionHeader buttonText="Reveal All" />
+			<ActionHeader buttonText="Reveal All" action={revealAll} />
 			<div>
 				<div>header</div>
 				<div className="pt-6 h-[640px] overflow-y-auto">

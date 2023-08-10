@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import rewardTemplates from 'data/rewardTemplates';
 import unknown from 'public/images/basicBeasts/unknown.jpeg';
@@ -19,9 +19,14 @@ import * as t from '@onflow/types';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
 import { REVEAL } from '@/flow/transactions/reveal';
+import ActionHeader from '../ActionHeader';
 
 const Rewards = ({ rewards, getRewards }: any) => {
 	const [rerender, setRerender] = useState(false);
+
+	useEffect(() => {
+		console.log('extracted rewards: ', rewards);
+	}, []);
 
 	const Reward = ({ item }: any) => (
 		<div className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden">
@@ -161,18 +166,24 @@ const Rewards = ({ rewards, getRewards }: any) => {
 	};
 
 	return (
-		<div className="pt-6 h-[640px] overflow-y-auto">
-			<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
-				{rewards
-					.filter((item: any) => !item.revealed)
-					.map((item: any) => (
-						<Reward key={item.id} item={item} />
-					))}
-				{rewards
-					.filter((item: any) => item.revealed)
-					.map((item: any) => (
-						<Reward key={item.id} item={item} />
-					))}
+		<div>
+			<ActionHeader buttonText="Reveal All" />
+			<div>
+				<div>header</div>
+				<div className="pt-6 h-[640px] overflow-y-auto">
+					<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
+						{rewards
+							.filter((item: any) => !item.revealed)
+							.map((item: any) => (
+								<Reward key={item.id} item={item} />
+							))}
+						{rewards
+							.filter((item: any) => item.revealed)
+							.map((item: any) => (
+								<Reward key={item.id} item={item} />
+							))}
+					</div>
+				</div>
 			</div>
 		</div>
 	);

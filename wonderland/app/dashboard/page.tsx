@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Beasts from '@/components/DashboardTabs/Beasts';
-import Rewards from '@/components/DashboardTabs/Rewards';
+import Beasts from '@/components/dashboardTabs/contents/Beasts';
+import Rewards from '@/components/dashboardTabs/contents/Rewards';
 import '../../flow-config.js';
 import { query } from '@onflow/fcl';
 import { FETCH_BEASTS } from '@/flow/scripts/fetch_beasts';
@@ -31,7 +31,7 @@ export default function Dashboard() {
 	const tabItems = [
 		{ name: 'Beasts' },
 		{ name: 'Rewards' },
-		{ name: 'Random' },
+		// { name: 'Random' },
 	];
 
 	const TabItem = ({ item }: any) => (
@@ -206,9 +206,9 @@ export default function Dashboard() {
 									getRewards={getRewards}
 								/>
 							)}
-							{activeTab === 'Random' && (
+							{/* {activeTab === 'Random' && (
 								<Tab>Random Content</Tab>
-							)}
+							)} */}
 						</>
 					)}
 				</div>

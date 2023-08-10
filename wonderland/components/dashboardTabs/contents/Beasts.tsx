@@ -20,7 +20,8 @@ import { STAKE } from '@/flow/transactions/stake';
 import { UNSTAKE } from '@/flow/transactions/unstake';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/framework/toastStatus';
-import DetailsModal from '../ui/DetailsModal';
+import DetailsModal from '../../ui/DetailsModal';
+import ActionHeader from '../ActionHeader';
 
 const Beasts = ({
 	beasts,
@@ -243,6 +244,7 @@ const Beasts = ({
 
 	return (
 		<>
+			<ActionHeader buttonText="Quest 10 Beasts" />
 			<div className="pt-6 h-[640px] overflow-y-auto">
 				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
 					{beasts != null && (

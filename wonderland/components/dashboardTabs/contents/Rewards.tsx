@@ -184,7 +184,7 @@ const Rewards = ({ rewards, getRewards }: any) => {
 				transaction(REVEAL_MULTIPLE),
 				args([
 					arg(mappedRewards, t.Array(t.Array(t.UInt64))),
-					arg('10', t.Int),
+					arg('250', t.Int),
 				]),
 				payer(authz),
 				proposer(authz),
@@ -222,7 +222,34 @@ const Rewards = ({ rewards, getRewards }: any) => {
 		<div>
 			<ActionHeader buttonText="Reveal All" action={revealAll} />
 			<div>
-				<div>header</div>
+				<div className="flex mb-4 mt-4">
+					<div className="w-full grid grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-2">
+						<div className="w-full p-2.5 flex-grow rounded-lg border border-white border-opacity-12">
+							<div>Unrevealed</div>
+							<div className="text-xl">5</div>
+						</div>
+						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
+							<div>Sushi</div>
+							<div className="text-xl">5</div>
+						</div>
+						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
+							<div>Ice Cream</div>
+							<div className="text-xl">5</div>
+						</div>
+						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
+							<div>Noodles</div>
+							<div className="text-xl">5</div>
+						</div>
+						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
+							<div>Empty Bottle</div>
+							<div className="text-xl">5</div>
+						</div>
+						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
+							<div>Poop</div>
+							<div className="text-xl">5</div>
+						</div>
+					</div>
+				</div>
 				<div className="pt-6 h-[640px] overflow-y-auto">
 					<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
 						{rewards

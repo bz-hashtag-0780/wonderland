@@ -15,6 +15,12 @@ module.exports = {
 			fontFamily: {
 				wonderland: ['Pacifico', 'cursive'],
 			},
+			backgroundColor: {
+				'custom-orange': 'rgb(252, 199, 135)',
+			},
+			borderColor: {
+				'custom-orange': 'rgba(252, 199, 135, 0.314)',
+			},
 		},
 	},
 	plugins: [],

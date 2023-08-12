@@ -153,10 +153,6 @@ export default function Dashboard() {
 
 	return (
 		<>
-			<RewardTableModal
-				isOpen={isModalOpen}
-				onClose={() => setModalOpen(false)}
-			/>
 			<div className="min-h-screen flex pt-20 pb-20 justify-center bg-center bg-no-repeat bg-cover bg-black">
 				<div
 					className="w-full max-w-5xl bg-custom-orange bg-opacity-10 p-5 rounded-lg mx-2 text-white border border-custom-orange"
@@ -220,6 +216,10 @@ export default function Dashboard() {
 					</div>
 				</div>
 			</div>
+			<RewardTableModal
+				isOpen={isModalOpen}
+				onClose={() => setModalOpen(false)}
+			/>
 		</>
 	);
 }

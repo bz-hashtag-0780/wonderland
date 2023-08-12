@@ -1,11 +1,13 @@
 const RewardTableModal = ({ isOpen, onClose }: any) => {
 	return (
 		isOpen && (
-			<div
-				className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-				onClick={onClose}
-			>
-				<div className="bg-black bg-opacity-80 p-6 rounded-lg shadow-xl max-w-xl overflow-scroll">
+			<div className="fixed inset-0 flex justify-center items-center z-50">
+				{/* Backdrop */}
+				<div
+					className="absolute inset-0 bg-black opacity-50"
+					onClick={onClose}
+				></div>
+				<div className="bg-black bg-opacity-80 p-6 rounded-lg shadow-xl max-w-xl overflow-scroll z-10">
 					<table className="min-w-full text-white divide-y divide-gray-200">
 						<thead>
 							<tr>

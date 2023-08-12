@@ -21,9 +21,12 @@ import { toastStatus } from '@/framework/toastStatus';
 import { REVEAL } from '@/flow/transactions/reveal';
 import { REVEAL_MULTIPLE } from '@/flow/transactions/reveal_multiple';
 import ActionHeader from '../ActionHeader';
+import RevealedModal from '@/components/ui/RevealedModal';
 
 const Rewards = ({ rewards, getRewards }: any) => {
 	const [rerender, setRerender] = useState(false);
+	const [revealed, setRevealed] = useState(false);
+	const [currentRevealed, setCurrentRevealed] = useState();
 
 	useEffect(() => {
 		console.log('extracted rewards: ', rewards);
@@ -248,6 +251,13 @@ const Rewards = ({ rewards, getRewards }: any) => {
 
 	return (
 		<div>
+			<button
+				onClick={() => {
+					setRevealed(true);
+				}}
+			>
+				test
+			</button>
 			<ActionHeader buttonText="Reveal All" action={revealAll} />
 			<div>
 				<div className="flex mb-4 mt-4">
@@ -341,6 +351,11 @@ const Rewards = ({ rewards, getRewards }: any) => {
 					</div>
 				</div>
 			</div>
+
+			<RevealedModal
+				isOpen={revealed}
+				onClose={() => setRevealed(false)}
+			/>
 		</div>
 	);
 };

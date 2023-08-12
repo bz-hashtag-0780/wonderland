@@ -2,7 +2,7 @@ import React from 'react';
 
 interface ActionHeaderProps {
 	buttonText?: string;
-	action: any;
+	action?: any;
 }
 
 const ActionHeader: React.FC<ActionHeaderProps> = ({

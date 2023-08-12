@@ -8,28 +8,14 @@ const RevealedModal = ({ isOpen, onClose }: any) => {
 					onClick={onClose}
 				></div>
 				<div className="bg-black bg-opacity-80 p-6 rounded-lg shadow-xl max-w-xl overflow-scroll z-10">
-					<table className="min-w-full text-white divide-y divide-gray-200">
-						<thead>
-							<tr>
-								<th className="py-2 px-4"></th>
-								<th className="py-2 px-4">🍣 S</th>
-								<th className="py-2 px-4">🍦 I</th>
-								<th className="py-2 px-4">🍜 N</th>
-								<th className="py-2 px-4">🫙 E</th>
-								<th className="py-2 px-4">💩 P</th>
-							</tr>
-						</thead>
-						<tbody className="divide-y divide-gray-300">
-							<tr>
-								<td className="py-2 px-4">Basic Beasts</td>
-								<td className="py-2 px-4">69%</td>
-								<td className="py-2 px-4">18%</td>
-								<td className="py-2 px-4">8%</td>
-								<td className="py-2 px-4">4%</td>
-								<td className="py-2 px-4">1%</td>
-							</tr>
-						</tbody>
-					</table>
+					<div className="flex w-full justify-center items-center">
+						<h2 className="text-2xl font-bold uppercase tracking-wide">
+							Revealed
+						</h2>
+					</div>
+					<div className="flex justify-center items-center border rounded-lg w-full p-4 px-6 mt-4 mb-6">
+						<div>Your rewards have been revealed!</div>
+					</div>
 
 					<button
 						onClick={onClose}

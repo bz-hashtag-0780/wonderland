@@ -39,7 +39,7 @@ const Rewards = ({ rewards, getRewards }: any) => {
 					{item.revealed && (
 						<div className="flex w-full absolute z-10 top-2">
 							<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
-								&nbsp;x {count}
+								&nbsp;x{count}
 							</div>
 						</div>
 					)}

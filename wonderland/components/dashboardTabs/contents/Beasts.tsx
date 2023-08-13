@@ -19,7 +19,7 @@ import * as t from '@onflow/types';
 import { STAKE } from '@/flow/transactions/stake';
 import { UNSTAKE } from '@/flow/transactions/unstake';
 import { toast } from 'react-toastify';
-import { toastStatus } from '@/framework/toastStatus';
+import { toastStatus } from '@/utils/toastStatus';
 import DetailsModal from '../../ui/DetailsModal';
 import ActionHeader from '../ActionHeader';
 

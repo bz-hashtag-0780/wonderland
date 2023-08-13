@@ -1,4 +1,7 @@
-const RevealedModal = ({ isOpen, onClose }: any) => {
+import rewardTemplates from 'data/rewardTemplates';
+import { filterAndGroupRewards } from '@/utils/filterAndGroupRewards';
+
+const RevealedModal = ({ isOpen, onClose, revealedRewards }: any) => {
 	return (
 		isOpen && (
 			<div className="fixed inset-0 flex justify-center items-center z-50">
@@ -14,13 +17,42 @@ const RevealedModal = ({ isOpen, onClose }: any) => {
 						</h2>
 					</div>
 					<div className="flex justify-center items-center border rounded-lg w-full p-4 px-6 mt-4 mb-6">
-						<div>Your rewards have been revealed!</div>
+						<div>
+							{revealedRewards.length > 1
+								? 'Your rewards have been revealed!'
+								: 'Your reward has been revealed!'}
+						</div>
 					</div>
 					<div className="flex flex-col">
-						<div className="flex justify-between text-base mt-4">
-							<p>Sushi</p>
-							<p>1</p>
-						</div>
+						{filterAndGroupRewards(revealedRewards).map(
+							(item: any) => (
+								<div
+									key={item.id}
+									className="flex justify-between text-base mt-4"
+								>
+									<p>
+										{
+											(
+												rewardTemplates.find(
+													(template: any) =>
+														template.rewardItemTemplateID ===
+															item.rewardItemTemplateID &&
+														template.type ===
+															'BasicBeasts'
+												) || {
+													type: 'BasicBeasts',
+													rewardItemTemplateID: 1,
+													name: 'Unrevealed',
+													description: '',
+													image: '/images/basicBeasts/unknown.jpeg',
+												}
+											).name
+										}
+									</p>
+									<p>{item.count}</p>
+								</div>
+							)
+						)}
 						<div
 							className="flex my-4 h-px w-full"
 							style={{
@@ -29,7 +61,7 @@ const RevealedModal = ({ isOpen, onClose }: any) => {
 						/>
 						<div className="flex justify-between text-xl">
 							<p>Total Rewards</p>
-							<p>1</p>
+							<p>{revealedRewards.length}</p>
 						</div>
 					</div>
 

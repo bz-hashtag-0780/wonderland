@@ -7,7 +7,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/components/*": ["components/*"],
-			"@/framework/*": ["framework/*"],
+			"@/utils/*": ["utils/*"],
 			"@/hooks/*": ["hooks/*"],
 			"@/flow/*": ["flow/*"],
 			"@/pages/*": ["pages/*"],

@@ -17,11 +17,12 @@ import {
 } from '@onflow/fcl';
 import * as t from '@onflow/types';
 import { toast } from 'react-toastify';
-import { toastStatus } from '@/framework/toastStatus';
+import { toastStatus } from '@/utils/toastStatus';
 import { REVEAL } from '@/flow/transactions/reveal';
 import { REVEAL_MULTIPLE } from '@/flow/transactions/reveal_multiple';
 import ActionHeader from '../ActionHeader';
 import RevealedModal from '@/components/ui/RevealedModal';
+import { filterAndGroupRewards } from '@/utils/filterAndGroupRewards';
 
 const Rewards = ({ rewards, getRewards }: any) => {
 	const [rerender, setRerender] = useState(false);
@@ -137,6 +138,7 @@ const Rewards = ({ rewards, getRewards }: any) => {
 		const id = toast.loading('Initializing...');
 		console.log('nftID: ', nftID);
 		console.log('rewardItemID: ', rewardItemID);
+		console.log(rewards.filter((reward: any) => reward.id == rewardItemID));
 
 		try {
 			const res = await send([
@@ -166,6 +168,10 @@ const Rewards = ({ rewards, getRewards }: any) => {
 				});
 			getRewards();
 			setRerender(!rerender);
+			setCurrentRevealed(
+				rewards.filter((reward: any) => reward.id == rewardItemID)
+			);
+			setRevealed(true);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -179,23 +185,26 @@ const Rewards = ({ rewards, getRewards }: any) => {
 
 	const revealAll = async () => {
 		const id = toast.loading('Initializing...');
+		const maxQuantity = 2;
 		const unrevealedRewards = rewards.filter(
 			(reward: any) => !reward.revealed
 		);
 
-		const mappedRewards = unrevealedRewards.map((reward: any) => [
+		const toReveal = unrevealedRewards.slice(0, maxQuantity);
+
+		const mappedRewards = toReveal.map((reward: any) => [
 			String(reward.nftID),
 			String(reward.id),
 		]);
 
-		console.log(mappedRewards);
+		console.log('toReveal: ', toReveal);
 
 		try {
 			const res = await send([
 				transaction(REVEAL_MULTIPLE),
 				args([
 					arg(mappedRewards, t.Array(t.Array(t.UInt64))),
-					arg('250', t.Int),
+					arg(String(maxQuantity), t.Int),
 				]),
 				payer(authz),
 				proposer(authz),
@@ -218,6 +227,8 @@ const Rewards = ({ rewards, getRewards }: any) => {
 				});
 			getRewards();
 			setRerender(!rerender);
+			setCurrentRevealed(toReveal);
+			setRevealed(true);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -229,35 +240,8 @@ const Rewards = ({ rewards, getRewards }: any) => {
 		}
 	};
 
-	const filteredAndGroupedRewards = rewards
-		.filter((item: any) => item.revealed) // Only revealed items
-		.reduce((acc: any[], current: any) => {
-			const existing = acc.find(
-				(x) => x.rewardItemTemplateID === current.rewardItemTemplateID
-			);
-
-			if (existing) {
-				existing.count += 1; // Increment the count
-			} else {
-				current.count = 1; // Set initial count
-				acc.push(current); // Add new unique item
-			}
-
-			return acc;
-		}, [])
-		.sort(
-			(a: any, b: any) => a.rewardItemTemplateID - b.rewardItemTemplateID
-		); // Sort by ID
-
 	return (
 		<div>
-			<button
-				onClick={() => {
-					setRevealed(true);
-				}}
-			>
-				test
-			</button>
 			<ActionHeader buttonText="Reveal All" action={revealAll} />
 			<div>
 				<div className="flex mb-4 mt-4">
@@ -341,7 +325,9 @@ const Rewards = ({ rewards, getRewards }: any) => {
 							.map((item: any) => (
 								<Reward key={item.id} item={item} />
 							))}
-						{filteredAndGroupedRewards.map((item: any) => (
+						{filterAndGroupRewards(
+							rewards.filter((item: any) => item.revealed)
+						).map((item: any) => (
 							<Reward
 								key={item.id}
 								item={item}
@@ -355,6 +341,7 @@ const Rewards = ({ rewards, getRewards }: any) => {
 			<RevealedModal
 				isOpen={revealed}
 				onClose={() => setRevealed(false)}
+				revealedRewards={currentRevealed}
 			/>
 		</div>
 	);

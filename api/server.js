@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const flowService = require('./services/flowService');
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 app.use(morgan('dev'));
 

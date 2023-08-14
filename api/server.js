@@ -23,7 +23,7 @@ app.listen(PORT, async () => {
 		await flowService.giveRewards(eligibleNFTs);
 
 		var i = 0;
-		while (i < 40) {
+		while (i < 200) {
 			await flowService.giveRewards(eligibleNFTs);
 			i = i + 1;
 		}

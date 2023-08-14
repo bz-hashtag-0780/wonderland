@@ -185,7 +185,7 @@ const Rewards = ({ rewards, getRewards }: any) => {
 
 	const revealAll = async () => {
 		const id = toast.loading('Initializing...');
-		const maxQuantity = 2;
+		const maxQuantity = 650; //tested
 		const unrevealedRewards = rewards.filter(
 			(reward: any) => !reward.revealed
 		);

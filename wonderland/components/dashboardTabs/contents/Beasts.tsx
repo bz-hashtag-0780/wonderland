@@ -18,6 +18,7 @@ import {
 import * as t from '@onflow/types';
 import { STAKE } from '@/flow/transactions/stake';
 import { UNSTAKE } from '@/flow/transactions/unstake';
+import { STAKE_MULTIPLE } from '@/flow/transactions/stake_multiple';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/utils/toastStatus';
 import DetailsModal from '../../ui/DetailsModal';
@@ -203,6 +204,55 @@ const Beasts = ({
 		}
 	};
 
+	const questAll = async () => {
+		const id = toast.loading('Initializing...');
+		const maxQuantity = 150; //tested
+
+		const toStake = unstakedBeasts
+			.slice(0, maxQuantity)
+			.map((item: any) => item.id);
+
+		console.log(toStake);
+
+		try {
+			const res = await send([
+				transaction(STAKE_MULTIPLE),
+				args([
+					arg(toStake, t.Array(t.UInt64)),
+					arg(String(maxQuantity), t.Int),
+				]),
+				payer(authz),
+				proposer(authz),
+				authorizations([authz]),
+				limit(9999),
+			]).then(decode);
+			tx(res).subscribe((res: any) => {
+				toastStatus(id, res.status);
+				console.log(res);
+			});
+			await tx(res)
+				.onceSealed()
+				.then(() => {
+					toast.update(id, {
+						render: 'Transaction Sealed',
+						type: 'success',
+						isLoading: false,
+						autoClose: 5000,
+					});
+				});
+			fetchUserBeasts();
+			setRerender(!rerender);
+		} catch (err) {
+			toast.update(id, {
+				render: () => <div>Error, try again later...</div>,
+				type: 'error',
+				isLoading: false,
+				autoClose: 5000,
+			});
+			console.log(err);
+		}
+	};
+
 	const quitQuest = async (nftID: number) => {
 		const id = toast.loading('Initializing...');
 
@@ -244,7 +294,7 @@ const Beasts = ({
 
 	return (
 		<>
-			<ActionHeader buttonText="Quest 10 Beasts" />
+			<ActionHeader buttonText="Quest all" action={questAll} />
 			<div className="pt-6 h-[640px] overflow-y-auto">
 				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
 					{beasts != null && (

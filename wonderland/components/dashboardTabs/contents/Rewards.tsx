@@ -29,9 +29,9 @@ const Rewards = ({ rewards, getRewards }: any) => {
 	const [revealed, setRevealed] = useState(false);
 	const [currentRevealed, setCurrentRevealed] = useState();
 
-	useEffect(() => {
-		console.log('extracted rewards: ', rewards);
-	}, []);
+	// useEffect(() => {
+	// 	console.log('extracted rewards: ', rewards);
+	// }, []);
 
 	const Reward = ({ item, count }: any) => (
 		<div className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden">

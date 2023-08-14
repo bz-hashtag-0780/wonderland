@@ -294,8 +294,8 @@ const Beasts = ({
 
 	return (
 		<>
-			<ActionHeader buttonText="Quest all" action={questAll} />
-			<div className="pt-6 h-[640px] overflow-y-auto">
+			<ActionHeader buttonText="Quest All" action={questAll} />
+			<div className="pt-6 h-[645px] overflow-y-auto">
 				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
 					{beasts != null && (
 						<>

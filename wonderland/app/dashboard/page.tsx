@@ -160,7 +160,7 @@ export default function Dashboard() {
 		getRewards();
 		getRewardPerSecond();
 		getTotalSupply();
-	}, [user, fetchUserBeasts]);
+	}, [user]);
 
 	function extractRewards(beasts: any[], rewards: any) {
 		return beasts.flatMap((beast: any) => {

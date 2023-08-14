@@ -124,6 +124,33 @@ export default function Dashboard() {
 		}
 	};
 
+	const getTotalSupply = async () => {
+		try {
+			let totalSupply = await query({
+				cadence: `
+				import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+				
+				pub fun main(): UInt32 {
+					return BasicBeastsNFTStakingRewards.totalSupply
+				}
+				`,
+			});
+			let burned = await query({
+				cadence: `
+				import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+				
+				pub fun main(): UInt32 {
+					return BasicBeastsNFTStakingRewards.burned
+				}
+				`,
+			});
+			console.log('totalSupply', totalSupply);
+			console.log('burned', burned);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	useEffect(() => {
 		if (user?.addr != null) {
 			fetchUserBeasts();
@@ -132,6 +159,7 @@ export default function Dashboard() {
 		}
 		getRewards();
 		getRewardPerSecond();
+		getTotalSupply();
 	}, [user]);
 
 	function extractRewards(beasts: any[], rewards: any) {

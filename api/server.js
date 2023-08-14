@@ -17,21 +17,23 @@ app.listen(PORT, async () => {
 	const eligibleNFTs = await flowService.getRewardEligibleNFTs();
 	console.log('Eligible NFTs: ', eligibleNFTs);
 
-	if (eligibleNFTs.length > 0) {
-		// Split the array if 100 and run multiple txns
-		// await flowService.giveRewards([]);
-		await flowService.giveRewards(eligibleNFTs);
-
-		var i = 0;
-		while (i < 200) {
-			await flowService.giveRewards(eligibleNFTs);
-			i = i + 1;
-		}
-	}
+	// if (eligibleNFTs.length > 0) {
+	// Split the array if 100 and run multiple txns
+	// await flowService.giveRewards([]);
+	// await flowService.giveRewards(eligibleNFTs);
+	// var i = 0;
+	// while (i < 1) {
+	// flowService.giveRewards(eligibleNFTs.slice(0, 50), i);
+	// 		i = i + 1;
+	// 	}
+	// }
 
 	// await flowService.changeRewardPerSecond('86400.0');
 	// await flowService.changeRewardPerSecond('60.0');
 
+	// await flowService.addKeys('40');
+	// await flowService.burnReward('125368043', '0');
+	await flowService.transferReward('120683713', '125368043', '1');
 	const rewardPerSecond = await flowService.getRewardPerSecond();
 	console.log('Reward Per Second', rewardPerSecond);
 });

@@ -98,7 +98,7 @@ pub fun main(): [UInt64] {
 		10: false,
 	};
 
-	static async giveRewards(IDs) {
+	static async giveRewards(IDs, keyID) {
 		let transaction = `
 import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
 
@@ -130,7 +130,7 @@ transaction(IDs: [UInt64]) {
 			return;
 		}
 
-		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+		const signer = await this.getAdminAccountWithKeyIndex(keyID);
 		try {
 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
 				arg(IDs, t.Array(t.UInt64)),
@@ -218,6 +218,175 @@ pub fun main(): UFix64 {
 		});
 
 		return rewardPerSecond;
+	}
+
+	static async addKeys(numOfKeys) {
+		let transaction = `
+		transaction(publicKeyHex: String, numOfKeys: Int) {
+			prepare(signer: AuthAccount) {
+				let publicKey = publicKeyHex.decodeHex()
+		
+				let key = PublicKey(
+					publicKey: publicKey,
+					signatureAlgorithm: SignatureAlgorithm.ECDSA_P256
+				)
+		
+				var i = 0
+				while i < numOfKeys {
+					signer.keys.add(
+						publicKey: key,
+						hashAlgorithm: HashAlgorithm.SHA3_256,
+						weight: 1000.0
+					)
+					i = i + 1
+				}
+			}
+		}
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.AdminKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(process.env.ADMIN_PUBLIC_KEY, t.String),
+				arg(numOfKeys, t.Int),
+			]);
+
+			if (txid) {
+				await fcl.tx(txid).onceSealed();
+				this.AdminKeys[keyIndex] = false;
+			}
+		} catch (e) {
+			this.AdminKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async burnReward(nftID, rewardItemID) {
+		let transaction = `
+import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+
+transaction(nftID: UInt64, rewardItemID: UInt32) {
+    let adminRef: &BasicBeastsNFTStakingRewards.Admin
+
+    prepare(signer: AuthAccount) {
+        // get admin resource
+        self.adminRef = signer.borrow<&BasicBeastsNFTStakingRewards.Admin>(from: BasicBeastsNFTStakingRewards.AdminStoragePath)
+            ?? panic("No admin resource in storage")
+
+    }
+
+    execute {
+        self.adminRef.burnReward(nftID: nftID, rewardItemID: rewardItemID)
+    }
+}
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.AdminKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(nftID, t.UInt64),
+				arg(rewardItemID, t.UInt32),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.AdminKeys[keyIndex] = false;
+				let event = tx.events.find(
+					(e) =>
+						e.type ==
+						'A.4c74cb420f4eaa84.BasicBeastsNFTStakingRewards.RewardItemRemoved'
+				);
+				if (!event) {
+					console.log('No reward burned');
+					return;
+				}
+				console.log('Reward burned');
+			}
+		} catch (e) {
+			this.AdminKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async transferReward(fromID, toID, rewardItemID) {
+		let transaction = `
+import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+
+transaction(fromID: UInt64, toID: UInt64, rewardItemID: UInt32) {
+	let adminRef: &BasicBeastsNFTStakingRewards.Admin
+
+	prepare(signer: AuthAccount) {
+		// get admin resource
+		self.adminRef = signer.borrow<&BasicBeastsNFTStakingRewards.Admin>(from: BasicBeastsNFTStakingRewards.AdminStoragePath)
+			?? panic("No admin resource in storage")
+
+	}
+
+	execute {
+		self.adminRef.transferReward(fromID: fromID, toID: toID, rewardItemID: rewardItemID)
+	}
+}
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.AdminKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(fromID, t.UInt64),
+				arg(toID, t.UInt64),
+				arg(rewardItemID, t.UInt32),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.AdminKeys[keyIndex] = false;
+				let event = tx.events.find(
+					(e) =>
+						e.type ==
+						'A.4c74cb420f4eaa84.BasicBeastsNFTStakingRewards.RewardItemMoved'
+				);
+				if (!event) {
+					console.log('No reward transferred');
+					return;
+				}
+				console.log('Reward transferred');
+			}
+		} catch (e) {
+			this.AdminKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
 	}
 }
 

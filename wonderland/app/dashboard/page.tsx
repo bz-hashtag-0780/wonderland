@@ -106,7 +106,7 @@ export default function Dashboard() {
 			let rewards = await query({
 				cadence: GET_ALL_REWARDS,
 			});
-			console.log('rewards: ', rewards);
+			// console.log('rewards: ', rewards);
 			setRewards(rewards);
 		} catch (err) {
 			console.log(err);

@@ -317,11 +317,6 @@ pub contract BasicBeastsRaids {
     self.attackerCooldownTimestamps[address] = innerDict
     }
 
-
-
-
-
-
     pub fun hasNFT(address: Address, nftID: UInt64): Bool {
         let collectionRef = getAccount(address).getCapability(BasicBeastsNFTStaking.CollectionPublicPath)
                                                             .borrow<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>()

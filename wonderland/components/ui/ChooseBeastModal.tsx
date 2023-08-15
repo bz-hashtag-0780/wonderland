@@ -12,10 +12,15 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 		</div>
 	);
 	const Beast = ({ value, label, lastItem }: any) => (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 group">
 			<div className="flex gap-4">
 				<div className="w-full">
 					<div className="relative overflow-hidden w-full bg-transparent rounded-xl">
+						<div className="flex w-full absolute z-10 top-2">
+							<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
+								Dappy #3323
+							</div>
+						</div>
 						<Image
 							alt={'something'}
 							src={
@@ -25,6 +30,14 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 							height={200}
 							priority={true}
 						/>
+						<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+							<button
+								onClick={() => console.log('hello')}
+								className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-md drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
+							>
+								Select
+							</button>
+						</div>
 					</div>
 				</div>
 				<div className="flex flex-col w-full w-2/3 gap-4">
@@ -73,7 +86,7 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 						onClick={onClose}
 						className="flex justify-center items-center mt-6 border border-solid text-white hover:bg-white hover:text-black text-2xl py-1 px-4 w-full h-16 rounded-md font-bold transition duration-150 ease-in-out"
 					>
-						Save
+						Close
 					</button>
 				</div>
 			</div>

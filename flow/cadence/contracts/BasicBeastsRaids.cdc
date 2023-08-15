@@ -12,12 +12,13 @@ pub contract BasicBeastsRaids {
 
     pub var currentSeason: UInt32
     pub var raidCount: UInt32
+    pub var raidsPaused: Bool
     access(self) var raidRecords: {UInt32: RaidRecord}
     access(self) var playerOptIns: {Address: UInt64}
     access(self) var playerLockStartDates: {Address: UFix64}
     access(self) var points: {UInt32: {UInt64: UInt32}}
     access(self) var exp: {UInt64: UInt32}
-    access(self) var attackerCooldownTimestamps: {Address: [UFix64]}
+    access(self) var attackerCooldownTimestamps: {Address: {UInt64: [UFix64]}}
 
     pub struct RaidRecord {
         pub let id: UInt32
@@ -149,10 +150,7 @@ pub contract BasicBeastsRaids {
                                 BasicBeastsRaids.raidRecords[BasicBeastsRaids.raidCount] = RaidRecord(id: BasicBeastsRaids.raidCount, attacker: nftID, defender: defenderNftID!, winner: winner)
 
                                 // add cooldown
-                                if BasicBeastsRaids.attackerCooldownTimestamps[attacker] == nil {
-                                    BasicBeastsRaids.attackerCooldownTimestamps[attacker] = []
-                                }
-                                BasicBeastsRaids.attackerCooldownTimestamps[attacker]!.append(getCurrentBlock().timestamp)
+                                BasicBeastsRaids.updateCooldownTimestamps(address: attacker, nftID: nftID)
 
                                 // start lock timer
                                 BasicBeastsRaids.playerLockStartDates[attacker] = getCurrentBlock().timestamp
@@ -233,10 +231,7 @@ pub contract BasicBeastsRaids {
                     BasicBeastsRaids.raidRecords[BasicBeastsRaids.raidCount] = RaidRecord(id: BasicBeastsRaids.raidCount, attacker: attackerNftID, defender: defenderNftID, winner: winner)
 
                     // add cooldown
-                    if BasicBeastsRaids.attackerCooldownTimestamps[attacker] == nil {
-                        BasicBeastsRaids.attackerCooldownTimestamps[attacker] = []
-                    }
-                    BasicBeastsRaids.attackerCooldownTimestamps[attacker]!.append(getCurrentBlock().timestamp)
+                    BasicBeastsRaids.updateCooldownTimestamps(address: attacker, nftID: attackerNftID)
 
                     // start lock timer
                     BasicBeastsRaids.playerLockStartDates[attacker] = getCurrentBlock().timestamp
@@ -271,6 +266,14 @@ pub contract BasicBeastsRaids {
             emit NewSeasonStarted(newCurrentSeason: BasicBeastsRaids.currentSeason)
         }
 
+        pub fun pauseRaids() {
+            BasicBeastsRaids.raidsPaused = true
+        }
+
+        pub fun unpauseRaids() {
+            BasicBeastsRaids.raidsPaused = false
+        }
+
     }
 
     access(contract) fun awardPoint(nftID: UInt64) {
@@ -293,6 +296,32 @@ pub contract BasicBeastsRaids {
         }
     }
 
+    access(contract) fun updateCooldownTimestamps(address: Address, nftID: UInt64) {
+    // Fetch the current timestamp
+    let timestamp = getCurrentBlock().timestamp
+
+    // Get or create the dictionary for the address
+    var innerDict = self.attackerCooldownTimestamps[address] ?? {}
+
+    // Check if the nftID exists for the given address and update timestamps
+    var timestamps = innerDict[nftID] ?? []
+    while timestamps.length >= 9 {
+        timestamps.remove(at: 0)
+    }
+    timestamps.append(timestamp)
+    
+    // Update the inner dictionary
+    innerDict[nftID] = timestamps
+
+    // Assign the updated inner dictionary back to the main dictionary
+    self.attackerCooldownTimestamps[address] = innerDict
+    }
+
+
+
+
+
+
     pub fun hasNFT(address: Address, nftID: UInt64): Bool {
         let collectionRef = getAccount(address).getCapability(BasicBeastsNFTStaking.CollectionPublicPath)
                                                             .borrow<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>()
@@ -308,23 +337,46 @@ pub contract BasicBeastsRaids {
     }
 
     pub fun canAttack(attacker: Address): Bool {
-        let currentTimestamp = getCurrentBlock().timestamp
+        if let nftID = self.playerOptIns[attacker] {
 
-        if let previousTimestamps = BasicBeastsRaids.attackerCooldownTimestamps[attacker] {
-            // Check if the attacker has attacked more than 9 times in the last 24 hours
-            var attacksOnCooldown = 0
-            // If the difference between the current timestamp and the stored timestamp is less than 24 hours,
-            // increment the attacksOnCooldown counter
-            for timestamp in previousTimestamps {
-                if currentTimestamp - timestamp < 86400.00 {
-                    attacksOnCooldown = attacksOnCooldown + 1
+            if let nftCooldowns = self.attackerCooldownTimestamps[attacker] {
+
+                let currentTimestamp = getCurrentBlock().timestamp
+
+                if let previousTimestamps = nftCooldowns[nftID] {
+                    // Check if the attacker has attacked more than 9 times in the last 24 hours
+                    var attacksOnCooldown = 0
+                    // If the difference between the current timestamp and the stored timestamp is less than 24 hours,
+                    // increment the attacksOnCooldown counter
+                    for timestamp in previousTimestamps {
+                        if currentTimestamp - timestamp < 86400.00 {
+                            attacksOnCooldown = attacksOnCooldown + 1
+                        }
+                    }
+                    if attacksOnCooldown >= 9 {
+                        return false
+                    }
+                }
+
+            } else {
+                return true // no cooldowns means it can attack
+            }
+        } 
+
+        return false // no opt in, cannot attack
+    }
+
+    pub fun nextAttack(attacker: Address): UFix64? {
+        if let nftID = self.playerOptIns[attacker] {
+            if let nftCooldowns = self.attackerCooldownTimestamps[attacker] {
+                if let previousTimestamps = nftCooldowns[nftID] {
+                    if(previousTimestamps.length>0) {
+                        return getCurrentBlock().timestamp - previousTimestamps[0]
+                    }
                 }
             }
-            if attacksOnCooldown >= 9 {
-                return false
-            }
         }
-        return true
+        return nil
     }
 
     pub fun chooseRewardOneOrTwo(): UInt32 {
@@ -393,13 +445,14 @@ pub contract BasicBeastsRaids {
         return self.exp
     }
 
-    pub fun getAttackCooldownTimestamps(): {Address: [UFix64]} {
+    pub fun getAttackCooldownTimestamps(): {Address: {UInt64: [UFix64]}} {
         return self.attackerCooldownTimestamps
     }
 
     init() {
         self.currentSeason = 0
         self.raidCount = 0
+        self.raidsPaused = false
         self.raidRecords = {}
         self.playerOptIns = {}
         self.playerLockStartDates = {}
@@ -407,8 +460,8 @@ pub contract BasicBeastsRaids {
         self.exp = {}
         self.attackerCooldownTimestamps = {}
 
-        self.GameMasterStoragePath = /storage/BasicBeastsRaidsGameMaster
-        self.GameMasterPrivatePath = /private/BasicBeastsRaidsGameMaster
+        self.GameMasterStoragePath = /storage/BasicBeastsRaidsGameMaster_1
+        self.GameMasterPrivatePath = /private/BasicBeastsRaidsGameMaster_1
 
         // Put Game Master in storage
         self.account.save(<-create GameMaster(), to: self.GameMasterStoragePath)

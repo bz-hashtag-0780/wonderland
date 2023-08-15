@@ -16,7 +16,7 @@ const RaidCockpit = () => {
 	);
 	return (
 		<div className="w-full max-w-5xl bg-custom-orange bg-opacity-10 p-8 rounded-lg mx-2 text-white border border-custom-orange">
-			<div className="flex uppercase font-bold text-xl justify-center mb-4">
+			<div className="flex uppercase font-bold text-3xl justify-center mb-4">
 				Raid Cockpit
 			</div>
 			<div className="flex w-full flex-col">
@@ -96,7 +96,7 @@ const RaidCockpit = () => {
 							<Info value={'200'} label={'Total W - L'} />
 							<Info value={'200'} label={'Raids'} />
 							<Info
-								value={'200'}
+								value={'190'}
 								label={'Raided'}
 								lastItem={true}
 							/>
@@ -105,8 +105,8 @@ const RaidCockpit = () => {
 							<Info value={'18-2'} label={'Sushi W-L'} />
 							<Info value={'2 - 1'} label={'Ice Cream W-L'} />
 							<Info
-								value={'2 - 1'}
-								label={'Ice Cream W-L'}
+								value={'200'}
+								label={'Total Raid Points'}
 								lastItem={true}
 							/>
 						</div>

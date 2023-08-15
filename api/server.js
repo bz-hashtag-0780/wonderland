@@ -42,6 +42,6 @@ app.listen(PORT, async () => {
 	console.log(`Server is running on http://localhost:${PORT}`);
 	// Call the function once the server starts
 	await processEligibleNFTs();
-	// Then run the function every 12 hours
-	setInterval(processEligibleNFTs, 12 * 60 * 60 * 1000); // 12 hours in milliseconds
+	// Then run the function every hour
+	setInterval(processEligibleNFTs, 1 * 60 * 60 * 1000); // hour in milliseconds
 });

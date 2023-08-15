@@ -377,6 +377,10 @@ pub contract BasicBeastsRaids {
         return self.playerOptIns
     }
 
+    pub fun getPlayerOptIn(address: Address): UInt64? {
+        return self.playerOptIns[address]
+    }
+
     pub fun getPlayerLockStartDates(): {Address: UFix64} {
         return self.playerLockStartDates
     }

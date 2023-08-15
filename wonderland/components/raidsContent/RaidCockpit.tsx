@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 
-const RaidCockpit = () => {
+const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 	const Info = ({ value, label, lastItem }: any) => (
 		<div
 			className={`flex flex-col relative h-auto bg-opacity-10 bg-white rounded-xl w-full p-4 mt-0 ${
@@ -14,6 +14,7 @@ const RaidCockpit = () => {
 			<div className="flex text-2xl font-bold">{value}</div>
 		</div>
 	);
+
 	return (
 		<div className="w-full max-w-5xl bg-custom-orange bg-opacity-10 p-8 rounded-lg mx-2 text-white border border-custom-orange">
 			<div className="flex uppercase font-bold text-3xl justify-center mb-4">
@@ -114,7 +115,10 @@ const RaidCockpit = () => {
 				</div>
 				<div className="border-t border-white opacity-20 mt-6 mb-1"></div>
 				<div>
-					<button className="flex justify-center items-center mt-6 border border-solid text-white hover:bg-white hover:text-black text-2xl py-1 px-4 w-full h-16 rounded-md font-bold transition duration-150 ease-in-out">
+					<button
+						onClick={() => setOpenRaidProfile(true)}
+						className="flex justify-center items-center mt-6 border border-solid text-white hover:bg-white hover:text-black text-2xl py-1 px-4 w-full h-16 rounded-md font-bold transition duration-150 ease-in-out"
+					>
 						Edit Raid Profile
 					</button>
 				</div>

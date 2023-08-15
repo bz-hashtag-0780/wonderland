@@ -1,5 +1,6 @@
 import React from 'react';
 import rewardTemplates from 'data/rewardTemplates';
+import Image from 'next/image';
 
 interface DetailsModalProps {
 	beast: any;
@@ -61,10 +62,12 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
 				<div className="flex mb-4">
 					{/* First Column: Beast Image */}
 					<div className="flex-1 mr-4">
-						<img
+						<Image
 							src={`https://basicbeasts.mypinata.cloud/ipfs/${beast.beastTemplate.image}`}
 							alt={beast.nickname}
-							className="w-64 h-64 object-cover rounded-md"
+							width={200}
+							height={200}
+							className="rounded-md"
 						/>
 					</div>
 

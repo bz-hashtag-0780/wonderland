@@ -16,8 +16,13 @@ const RevealedModal = ({ isOpen, onClose, revealedRewards }: any) => {
 							Revealed
 						</h2>
 					</div>
-					<div className="flex justify-center items-center border rounded-lg w-full p-4 px-6 mt-4 mb-6">
-						<div>
+					<div className="flex justify-center items-center border rounded-lg w-full p-4 mt-4 mb-6">
+						<div className="p-2">
+							<div className="px-2.5 font-bold border border-solid rounded-full bg-white text-black transition-colors duration-150 focus:outline-none">
+								i
+							</div>
+						</div>
+						<div className="ml-4">
 							{revealedRewards.length > 1
 								? 'Your rewards have been revealed!'
 								: 'Your reward has been revealed!'}

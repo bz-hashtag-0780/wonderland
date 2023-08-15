@@ -1,4 +1,39 @@
+import Image from 'next/image';
+
 const ChooseBeastModal = ({ isOpen, onClose }: any) => {
+	const Reward = ({ value, label, lastItem }: any) => (
+		<div
+			className={
+				'flex flex-col relative h-auto bg-opacity-10 bg-white rounded-xl w-full p-4 mt-0'
+			}
+		>
+			<div className="flex text-white opacity-40 text-sm">{label}</div>
+			<div className="flex text-2xl font-bold">{value}</div>
+		</div>
+	);
+	const Beast = ({ value, label, lastItem }: any) => (
+		<div className="flex flex-col gap-2">
+			<div className="flex gap-4">
+				<div className="w-full">
+					<div className="relative overflow-hidden w-full bg-transparent rounded-xl">
+						<Image
+							alt={'something'}
+							src={
+								'https://basicbeasts.mypinata.cloud/ipfs/QmdWciz9H88fu2jT1Mfu3LszJuBjvjwbW1zh77135aEukE'
+							}
+							width={200}
+							height={200}
+							priority={true}
+						/>
+					</div>
+				</div>
+				<div className="flex flex-col w-full w-2/3 gap-4">
+					<Reward value={'10'} label={'Sushi'} />
+					<Reward value={'2'} label={'Ice Cream'} lastItem={true} />
+				</div>
+			</div>
+		</div>
+	);
 	return (
 		isOpen && (
 			<div className="fixed inset-0 flex justify-center items-center z-50 text-white">
@@ -26,7 +61,13 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 						</div>
 					</div>
 					<div className="flex flex-col text-lg">
-						<div>Beast</div>
+						<div className="h-[300px] overflow-y-auto">
+							<div className="grid grid-cols-2 gap-4">
+								<Beast />
+								<Beast />
+								<Beast />
+							</div>
+						</div>
 					</div>
 					<button
 						onClick={onClose}

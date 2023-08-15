@@ -26,13 +26,15 @@ pub contract BasicBeastsRaids {
         pub let defender: UInt64
         pub let winner: UInt64?
         pub let season: UInt32
+        pub let pointsAwarded: UInt32
 
-        init(id: UInt32, attacker: UInt64, defender: UInt64, winner: UInt64?) {
+        init(id: UInt32, attacker: UInt64, defender: UInt64, winner: UInt64?, pointsAwarded: UInt32) {
             self.id = id
             self.attacker = attacker
             self.defender = defender
             self.winner = winner
             self.season = BasicBeastsRaids.currentSeason
+            self.pointsAwarded = pointsAwarded
         }
     }
 
@@ -123,6 +125,7 @@ pub contract BasicBeastsRaids {
                                 // run the raid algo
                                 let raidResult = BasicBeastsRaids.pickRaidWinner()
                                 var winner: UInt64? = nil
+                                var pointCount: UInt32 = 0
                                 if(raidResult == 0) {
                                     // tie, the reward gets burned
                                     BasicBeastsNFTStakingRewards.removeReward(nftID: nftID, rewardItemID: attackerRewardID!)
@@ -133,6 +136,7 @@ pub contract BasicBeastsRaids {
                                     BasicBeastsNFTStakingRewards.moveReward(fromID: defenderNftID!, toID: nftID, rewardItemID: defenderRewardID!)
                                     // award additional point to attacker
                                     BasicBeastsRaids.awardPoint(nftID: nftID)
+                                    pointCount = pointCount + 1
                                 } else if (raidResult == 2) {
                                     // defender wins
                                     winner = defenderNftID
@@ -140,14 +144,16 @@ pub contract BasicBeastsRaids {
                                     BasicBeastsNFTStakingRewards.moveReward(fromID: nftID, toID: defenderNftID!, rewardItemID: attackerRewardID!)
                                     // award point to defender
                                     BasicBeastsRaids.awardPoint(nftID: defenderNftID!)
+                                    pointCount = pointCount + 1
                                 }
                                 // award point and exp to attacker for raiding
                                 BasicBeastsRaids.awardPoint(nftID: nftID)
+                                pointCount = pointCount + 1
                                 BasicBeastsRaids.awardExp(nftID: nftID)
                                 
                                 // create record
                                 BasicBeastsRaids.raidCount = BasicBeastsRaids.raidCount + 1
-                                BasicBeastsRaids.raidRecords[BasicBeastsRaids.raidCount] = RaidRecord(id: BasicBeastsRaids.raidCount, attacker: nftID, defender: defenderNftID!, winner: winner)
+                                BasicBeastsRaids.raidRecords[BasicBeastsRaids.raidCount] = RaidRecord(id: BasicBeastsRaids.raidCount, attacker: nftID, defender: defenderNftID!, winner: winner, pointsAwarded: pointCount)
 
                                 // add cooldown
                                 BasicBeastsRaids.updateCooldownTimestamps(address: attacker, nftID: nftID)
@@ -228,7 +234,7 @@ pub contract BasicBeastsRaids {
 
                     // create record
                     BasicBeastsRaids.raidCount = BasicBeastsRaids.raidCount + 1
-                    BasicBeastsRaids.raidRecords[BasicBeastsRaids.raidCount] = RaidRecord(id: BasicBeastsRaids.raidCount, attacker: attackerNftID, defender: defenderNftID, winner: winner)
+                    BasicBeastsRaids.raidRecords[BasicBeastsRaids.raidCount] = RaidRecord(id: BasicBeastsRaids.raidCount, attacker: attackerNftID, defender: defenderNftID, winner: winner, pointsAwarded: 1)
 
                     // add cooldown
                     BasicBeastsRaids.updateCooldownTimestamps(address: attacker, nftID: attackerNftID)

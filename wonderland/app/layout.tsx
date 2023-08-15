@@ -8,6 +8,7 @@ import '../flow-config.js';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthProvider from 'providers/AuthProvider';
+import UserProvider from 'providers/UserProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -26,12 +27,14 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={inter.className} suppressHydrationWarning={true}>
 				<AuthProvider>
-					<ToastContainer
-						position="bottom-right"
-						pauseOnFocusLoss={false}
-					/>
-					<Navbar />
-					<main>{children}</main>
+					<UserProvider>
+						<ToastContainer
+							position="bottom-right"
+							pauseOnFocusLoss={false}
+						/>
+						<Navbar />
+						<main>{children}</main>
+					</UserProvider>
 				</AuthProvider>
 			</body>
 		</html>

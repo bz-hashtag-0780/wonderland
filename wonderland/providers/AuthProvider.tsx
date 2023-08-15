@@ -4,7 +4,7 @@ import { createContext, useContext, ReactNode } from 'react';
 import useCurrentUser from '@/hooks/use-current-user.hook';
 
 interface State {
-	user: any; // replace 'any' with the actual User type
+	user: any;
 	loggedIn: any;
 	logIn: any;
 	logOut: any;

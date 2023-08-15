@@ -13,14 +13,16 @@ import { GET_ALL_REWARDS } from '@/flow/scripts/get_all_rewards.js';
 import { GET_REWARD_PER_SECOND } from '@/flow/scripts/get_reward_per_second.js';
 import { useAuth } from 'providers/AuthProvider';
 import RewardTableModal from '@/components/ui/RewardTableModal';
+import { useUser } from 'providers/UserProvider';
 
 const Tab = ({ children }: any) => <div>{children}</div>;
 
 export default function Dashboard() {
+	const { beasts, stakedBeasts, unstakedBeasts, fetchUserBeasts } = useUser();
 	const [activeTab, setActiveTab] = useState('Beasts');
-	const [stakedBeasts, setStakedBeasts] = useState([]);
-	const [unstakedBeasts, setUnstakedBeasts] = useState([]);
-	const [beasts, setBeasts] = useState([]);
+	// const [stakedBeasts, setStakedBeasts] = useState([]);
+	// const [unstakedBeasts, setUnstakedBeasts] = useState([]);
+	// const [beasts, setBeasts] = useState([]);
 	const [stakingStartDates, setStakingStartDates] = useState({});
 	const [adjustedStakingDates, setAdjustedStakingDates] = useState({});
 	const [rewards, setRewards] = useState<any>({});
@@ -64,26 +66,26 @@ export default function Dashboard() {
 		</button>
 	);
 
-	const fetchUserBeasts = async () => {
-		try {
-			let beastCollection = await query({
-				cadence: FETCH_BEASTS,
-				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
-			});
-			let stakingCollection = await query({
-				cadence: FETCH_STAKED_BEASTS,
-				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
-			});
-			let joinedCollection = stakingCollection.concat(beastCollection);
-			// console.log(joinedCollection);
-			setBeasts(joinedCollection);
-			setStakedBeasts(stakingCollection);
-			setUnstakedBeasts(beastCollection);
-			getStakingDates();
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	// const fetchUserBeasts = async () => {
+	// 	try {
+	// 		let beastCollection = await query({
+	// 			cadence: FETCH_BEASTS,
+	// 			args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
+	// 		});
+	// 		let stakingCollection = await query({
+	// 			cadence: FETCH_STAKED_BEASTS,
+	// 			args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
+	// 		});
+	// 		let joinedCollection = stakingCollection.concat(beastCollection);
+	// 		// console.log(joinedCollection);
+	// 		setBeasts(joinedCollection);
+	// 		setStakedBeasts(stakingCollection);
+	// 		setUnstakedBeasts(beastCollection);
+	// 		getStakingDates();
+	// 	} catch (err) {
+	// 		console.log(err);
+	// 	}
+	// };
 
 	const getStakingDates = async () => {
 		try {
@@ -152,11 +154,6 @@ export default function Dashboard() {
 	};
 
 	useEffect(() => {
-		if (user?.addr != null) {
-			fetchUserBeasts();
-		} else {
-			setBeasts([]);
-		}
 		getRewards();
 		getRewardPerSecond();
 		getTotalSupply();

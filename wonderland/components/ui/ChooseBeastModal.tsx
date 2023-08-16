@@ -14,7 +14,7 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 		getRewards();
 	}, [user?.addr]);
 
-	const Reward = ({ value, label, lastItem }: any) => (
+	const Reward = ({ value, label }: any) => (
 		<div
 			className={
 				'flex flex-col relative h-auto bg-opacity-10 bg-white rounded-xl w-full p-4 mt-0'
@@ -25,7 +25,7 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 		</div>
 	);
 
-	const Beast = ({ beast, value, label, lastItem }: any) => (
+	const Beast = ({ beast }: any) => (
 		<div className="flex flex-col gap-2 group">
 			<div className="flex gap-4">
 				<div className="w-full">
@@ -59,11 +59,7 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 				</div>
 				<div className="flex flex-col w-full w-2/3 gap-4">
 					<Reward value={beast.sushiCount} label={'Sushi'} />
-					<Reward
-						value={beast.iceCreamCount}
-						label={'Ice Cream'}
-						lastItem={true}
-					/>
+					<Reward value={beast.iceCreamCount} label={'Ice Cream'} />
 				</div>
 			</div>
 		</div>

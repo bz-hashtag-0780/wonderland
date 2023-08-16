@@ -44,8 +44,12 @@ pub contract BasicBeastsRaids {
             
             // check if player has the nft in the staking collection
             let playerAddress = self.owner!.address
-            let collectionRef = getAccount(playerAddress).getCapability(BasicBeastsNFTStaking.CollectionPublicPath)
-                                                            .borrow<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>()
+
+            var collectionRef:&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}?  = nil
+            
+            if let cap = getAccount(playerAddress).capabilities.get<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>(BasicBeastsNFTStaking.CollectionPublicPath) {
+                collectionRef = cap.borrow()
+            }
 
             if(collectionRef != nil) {
                 let IDs = collectionRef!.getIDs()
@@ -328,8 +332,11 @@ pub contract BasicBeastsRaids {
     }
 
     pub fun hasNFT(address: Address, nftID: UInt64): Bool {
-        let collectionRef = getAccount(address).getCapability(BasicBeastsNFTStaking.CollectionPublicPath)
-                                                            .borrow<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>()
+        var collectionRef:&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}?  = nil
+            
+        if let cap = getAccount(address).capabilities.get<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>(BasicBeastsNFTStaking.CollectionPublicPath) {
+            collectionRef = cap.borrow()
+        }
 
         if(collectionRef != nil) {
             let IDs = collectionRef!.getIDs()

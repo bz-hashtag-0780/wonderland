@@ -25,20 +25,21 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 		</div>
 	);
 
-	const Beast = ({ value, label, lastItem }: any) => (
+	const Beast = ({ beast, value, label, lastItem }: any) => (
 		<div className="flex flex-col gap-2 group">
 			<div className="flex gap-4">
 				<div className="w-full">
 					<div className="relative overflow-hidden w-full bg-transparent rounded-xl">
 						<div className="flex w-full absolute z-10 top-2">
 							<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
-								Dappy #3323
+								{beast.name} #{beast.serial}
 							</div>
 						</div>
 						<Image
 							alt={'something'}
 							src={
-								'https://basicbeasts.mypinata.cloud/ipfs/QmdWciz9H88fu2jT1Mfu3LszJuBjvjwbW1zh77135aEukE'
+								'https://basicbeasts.mypinata.cloud/ipfs/' +
+								beast.image
 							}
 							width={200}
 							height={200}
@@ -47,7 +48,7 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 						<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 							<button
 								onClick={() => {
-									console.log(transformedData);
+									console.log('transformedData');
 								}}
 								className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-md drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 							>
@@ -57,8 +58,12 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 					</div>
 				</div>
 				<div className="flex flex-col w-full w-2/3 gap-4">
-					<Reward value={'10'} label={'Sushi'} />
-					<Reward value={'2'} label={'Ice Cream'} lastItem={true} />
+					<Reward value={beast.sushiCount} label={'Sushi'} />
+					<Reward
+						value={beast.iceCreamCount}
+						label={'Ice Cream'}
+						lastItem={true}
+					/>
 				</div>
 			</div>
 		</div>
@@ -85,8 +90,8 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 				}
 
 				return {
-					nftID: beast.id,
-					nftSerial: beast.serialNumber,
+					id: beast.id,
+					serial: beast.serialNumber,
 					name: beast.beastTemplate.name,
 					image: beast.beastTemplate.image,
 					sushiCount,
@@ -98,7 +103,7 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 		return result;
 	}
 
-	const transformedData = transform(stakedBeasts, rewards);
+	const filteredBeasts = transform(stakedBeasts, rewards);
 
 	return (
 		isOpen && (
@@ -129,9 +134,9 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 					<div className="flex flex-col text-lg">
 						<div className="h-[300px] overflow-y-auto">
 							<div className="grid grid-cols-2 gap-4">
-								<Beast />
-								<Beast />
-								<Beast />
+								{filteredBeasts.map((beast: any) => (
+									<Beast key={beast.id} beast={beast} />
+								))}
 							</div>
 						</div>
 					</div>

@@ -24,6 +24,7 @@ import ActionHeader from '../ActionHeader';
 import RevealedModal from '@/components/ui/RevealedModal';
 import { filterAndGroupRewards } from '@/utils/filterAndGroupRewards';
 import { useUser } from 'providers/UserProvider';
+import { InView } from 'react-intersection-observer';
 
 const Rewards = ({ rewards }: any) => {
 	const [rerender, setRerender] = useState(false);
@@ -36,104 +37,109 @@ const Rewards = ({ rewards }: any) => {
 	// }, []);
 
 	const Reward = ({ item, count }: any) => (
-		<div className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden">
-			<div className="flex-auto flex flex-col w-full group relative">
-				<div className="rounded-xl overflow-hidden flex items-center relative">
-					{item.revealed && (
-						<div className="flex w-full absolute z-10 top-2">
-							<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
-								&nbsp;x{count}
+		<InView>
+			<div className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden">
+				<div className="flex-auto flex flex-col w-full group relative">
+					<div className="rounded-xl overflow-hidden flex items-center relative">
+						{item.revealed && (
+							<div className="flex w-full absolute z-10 top-2">
+								<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
+									&nbsp;x{count}
+								</div>
 							</div>
-						</div>
-					)}
+						)}
 
-					<div>
-						{item.revealed ? (
-							<Image
-								alt={
-									(
-										rewardTemplates.find(
-											(template: any) =>
-												template.rewardItemTemplateID ===
-													item.rewardItemTemplateID &&
-												template.type === 'BasicBeasts'
-										) || {
-											type: 'BasicBeasts',
-											rewardItemTemplateID: 1,
-											name: 'Unrevealed',
-											description: '',
-											image: '/images/basicBeasts/unknown.jpeg',
-										}
-									).name
-								}
-								src={
-									(
-										rewardTemplates.find(
-											(template: any) =>
-												template.rewardItemTemplateID ===
-													item.rewardItemTemplateID &&
-												template.type === 'BasicBeasts'
-										) || {
-											type: 'BasicBeasts',
-											rewardItemTemplateID: 1,
-											name: 'Unrevealed',
-											description: '',
-											image: '/images/basicBeasts/unknown.jpeg',
-										}
-									).image
-								}
-								width={400}
-								height={400}
-							/>
-						) : (
-							<Image
-								alt={'Unrevealed'}
-								src={unknown.src}
-								width={400}
-								height={400}
-							/>
+						<div>
+							{item.revealed ? (
+								<Image
+									alt={
+										(
+											rewardTemplates.find(
+												(template: any) =>
+													template.rewardItemTemplateID ===
+														item.rewardItemTemplateID &&
+													template.type ===
+														'BasicBeasts'
+											) || {
+												type: 'BasicBeasts',
+												rewardItemTemplateID: 1,
+												name: 'Unrevealed',
+												description: '',
+												image: '/images/basicBeasts/unknown.jpeg',
+											}
+										).name
+									}
+									src={
+										(
+											rewardTemplates.find(
+												(template: any) =>
+													template.rewardItemTemplateID ===
+														item.rewardItemTemplateID &&
+													template.type ===
+														'BasicBeasts'
+											) || {
+												type: 'BasicBeasts',
+												rewardItemTemplateID: 1,
+												name: 'Unrevealed',
+												description: '',
+												image: '/images/basicBeasts/unknown.jpeg',
+											}
+										).image
+									}
+									width={400}
+									height={400}
+								/>
+							) : (
+								<Image
+									alt={'Unrevealed'}
+									src={unknown.src}
+									width={400}
+									height={400}
+								/>
+							)}
+						</div>
+						{!item.revealed && (
+							<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+								<button
+									onClick={() => reveal(item.nftID, item.id)}
+									className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
+								>
+									Reveal
+								</button>
+							</div>
 						)}
 					</div>
-					{!item.revealed && (
-						<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-							<button
-								onClick={() => reveal(item.nftID, item.id)}
-								className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
-							>
-								Reveal
-							</button>
-						</div>
-					)}
 				</div>
-			</div>
-			<div className="flex flex-initial flex-col p-2">
-				<div className="truncate mt-1">
-					<div className="flex items-center justify-between gap-x-2 flex-wrap h-7 overflow-hidden">
-						<span className="flex items-center gap-1 text-xs text-white-2 min-w-0 min-h-[28px]">
-							Reward
-						</span>
-						<p className="text-xs px-2 rounded-lg leading-snug text-white bg-white bg-opacity-30 border border-transparent">
-							{item.revealed
-								? (
-										rewardTemplates.find(
-											(template: any) =>
-												template.rewardItemTemplateID ===
-													item.rewardItemTemplateID &&
-												template.type === 'BasicBeasts'
-										) || {
-											type: 'BasicBeasts',
-											rewardItemTemplateID: 1,
-											name: 'Unrevealed',
-											description: '',
-											image: '/images/basicBeasts/unknown.jpeg',
-										}
-								  ).name
-								: 'Unrevealed'}
-						</p>
+				<div className="flex flex-initial flex-col p-2">
+					<div className="truncate mt-1">
+						<div className="flex items-center justify-between gap-x-2 flex-wrap h-7 overflow-hidden">
+							<span className="flex items-center gap-1 text-xs text-white-2 min-w-0 min-h-[28px]">
+								Reward
+							</span>
+							<p className="text-xs px-2 rounded-lg leading-snug text-white bg-white bg-opacity-30 border border-transparent">
+								{item.revealed
+									? (
+											rewardTemplates.find(
+												(template: any) =>
+													template.rewardItemTemplateID ===
+														item.rewardItemTemplateID &&
+													template.type ===
+														'BasicBeasts'
+											) || {
+												type: 'BasicBeasts',
+												rewardItemTemplateID: 1,
+												name: 'Unrevealed',
+												description: '',
+												image: '/images/basicBeasts/unknown.jpeg',
+											}
+									  ).name
+									: 'Unrevealed'}
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</InView>
 	);
 
 	const reveal = async (nftID: number, rewardItemID: number) => {

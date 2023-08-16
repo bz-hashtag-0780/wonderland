@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthProvider from 'providers/AuthProvider';
 import UserProvider from 'providers/UserProvider';
+import { SessionProvider } from 'next-auth/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,12 +29,14 @@ export default function RootLayout({
 			<body className={inter.className} suppressHydrationWarning={true}>
 				<AuthProvider>
 					<UserProvider>
-						<ToastContainer
-							position="bottom-right"
-							pauseOnFocusLoss={false}
-						/>
-						<Navbar />
-						<main>{children}</main>
+						<SessionProvider>
+							<ToastContainer
+								position="bottom-right"
+								pauseOnFocusLoss={false}
+							/>
+							<Navbar />
+							<main>{children}</main>
+						</SessionProvider>
 					</UserProvider>
 				</AuthProvider>
 			</body>

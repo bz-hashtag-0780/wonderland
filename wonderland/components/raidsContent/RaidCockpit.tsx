@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
+	const { data: session }: any = useSession();
 	const Info = ({ value, label, lastItem }: any) => (
 		<div
 			className={`flex flex-col relative h-auto bg-opacity-10 bg-white rounded-xl w-full p-4 mt-0 ${
@@ -89,9 +91,16 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 						<div className="mb-4 uppercase">
 							wallet season metrics
 						</div>
-						<div className="flex w-full mb-4">
+						<div
+							onClick={() => console.log(session.user)}
+							className="flex w-full mb-4"
+						>
 							<Info
-								value={'verywerrwerewrewrerwr'}
+								value={
+									session && session.user
+										? session.user.name
+										: ''
+								}
 								label={'Discord'}
 							/>
 							<Info value={'200'} label={'Total W - L'} />

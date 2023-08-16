@@ -1,4 +1,7 @@
+import { useSession, signIn, signOut } from 'next-auth/react';
+
 const RaidProfileModal = ({ isOpen, onClose, setOpenChooseBeast }: any) => {
+	const { data: session } = useSession();
 	return (
 		isOpen && (
 			<div className="fixed inset-0 flex justify-center items-center z-50 text-white">
@@ -15,10 +18,27 @@ const RaidProfileModal = ({ isOpen, onClose, setOpenChooseBeast }: any) => {
 					</div>
 					<div className="flex flex-col text-lg">
 						<div className="flex justify-between items-center mb-4">
-							<div className="flex w-full">Discord: </div>
-							<button className="flex w-full justify-center border border-solid rounded-md py-1 px-4 hover:bg-white hover:text-black">
-								Disconnect Discord
-							</button>
+							<div className="flex w-full">
+								Discord:{' '}
+								{session && session.user
+									? session.user.name
+									: ''}
+							</div>
+							{session && session.user ? (
+								<button
+									onClick={() => signOut()}
+									className="flex w-full justify-center border border-solid rounded-md py-1 px-4 hover:bg-white hover:text-black"
+								>
+									Disconnect Discord
+								</button>
+							) : (
+								<button
+									onClick={() => signIn('discord')}
+									className="flex w-full justify-center border border-solid rounded-md py-1 px-4 hover:bg-white hover:text-black"
+								>
+									Connect Discord
+								</button>
+							)}
 						</div>
 						<div className="flex justify-between items-center">
 							<div className="flex w-full">Beast: </div>

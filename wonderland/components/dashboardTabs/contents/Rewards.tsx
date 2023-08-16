@@ -31,10 +31,6 @@ const Rewards = ({ rewards }: any) => {
 	const [currentRevealed, setCurrentRevealed] = useState();
 	const { getRewards } = useUser();
 
-	// useEffect(() => {
-	// 	console.log('extracted rewards: ', rewards);
-	// }, []);
-
 	const Reward = ({ item, count }: any) => (
 		<InView>
 			<div className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden">

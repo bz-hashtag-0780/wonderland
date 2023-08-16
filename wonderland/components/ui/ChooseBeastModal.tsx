@@ -1,6 +1,19 @@
 import Image from 'next/image';
+import { useAuth } from 'providers/AuthProvider';
+import { useUser } from 'providers/UserProvider';
+import { useEffect } from 'react';
 
 const ChooseBeastModal = ({ isOpen, onClose }: any) => {
+	const { stakedBeasts, fetchUserBeasts, rewards, getRewards } = useUser();
+	const { user } = useAuth();
+
+	useEffect(() => {
+		if (user?.addr != null) {
+			fetchUserBeasts();
+		}
+		getRewards();
+	}, [user?.addr]);
+
 	const Reward = ({ value, label, lastItem }: any) => (
 		<div
 			className={
@@ -11,6 +24,7 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 			<div className="flex text-2xl font-bold">{value}</div>
 		</div>
 	);
+
 	const Beast = ({ value, label, lastItem }: any) => (
 		<div className="flex flex-col gap-2 group">
 			<div className="flex gap-4">
@@ -32,7 +46,9 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 						/>
 						<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 							<button
-								onClick={() => console.log('hello')}
+								onClick={() => {
+									console.log(transformedData);
+								}}
 								className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-md drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 							>
 								Select
@@ -47,6 +63,43 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 			</div>
 		</div>
 	);
+
+	function transform(beasts: any[], rewards: any) {
+		const result = beasts
+			.map((beast) => {
+				const beastRewards = rewards[beast.id];
+
+				let sushiCount = 0;
+				let iceCreamCount = 0;
+
+				if (beastRewards) {
+					for (const key in beastRewards) {
+						const reward = beastRewards[key];
+						if (reward.revealed) {
+							if (reward.rewardItemTemplateID === '1')
+								sushiCount++;
+							if (reward.rewardItemTemplateID === '2')
+								iceCreamCount++;
+						}
+					}
+				}
+
+				return {
+					nftID: beast.id,
+					nftSerial: beast.serialNumber,
+					name: beast.beastTemplate.name,
+					image: beast.beastTemplate.image,
+					sushiCount,
+					iceCreamCount,
+				};
+			})
+			.filter((item) => item.sushiCount > 0 || item.iceCreamCount > 0);
+
+		return result;
+	}
+
+	const transformedData = transform(stakedBeasts, rewards);
+
 	return (
 		isOpen && (
 			<div className="fixed inset-0 flex justify-center items-center z-50 text-white">

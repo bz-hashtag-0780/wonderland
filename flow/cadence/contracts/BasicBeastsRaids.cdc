@@ -89,13 +89,13 @@ pub contract BasicBeastsRaids {
                 // check cooldown
                 if BasicBeastsRaids.canAttack(attacker: attacker) {
                     // fetch attacker's nft
-                    if let nftID = BasicBeastsRaids.playerOptIns[attacker] {
+                    if let attackerNftID = BasicBeastsRaids.playerOptIns[attacker] {
                         // pick a reward from the attacker
                         var attackerRewardID: UInt32? = nil
                         
                         // check rewards
-                        let hasRewardOne = BasicBeastsNFTStakingRewards.hasRewardItemOne(nftID: nftID)
-                        let hasRewardTwo = BasicBeastsNFTStakingRewards.hasRewardItemTwo(nftID: nftID)
+                        let hasRewardOne = BasicBeastsNFTStakingRewards.hasRewardItemOne(nftID: attackerNftID)
+                        let hasRewardTwo = BasicBeastsNFTStakingRewards.hasRewardItemTwo(nftID: attackerNftID)
 
                         // pick reward
                         if hasRewardOne != nil || hasRewardTwo != nil {
@@ -105,66 +105,72 @@ pub contract BasicBeastsRaids {
 
                         if(attackerRewardID != nil) {
                             // find a random defender
-                            var defenderFound = false
-                            var randomDefender: Address? = nil
+                            var defenderAddress: Address? = nil
                             var defenderRewardID: UInt32? = nil
                             var defenderNftID: UInt64? = nil
 
-                            while !defenderFound {
-                                randomDefender = BasicBeastsRaids.pickRandomPlayer()
-                                defenderNftID = BasicBeastsRaids.playerOptIns[randomDefender!]
-                                
-                                if(defenderNftID != nil) {
-                                    // make sure defender is not attacker
-                                    if(randomDefender! != attacker) {
-                                        // check if defender has valid matching reward
-                                        if(hasRewardOne == attackerRewardID) {
-                                            defenderRewardID = BasicBeastsNFTStakingRewards.hasRewardItemOne(nftID: defenderNftID!)
-                                            defenderFound = true
-                                        } else if (hasRewardTwo == attackerRewardID) {
-                                            defenderRewardID = BasicBeastsNFTStakingRewards.hasRewardItemTwo(nftID: defenderNftID!)
-                                            defenderFound = true
+                            let allPlayers = BasicBeastsRaids.playerOptIns.keys
+                            let shuffledPlayers = BasicBeastsRaids.shuffle(addresses: allPlayers)
+
+                            for potentialDefender in shuffledPlayers {
+                                if potentialDefender != attacker {
+                                    defenderNftID = BasicBeastsRaids.playerOptIns[potentialDefender]
+
+                                    if defenderNftID != nil {
+                                        // check rewards and break if found
+                                        let defenderRewardOne = BasicBeastsNFTStakingRewards.hasRewardItemOne(nftID: defenderNftID!)
+                                        let defenderRewardTwo = BasicBeastsNFTStakingRewards.hasRewardItemTwo(nftID: defenderNftID!)
+
+                                        if(hasRewardOne == attackerRewardID && defenderRewardOne != nil) {
+                                            defenderRewardID = defenderRewardOne
+                                            defenderAddress = potentialDefender
+                                            break
+                                        } else if (hasRewardTwo == attackerRewardID && defenderRewardTwo != nil) {
+                                            defenderRewardID = defenderRewardTwo
+                                            defenderAddress = potentialDefender
+                                            break
                                         }
                                     }
+
                                 }
                             }
 
-                            if(defenderFound && defenderRewardID != nil) {
+                            if(defenderRewardID != nil) {
                                 // run the raid algo
                                 let raidResult = BasicBeastsRaids.pickRaidWinner()
                                 var winner: UInt64? = nil
                                 var pointCount: UInt32 = 0
                                 if(raidResult == 0) {
                                     // tie, the reward gets burned
-                                    BasicBeastsNFTStakingRewards.removeReward(nftID: nftID, rewardItemID: attackerRewardID!)
+                                    BasicBeastsNFTStakingRewards.removeReward(nftID: attackerNftID, rewardItemID: attackerRewardID!)
                                 } else if (raidResult == 1) {
                                     // attacker wins
-                                    winner = nftID
+                                    winner = attackerNftID
                                     // award reward to attacker
-                                    BasicBeastsNFTStakingRewards.moveReward(fromID: defenderNftID!, toID: nftID, rewardItemID: defenderRewardID!)
+                                    BasicBeastsNFTStakingRewards.moveReward(fromID: defenderNftID!, toID: attackerNftID, rewardItemID: defenderRewardID!)
                                     // award additional point to attacker
-                                    BasicBeastsRaids.awardPoint(nftID: nftID)
+                                    BasicBeastsRaids.awardPoint(nftID: attackerNftID)
                                     pointCount = pointCount + 1
                                 } else if (raidResult == 2) {
                                     // defender wins
                                     winner = defenderNftID
                                     // award reward to defender
-                                    BasicBeastsNFTStakingRewards.moveReward(fromID: nftID, toID: defenderNftID!, rewardItemID: attackerRewardID!)
+                                    BasicBeastsNFTStakingRewards.moveReward(fromID: attackerNftID, toID: defenderNftID!, rewardItemID: attackerRewardID!)
                                     // award point to defender
                                     BasicBeastsRaids.awardPoint(nftID: defenderNftID!)
                                     pointCount = pointCount + 1
                                 }
                                 // award point and exp to attacker for raiding
-                                BasicBeastsRaids.awardPoint(nftID: nftID)
+                                BasicBeastsRaids.awardPoint(nftID: attackerNftID)
                                 pointCount = pointCount + 1
-                                BasicBeastsRaids.awardExp(nftID: nftID)
+                                BasicBeastsRaids.awardExp(nftID: attackerNftID)
                                 
                                 // create record
                                 BasicBeastsRaids.raidCount = BasicBeastsRaids.raidCount + 1
                                 BasicBeastsRaids.raidRecords[BasicBeastsRaids.raidCount] = RaidRecord(id: BasicBeastsRaids.raidCount, attacker: nftID, defender: defenderNftID!, winner: winner, pointsAwarded: pointCount)
 
                                 // add cooldown
-                                BasicBeastsRaids.updateCooldownTimestamps(address: attacker, nftID: nftID)
+                                BasicBeastsRaids.updateCooldownTimestamps(address: attacker, nftID: attackerNftID)
 
                                 // start lock timer
                                 BasicBeastsRaids.playerLockStartDates[attacker] = getCurrentBlock().timestamp
@@ -335,6 +341,16 @@ pub contract BasicBeastsRaids {
 
         // Assign the updated inner dictionary back to the main dictionary
         self.attackerCooldownTimestamps[address] = innerDict
+    }
+
+    pub fun shuffle(addresses: [Address]): [Address] {
+        var shuffled: [Address] = []
+        var input = addresses
+        while input.length > 0 {
+            let randomIndex = unsafeRandom() % UInt64(input.length)
+            shuffled.append(input.remove(at: randomIndex))
+        }
+        return shuffled
     }
 
     pub fun hasNFT(address: Address, nftID: UInt64): Bool {

@@ -18,7 +18,6 @@ export default function useRewards(user: any) {
 			let rewards = await query({
 				cadence: GET_ALL_REWARDS,
 			});
-			// console.log('rewards: ', rewards);
 			setRewards(rewards);
 		} catch (err) {
 			console.log(err);

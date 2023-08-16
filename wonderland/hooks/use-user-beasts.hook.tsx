@@ -51,8 +51,6 @@ export default function useUserBeasts(user: any) {
 			});
 			setAdjustedStakingDates(adjustedStakingDates);
 			setStakingStartDates(stakingStartDates);
-
-			console.log(adjustedStakingDates);
 		} catch (err) {
 			console.log(err);
 		}

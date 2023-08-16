@@ -91,9 +91,9 @@ pub contract BasicBeastsRaids {
         // No pre-condition to allow running multiple random raids in a single transaction
         pub fun randomRaid(attacker: Address) {
             // check if attacker is valid
-            if(BasicBeastsRaids.playerOptIns.keys.contains(attacker)) {
+            if(BasicBeastsRaids.playerOptIns.keys.contains(attacker)) { //todo: tested
                 // check cooldown
-                if BasicBeastsRaids.canAttack(attacker: attacker) {
+                if BasicBeastsRaids.canAttack(attacker: attacker) { //todo: tested
                     // fetch attacker's nft
                     if let attackerNftID = BasicBeastsRaids.playerOptIns[attacker] {
                         // pick a reward from the attacker
@@ -104,9 +104,13 @@ pub contract BasicBeastsRaids {
                         let hasRewardTwo = BasicBeastsNFTStakingRewards.hasRewardItemTwo(nftID: attackerNftID)
 
                         // pick reward
-                        if hasRewardOne != nil || hasRewardTwo != nil {
+                        if hasRewardOne != nil && hasRewardTwo != nil {
                             let randomReward = BasicBeastsRaids.chooseRewardOneOrTwo()
-                            attackerRewardID = (randomReward == 2 && hasRewardTwo != nil) ? hasRewardTwo : hasRewardOne
+                            attackerRewardID = (randomReward == 2) ? hasRewardTwo : hasRewardOne
+                        } else if hasRewardTwo != nil {
+                            attackerRewardID = hasRewardTwo
+                        } else {
+                            attackerRewardID = hasRewardOne
                         }
 
                         if(attackerRewardID != nil) {

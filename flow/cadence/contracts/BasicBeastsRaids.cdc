@@ -5,6 +5,7 @@ pub contract BasicBeastsRaids {
 
     pub event ContractInitialized()
     pub event PlayerOptIn(player: Address, nftID: UInt64, discordID: String)
+    pub event RaidEvent(winner: UInt64?, attackerNFT: UInt64, defenderNFT: UInt64, attackerAddress: Address)
     pub event NewSeasonStarted(newCurrentSeason: UInt32)
 
     pub let GameMasterStoragePath: StoragePath
@@ -85,7 +86,7 @@ pub contract BasicBeastsRaids {
         pub fun randomRaid(attacker: Address) {
             // check if attacker is valid
             if(BasicBeastsRaids.playerOptIns.keys.contains(attacker)) {
-                //check cooldown
+                // check cooldown
                 if BasicBeastsRaids.canAttack(attacker: attacker) {
                     // fetch attacker's nft
                     if let nftID = BasicBeastsRaids.playerOptIns[attacker] {
@@ -169,10 +170,15 @@ pub contract BasicBeastsRaids {
                                 BasicBeastsRaids.playerLockStartDates[attacker] = getCurrentBlock().timestamp
 
                             }
+                            // no raid, no defender with valid rewards were found
                         }
+                        // no raid, nft has no valid rewards
                     }
+                    // no raid, nft could not be found
                 }
+                // no raid, player cannot attack
             }
+            // no raid, player has no opted in 
         }
 
         // no points nor exp is awarded from this type of raid

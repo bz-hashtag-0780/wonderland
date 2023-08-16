@@ -349,34 +349,40 @@ pub contract BasicBeastsRaids {
     }
 
     pub fun canAttack(attacker: Address): Bool {
+        let SECONDS_IN_A_DAY: UFix64 = 86400.00
+        let MAX_ATTACKS_IN_DAY: Int = 9
+        
+        // Check if the attacker has opted-in
         if let nftID = self.playerOptIns[attacker] {
-
+            // Check if the attacker has cooldowns
             if let nftCooldowns = self.attackerCooldownTimestamps[attacker] {
-
                 let currentTimestamp = getCurrentBlock().timestamp
 
+                // Check for the specific NFT's cooldowns
                 if let previousTimestamps = nftCooldowns[nftID] {
-                    // Check if the attacker has attacked more than 9 times in the last 24 hours
-                    var attacksOnCooldown = 0
+                    // Count recent attacks
+                    var recentAttacksCount = 0
                     // If the difference between the current timestamp and the stored timestamp is less than 24 hours,
                     // increment the attacksOnCooldown counter
                     for timestamp in previousTimestamps {
-                        if currentTimestamp - timestamp < 86400.00 {
-                            attacksOnCooldown = attacksOnCooldown + 1
+                        if currentTimestamp - timestamp < SECONDS_IN_A_DAY {
+                            recentAttacksCount = recentAttacksCount + 1
                         }
                     }
-                    if attacksOnCooldown >= 9 {
-                        return false
-                    }
+
+                    // Return whether the attacker can attack based on recent attacks count
+                    return recentAttacksCount < MAX_ATTACKS_IN_DAY
                 }
-
-            } else {
-                return true // no cooldowns means it can attack
+                // If there's no specific record for the NFT's cooldowns, then it can attack
+                return true
             }
-        } 
-
-        return false // no opt in, cannot attack
+            // If the attacker has no cooldowns, then it can attack
+            return true
+        }
+        // If there's no opt-in, then it cannot attack
+        return false
     }
+
 
     pub fun nextAttack(attacker: Address): UFix64? {
         if let nftID = self.playerOptIns[attacker] {

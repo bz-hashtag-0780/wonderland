@@ -27,7 +27,6 @@ import { useUser } from 'providers/UserProvider';
 import { InView } from 'react-intersection-observer';
 
 const Rewards = ({ rewards }: any) => {
-	const [rerender, setRerender] = useState(false);
 	const [revealed, setRevealed] = useState(false);
 	const [currentRevealed, setCurrentRevealed] = useState();
 	const { getRewards } = useUser();
@@ -175,7 +174,6 @@ const Rewards = ({ rewards }: any) => {
 					});
 				});
 			getRewards();
-			setRerender(!rerender);
 			setCurrentRevealed(
 				rewards.filter((reward: any) => reward.id == rewardItemID)
 			);
@@ -193,7 +191,7 @@ const Rewards = ({ rewards }: any) => {
 
 	const revealAll = async () => {
 		const id = toast.loading('Initializing...');
-		const maxQuantity = 650; //tested
+		const maxQuantity = 1000; //tested
 		const unrevealedRewards = rewards.filter(
 			(reward: any) => !reward.revealed
 		);
@@ -205,7 +203,7 @@ const Rewards = ({ rewards }: any) => {
 			String(reward.id),
 		]);
 
-		console.log('toReveal: ', toReveal);
+		console.log('toReveal: ', toReveal.length);
 
 		try {
 			const res = await send([
@@ -234,7 +232,6 @@ const Rewards = ({ rewards }: any) => {
 					});
 				});
 			getRewards();
-			setRerender(!rerender);
 			setCurrentRevealed(toReveal);
 			setRevealed(true);
 		} catch (err) {

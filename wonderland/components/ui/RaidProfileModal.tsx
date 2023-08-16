@@ -19,10 +19,12 @@ const RaidProfileModal = ({ isOpen, onClose, setOpenChooseBeast }: any) => {
 					<div className="flex flex-col text-lg">
 						<div className="flex justify-between items-center mb-4">
 							<div className="flex w-full">
-								Discord:{' '}
-								{session && session.user
-									? session.user.name
-									: ''}
+								Discord:&nbsp;
+								<span className="font-bold">
+									{session && session.user
+										? session.user.name
+										: ''}
+								</span>
 							</div>
 							{session && session.user ? (
 								<button

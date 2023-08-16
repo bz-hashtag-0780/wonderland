@@ -4,7 +4,7 @@ import BasicBeastsNFTStakingRewards from "./BasicBeastsNFTStakingRewards.cdc"
 pub contract BasicBeastsRaids {
 
     pub event ContractInitialized()
-    pub event PlayerOptIn(player: Address, nftID: UInt64)
+    pub event PlayerOptIn(player: Address, nftID: UInt64, discordID: String)
     pub event NewSeasonStarted(newCurrentSeason: UInt32)
 
     pub let GameMasterStoragePath: StoragePath
@@ -15,8 +15,9 @@ pub contract BasicBeastsRaids {
     pub var raidsPaused: Bool
     access(self) var raidRecords: {UInt32: RaidRecord}
     access(self) var playerOptIns: {Address: UInt64}
+    access(self) var addressToDiscord: {Address: String}
     access(self) var playerLockStartDates: {Address: UFix64}
-    access(self) var points: {UInt32: {UInt64: UInt32}}
+    access(self) var points: {UInt32: {UInt64: UInt32}} // {season: {nftID: points}}
     access(self) var exp: {UInt64: UInt32}
     access(self) var attackerCooldownTimestamps: {Address: {UInt64: [UFix64]}}
 
@@ -39,7 +40,7 @@ pub contract BasicBeastsRaids {
     }
 
     pub resource Player {
-        pub fun optIn(nftID: UInt64) {
+        pub fun optIn(nftID: UInt64, discordID: String) {
             
             // check if player has the nft in the staking collection
             let playerAddress = self.owner!.address
@@ -55,7 +56,9 @@ pub contract BasicBeastsRaids {
             if(BasicBeastsNFTStakingRewards.hasRewardItemOne(nftID: nftID) != nil || BasicBeastsNFTStakingRewards.hasRewardItemTwo(nftID: nftID) != nil) {
                 BasicBeastsRaids.playerOptIns[playerAddress] = nftID
 
-                emit PlayerOptIn(player: playerAddress, nftID: nftID)
+                BasicBeastsRaids.addressToDiscord[playerAddress] = discordID
+
+                emit PlayerOptIn(player: playerAddress, nftID: nftID, discordID: discordID)
             }
         }
 
@@ -283,15 +286,16 @@ pub contract BasicBeastsRaids {
     }
 
     access(contract) fun awardPoint(nftID: UInt64) {
-        var points = BasicBeastsRaids.points[BasicBeastsRaids.currentSeason]
-        if(points != nil) {
-            var currentSeasonPoints = points!
-            if(currentSeasonPoints[nftID] != nil) {
-                currentSeasonPoints[nftID] = currentSeasonPoints[nftID]! + 1
-            } else {
-                currentSeasonPoints[nftID] = 1
-            }
+        var currentSeasonPoints = BasicBeastsRaids.points[BasicBeastsRaids.currentSeason] ?? {}
+
+        if(currentSeasonPoints[nftID] != nil) {
+            currentSeasonPoints[nftID] = currentSeasonPoints[nftID]! + 1
+        } else {
+            currentSeasonPoints[nftID] = 1
         }
+
+        // Save the updated currentSeasonPoints back to the points dictionary
+        BasicBeastsRaids.points[BasicBeastsRaids.currentSeason] = currentSeasonPoints
     }
 
     access(contract) fun awardExp(nftID: UInt64) {
@@ -303,24 +307,24 @@ pub contract BasicBeastsRaids {
     }
 
     access(contract) fun updateCooldownTimestamps(address: Address, nftID: UInt64) {
-    // Fetch the current timestamp
-    let timestamp = getCurrentBlock().timestamp
+        // Fetch the current timestamp
+        let timestamp = getCurrentBlock().timestamp
 
-    // Get or create the dictionary for the address
-    var innerDict = self.attackerCooldownTimestamps[address] ?? {}
+        // Get or create the dictionary for the address
+        var innerDict = self.attackerCooldownTimestamps[address] ?? {}
 
-    // Check if the nftID exists for the given address and update timestamps
-    var timestamps = innerDict[nftID] ?? []
-    while timestamps.length >= 9 {
-        timestamps.remove(at: 0)
-    }
-    timestamps.append(timestamp)
-    
-    // Update the inner dictionary
-    innerDict[nftID] = timestamps
+        // Check if the nftID exists for the given address and update timestamps
+        var timestamps = innerDict[nftID] ?? []
+        while timestamps.length >= 9 {
+            timestamps.remove(at: 0)
+        }
+        timestamps.append(timestamp)
+        
+        // Update the inner dictionary
+        innerDict[nftID] = timestamps
 
-    // Assign the updated inner dictionary back to the main dictionary
-    self.attackerCooldownTimestamps[address] = innerDict
+        // Assign the updated inner dictionary back to the main dictionary
+        self.attackerCooldownTimestamps[address] = innerDict
     }
 
     pub fun hasNFT(address: Address, nftID: UInt64): Bool {
@@ -434,6 +438,14 @@ pub contract BasicBeastsRaids {
         return self.playerOptIns[address]
     }
 
+    pub fun getAddressToDiscords(): {Address: String} {
+        return self.addressToDiscord
+    }
+
+    pub fun getAddressToDiscord(address: Address): String? {
+        return self.addressToDiscord[address]
+    }
+
     pub fun getPlayerLockStartDates(): {Address: UFix64} {
         return self.playerLockStartDates
     }
@@ -456,6 +468,7 @@ pub contract BasicBeastsRaids {
         self.raidsPaused = false
         self.raidRecords = {}
         self.playerOptIns = {}
+        self.addressToDiscord = {}
         self.playerLockStartDates = {}
         self.points = {}
         self.exp = {}

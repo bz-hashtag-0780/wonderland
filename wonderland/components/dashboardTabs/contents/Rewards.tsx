@@ -23,11 +23,13 @@ import { REVEAL_MULTIPLE } from '@/flow/transactions/reveal_multiple';
 import ActionHeader from '../ActionHeader';
 import RevealedModal from '@/components/ui/RevealedModal';
 import { filterAndGroupRewards } from '@/utils/filterAndGroupRewards';
+import { useUser } from 'providers/UserProvider';
 
-const Rewards = ({ rewards, getRewards }: any) => {
+const Rewards = ({ rewards }: any) => {
 	const [rerender, setRerender] = useState(false);
 	const [revealed, setRevealed] = useState(false);
 	const [currentRevealed, setCurrentRevealed] = useState();
+	const { getRewards } = useUser();
 
 	// useEffect(() => {
 	// 	console.log('extracted rewards: ', rewards);

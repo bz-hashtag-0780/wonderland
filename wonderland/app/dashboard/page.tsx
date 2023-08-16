@@ -18,15 +18,24 @@ import { useUser } from 'providers/UserProvider';
 const Tab = ({ children }: any) => <div>{children}</div>;
 
 export default function Dashboard() {
-	const { beasts, stakedBeasts, unstakedBeasts, fetchUserBeasts } = useUser();
+	const {
+		beasts,
+		stakedBeasts,
+		unstakedBeasts,
+		fetchUserBeasts,
+		stakingStartDates,
+		adjustedStakingDates,
+		rewards,
+		rewardPerSecond,
+	} = useUser();
 	const [activeTab, setActiveTab] = useState('Beasts');
 	// const [stakedBeasts, setStakedBeasts] = useState([]);
 	// const [unstakedBeasts, setUnstakedBeasts] = useState([]);
-	// const [beasts, setBeasts] = useState([]);
-	const [stakingStartDates, setStakingStartDates] = useState({});
-	const [adjustedStakingDates, setAdjustedStakingDates] = useState({});
-	const [rewards, setRewards] = useState<any>({});
-	const [rewardPerSecond, setRewardPerSecond] = useState(604800.0);
+	// // const [beasts, setBeasts] = useState([]);
+	// const [stakingStartDates, setStakingStartDates] = useState({});
+	// const [adjustedStakingDates, setAdjustedStakingDates] = useState({});
+	// const [rewards, setRewards] = useState<any>({});
+	// const [rewardPerSecond, setRewardPerSecond] = useState(604800.0);
 	const { user, loggedIn, logIn } = useAuth();
 	const [isModalOpen, setModalOpen] = useState(false);
 
@@ -65,99 +74,6 @@ export default function Dashboard() {
 			</div>
 		</button>
 	);
-
-	// const fetchUserBeasts = async () => {
-	// 	try {
-	// 		let beastCollection = await query({
-	// 			cadence: FETCH_BEASTS,
-	// 			args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
-	// 		});
-	// 		let stakingCollection = await query({
-	// 			cadence: FETCH_STAKED_BEASTS,
-	// 			args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
-	// 		});
-	// 		let joinedCollection = stakingCollection.concat(beastCollection);
-	// 		// console.log(joinedCollection);
-	// 		setBeasts(joinedCollection);
-	// 		setStakedBeasts(stakingCollection);
-	// 		setUnstakedBeasts(beastCollection);
-	// 		getStakingDates();
-	// 	} catch (err) {
-	// 		console.log(err);
-	// 	}
-	// };
-
-	const getStakingDates = async () => {
-		try {
-			let adjustedStakingDates = await query({
-				cadence: GET_ALL_ADJUSTED_STAKING_DATES,
-			});
-			let stakingStartDates = await query({
-				cadence: GET_ALL_STAKING_START_DATES,
-			});
-			setAdjustedStakingDates(adjustedStakingDates);
-			setStakingStartDates(stakingStartDates);
-			// console.log(adjustedStakingDates);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const getRewards = async () => {
-		try {
-			let rewards = await query({
-				cadence: GET_ALL_REWARDS,
-			});
-			// console.log('rewards: ', rewards);
-			setRewards(rewards);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const getRewardPerSecond = async () => {
-		try {
-			let res = await query({
-				cadence: GET_REWARD_PER_SECOND,
-			});
-			setRewardPerSecond(res);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const getTotalSupply = async () => {
-		try {
-			let totalSupply = await query({
-				cadence: `
-				import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
-				
-				pub fun main(): UInt32 {
-					return BasicBeastsNFTStakingRewards.totalSupply
-				}
-				`,
-			});
-			let burned = await query({
-				cadence: `
-				import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
-				
-				pub fun main(): UInt32 {
-					return BasicBeastsNFTStakingRewards.burned
-				}
-				`,
-			});
-			console.log('totalSupply', totalSupply);
-			console.log('burned', burned);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	useEffect(() => {
-		getRewards();
-		getRewardPerSecond();
-		getTotalSupply();
-	}, [user]);
 
 	function extractRewards(beasts: any[], rewards: any) {
 		return beasts.flatMap((beast: any) => {
@@ -230,7 +146,6 @@ export default function Dashboard() {
 											beasts,
 											rewards
 										)}
-										getRewards={getRewards}
 									/>
 								)}
 								{/* {activeTab === 'Random' && (

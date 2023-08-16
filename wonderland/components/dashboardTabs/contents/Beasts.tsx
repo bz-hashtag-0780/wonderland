@@ -23,34 +23,21 @@ import { toast } from 'react-toastify';
 import { toastStatus } from '@/utils/toastStatus';
 import DetailsModal from '../../ui/DetailsModal';
 import ActionHeader from '../ActionHeader';
+import { useUser } from 'providers/UserProvider';
 
-const Beasts = ({
-	beasts,
-	unstakedBeasts,
-	fetchUserBeasts,
-	adjustedStakingDates,
-	stakingStartDates,
-	rewards,
-	rewardPerSecond,
-}: any) => {
-	const [rerender, setRerender] = useState(false);
+const Beasts = () => {
 	const [currentBeast, setCurrentBeast] = useState(null);
 	const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
-	const dummyData = [
-		{
-			name: 'Beasts',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Rewards',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-		{
-			name: 'Random',
-			image: 'https://basicbeasts.mypinata.cloud/ipfs/QmStptQqKw1aoa1U4MUF64KaxGYAx2WRoGkBuafHkLoJyD',
-		},
-	];
+	const {
+		beasts,
+		unstakedBeasts,
+		fetchUserBeasts,
+		stakingStartDates,
+		adjustedStakingDates,
+		rewards,
+		rewardPerSecond,
+	} = useUser();
 
 	const NFT = ({ item }: any) => (
 		<div className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden">
@@ -192,7 +179,6 @@ const Beasts = ({
 					});
 				});
 			fetchUserBeasts();
-			setRerender(!rerender);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -241,7 +227,6 @@ const Beasts = ({
 					});
 				});
 			fetchUserBeasts();
-			setRerender(!rerender);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -280,7 +265,6 @@ const Beasts = ({
 					});
 				});
 			fetchUserBeasts();
-			setRerender(!rerender);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,

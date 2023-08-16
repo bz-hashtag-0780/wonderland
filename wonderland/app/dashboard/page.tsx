@@ -1,42 +1,17 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Beasts from '@/components/dashboardTabs/contents/Beasts';
 import Rewards from '@/components/dashboardTabs/contents/Rewards';
 import '../../flow-config.js';
-import { query } from '@onflow/fcl';
-import { FETCH_BEASTS } from '@/flow/scripts/fetch_beasts';
-import { FETCH_STAKED_BEASTS } from '@/flow/scripts/fetch_staked_beasts';
-import { GET_ALL_STAKING_START_DATES } from '@/flow/scripts/get_all_staking_start_dates';
-import { GET_ALL_ADJUSTED_STAKING_DATES } from '@/flow/scripts/get_all_adjusted_staking_dates.js';
-import { GET_ALL_REWARDS } from '@/flow/scripts/get_all_rewards.js';
-import { GET_REWARD_PER_SECOND } from '@/flow/scripts/get_reward_per_second.js';
 import { useAuth } from 'providers/AuthProvider';
 import RewardTableModal from '@/components/ui/RewardTableModal';
 import { useUser } from 'providers/UserProvider';
 
-const Tab = ({ children }: any) => <div>{children}</div>;
-
 export default function Dashboard() {
-	const {
-		beasts,
-		stakedBeasts,
-		unstakedBeasts,
-		fetchUserBeasts,
-		stakingStartDates,
-		adjustedStakingDates,
-		rewards,
-		rewardPerSecond,
-	} = useUser();
+	const { beasts, rewards } = useUser();
+	const { loggedIn, logIn } = useAuth();
 	const [activeTab, setActiveTab] = useState('Beasts');
-	// const [stakedBeasts, setStakedBeasts] = useState([]);
-	// const [unstakedBeasts, setUnstakedBeasts] = useState([]);
-	// // const [beasts, setBeasts] = useState([]);
-	// const [stakingStartDates, setStakingStartDates] = useState({});
-	// const [adjustedStakingDates, setAdjustedStakingDates] = useState({});
-	// const [rewards, setRewards] = useState<any>({});
-	// const [rewardPerSecond, setRewardPerSecond] = useState(604800.0);
-	const { user, loggedIn, logIn } = useAuth();
 	const [isModalOpen, setModalOpen] = useState(false);
 
 	const tabItems = [
@@ -110,13 +85,11 @@ export default function Dashboard() {
 						) : (
 							<>
 								<div className="flex border-b border-white border-opacity-20 gap-4">
-									{/* TODO: Add reveal all, quest all, and info pop up */}
 									{tabItems.map((item) => (
 										<TabItem key={item.name} item={item} />
 									))}
 									{/* This div will grow and push the button to the right */}
 									<div className="flex-grow"></div>
-
 									{/* Question mark button */}
 									<div className="p-1">
 										<button
@@ -127,19 +100,7 @@ export default function Dashboard() {
 										</button>
 									</div>
 								</div>
-								{activeTab === 'Beasts' && (
-									<Beasts
-										beasts={beasts}
-										unstakedBeasts={unstakedBeasts}
-										fetchUserBeasts={fetchUserBeasts}
-										adjustedStakingDates={
-											adjustedStakingDates
-										}
-										stakingStartDates={stakingStartDates}
-										rewards={rewards}
-										rewardPerSecond={rewardPerSecond}
-									/>
-								)}
+								{activeTab === 'Beasts' && <Beasts />}
 								{activeTab === 'Rewards' && (
 									<Rewards
 										rewards={extractRewards(

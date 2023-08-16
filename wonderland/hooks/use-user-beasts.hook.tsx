@@ -18,7 +18,7 @@ export default function useUserBeasts(user: any) {
 		} else {
 			setBeasts([]);
 		}
-	}, [user]);
+	}, [user?.addr]);
 
 	const fetchUserBeasts = async () => {
 		try {

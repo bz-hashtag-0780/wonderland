@@ -8,10 +8,12 @@ export default function useRewards(user: any) {
 	const [rewardPerSecond, setRewardPerSecond] = useState(604800.0);
 
 	useEffect(() => {
-		getRewards();
-		getRewardPerSecond();
-		getTotalSupply();
-	}, [user]);
+		if (user?.addr != null) {
+			getRewards();
+			getRewardPerSecond();
+			getTotalSupply();
+		}
+	}, [user?.addr]);
 
 	const getRewards = async () => {
 		try {

@@ -30,10 +30,11 @@ pub contract BasicBeastsRaids {
         pub let defenderAddress: Address
         pub let winner: UInt64?
         pub let season: UInt32
-        pub let pointsAwarded: UInt32
+        pub let attackerPointsAwarded: UInt32
+        pub let defenderPointsAwarded: UInt32
         pub let rewardTemplateID: UInt32
 
-        init(id: UInt32, attackerNFT: UInt64, defenderNFT: UInt64, attackerAddress: Address, defenderAddress: Address, winner: UInt64?, pointsAwarded: UInt32, rewardTemplateID: UInt32) {
+        init(id: UInt32, attackerNFT: UInt64, defenderNFT: UInt64, attackerAddress: Address, defenderAddress: Address, winner: UInt64?, attackerPointsAwarded: UInt32, defenderPointsAwarded: UInt32, rewardTemplateID: UInt32) {
             self.id = id
             self.attackerNFT = attackerNFT
             self.defenderNFT = defenderNFT
@@ -41,7 +42,8 @@ pub contract BasicBeastsRaids {
             self.defenderAddress = defenderAddress
             self.winner = winner
             self.season = BasicBeastsRaids.currentSeason
-            self.pointsAwarded = pointsAwarded
+            self.attackerPointsAwarded = attackerPointsAwarded
+            self.defenderPointsAwarded = defenderPointsAwarded
             self.rewardTemplateID = rewardTemplateID
         }
     }
@@ -76,11 +78,12 @@ pub contract BasicBeastsRaids {
         pub fun optOut() {
             let currentTimestamp = getCurrentBlock().timestamp
             if let playerLockStartDate = BasicBeastsRaids.playerLockStartDates[self.owner!.address] {
-                // check if player has not raided in the last 3 hours
-                if(currentTimestamp - playerLockStartDate > 10800.00) {
-                    BasicBeastsRaids.playerOptIns.remove(key: self.owner!.address)
+                // check if player has raided in the last 3 hours
+                if(currentTimestamp - playerLockStartDate <= 10800.00) {
+                    panic("Cannot opt out, player has raided in the last 3 hours")
                 }
             }
+            BasicBeastsRaids.playerOptIns.remove(key: self.owner!.address)
         }
 
     }
@@ -95,7 +98,7 @@ pub contract BasicBeastsRaids {
                 // check cooldown
                 if BasicBeastsRaids.canAttack(attacker: attacker) { //todo: tested
                     // fetch attacker's nft
-                    if let attackerNftID = BasicBeastsRaids.playerOptIns[attacker] {
+                    if let attackerNftID = BasicBeastsRaids.playerOptIns[attacker] { //todo: tested
                         // pick a reward from the attacker
                         var attackerRewardID: UInt32? = nil
                         
@@ -103,8 +106,8 @@ pub contract BasicBeastsRaids {
                         let hasRewardOne = BasicBeastsNFTStakingRewards.hasRewardItemOne(nftID: attackerNftID)
                         let hasRewardTwo = BasicBeastsNFTStakingRewards.hasRewardItemTwo(nftID: attackerNftID)
 
-                        // pick reward
-                        if hasRewardOne != nil && hasRewardTwo != nil {
+                        // pick attacker reward
+                        if hasRewardOne != nil && hasRewardTwo != nil { //todo: tested
                             let randomReward = BasicBeastsRaids.chooseRewardOneOrTwo()
                             attackerRewardID = (randomReward == 2) ? hasRewardTwo : hasRewardOne
                         } else if hasRewardTwo != nil {
@@ -122,7 +125,7 @@ pub contract BasicBeastsRaids {
                             let allPlayers = BasicBeastsRaids.playerOptIns.keys
                             let shuffledPlayers = BasicBeastsRaids.shuffle(addresses: allPlayers)
 
-                            for potentialDefender in shuffledPlayers {
+                            for potentialDefender in shuffledPlayers { //todo: tested
                                 if potentialDefender != attacker {
                                     defenderNftID = BasicBeastsRaids.playerOptIns[potentialDefender]
 
@@ -149,7 +152,8 @@ pub contract BasicBeastsRaids {
                                 // run the raid algo
                                 let raidResult = BasicBeastsRaids.pickRaidWinner()
                                 var winner: UInt64? = nil
-                                var pointCount: UInt32 = 0
+                                var attackerPointCount: UInt32 = 0
+                                var defenderPointCount: UInt32 = 0
 
                                 // 1 point = rewardItemOne, 3 points = rewardItemTwo
                                 var additionalPoints: UInt32 = hasRewardTwo == attackerRewardID ? 3 : 1
@@ -164,7 +168,7 @@ pub contract BasicBeastsRaids {
                                     BasicBeastsNFTStakingRewards.moveReward(fromID: defenderNftID!, toID: attackerNftID, rewardItemID: defenderRewardID!)
                                     // award additional point to attacker
                                     BasicBeastsRaids.awardPoint(nftID: attackerNftID, numOfPoints: additionalPoints)
-                                    pointCount = pointCount + additionalPoints
+                                    attackerPointCount = attackerPointCount + additionalPoints
                                 } else if (raidResult == 2) {
                                     // defender wins
                                     winner = defenderNftID
@@ -172,11 +176,11 @@ pub contract BasicBeastsRaids {
                                     BasicBeastsNFTStakingRewards.moveReward(fromID: attackerNftID, toID: defenderNftID!, rewardItemID: attackerRewardID!)
                                     // award point to defender
                                     BasicBeastsRaids.awardPoint(nftID: defenderNftID!, numOfPoints: additionalPoints)
-                                    pointCount = pointCount + additionalPoints
+                                    defenderPointCount = defenderPointCount + additionalPoints
                                 }
                                 // award 1 point and exp to attacker for raiding
                                 BasicBeastsRaids.awardPoint(nftID: attackerNftID, numOfPoints: 1)
-                                pointCount = pointCount + 1
+                                attackerPointCount = attackerPointCount + 1
                                 BasicBeastsRaids.awardExp(nftID: attackerNftID)
                                 
                                 // create record
@@ -187,7 +191,8 @@ pub contract BasicBeastsRaids {
                                                                                                     attackerAddress: attacker, 
                                                                                                     defenderAddress: defenderAddress!, 
                                                                                                     winner: winner, 
-                                                                                                    pointsAwarded: pointCount,
+                                                                                                    attackerPointsAwarded: attackerPointCount,
+                                                                                                    defenderPointsAwarded: defenderPointCount,
                                                                                                     rewardTemplateID: hasRewardTwo == attackerRewardID ? 2 : 1)
 
                                 // add cooldown
@@ -280,7 +285,8 @@ pub contract BasicBeastsRaids {
                                                                                         attackerAddress: attacker,
                                                                                         defenderAddress: defender,
                                                                                         winner: winner, 
-                                                                                        pointsAwarded: 0,
+                                                                                        attackerPointsAwarded: 0,
+                                                                                        defenderPointsAwarded: 0,
                                                                                         rewardTemplateID: aHasRewardTwo == attackerRewardID ? 2 : 1)
 
                     // add cooldown
@@ -297,15 +303,19 @@ pub contract BasicBeastsRaids {
         }
 
         pub fun removePlayer(player: Address) {
-            // no pre-conditions to allow for removal of multiple players
+            BasicBeastsRaids.playerOptIns.remove(key: player)
+        }
+
+        pub fun optOutPlayer(player: Address): Bool {
             let currentTimestamp = getCurrentBlock().timestamp
             if let playerLockStartDate = BasicBeastsRaids.playerLockStartDates[player] {
-                // check if player has not raided in the last 3 hours
-                if(currentTimestamp - playerLockStartDate > 10800.00) {
-                    BasicBeastsRaids.playerOptIns.remove(key: player)
+                // check if player has raided in the last 3 hours
+                if(currentTimestamp - playerLockStartDate <= 10800.00) {
+                    return false
                 }
             }
-        
+            BasicBeastsRaids.playerOptIns.remove(key: player)
+            return true
         }
 
         pub fun createNewGameMaster(): @GameMaster {

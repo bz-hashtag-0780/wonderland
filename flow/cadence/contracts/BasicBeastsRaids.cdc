@@ -178,14 +178,17 @@ pub contract BasicBeastsRaids {
                                     BasicBeastsRaids.awardPoint(nftID: defenderNftID!, numOfPoints: additionalPoints)
                                     defenderPointCount = defenderPointCount + additionalPoints
                                 }
-                                // award 1 point and exp to each for raiding
+                                // award 1 point and exp for raiding
                                 BasicBeastsRaids.awardPoint(nftID: attackerNftID, numOfPoints: 1)
                                 attackerPointCount = attackerPointCount + 1
                                 BasicBeastsRaids.awardExp(nftID: attackerNftID)
 
-                                BasicBeastsRaids.awardPoint(nftID: defenderNftID!, numOfPoints: 1)
-                                defenderPointCount = defenderPointCount + 1
-                                BasicBeastsRaids.awardExp(nftID: defenderNftID!)
+                                // only award point and exp to defender if won or lost a reward
+                                if(raidResult != 0) {
+                                    BasicBeastsRaids.awardPoint(nftID: defenderNftID!, numOfPoints: 1)
+                                    defenderPointCount = defenderPointCount + 1
+                                    BasicBeastsRaids.awardExp(nftID: defenderNftID!)
+                                }
                                 
                                 // create record
                                 BasicBeastsRaids.raidCount = BasicBeastsRaids.raidCount + 1

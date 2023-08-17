@@ -1,7 +1,9 @@
 import { useSession, signIn, signOut } from 'next-auth/react';
+import { useUser } from 'providers/UserProvider';
 
 const RaidProfileModal = ({ isOpen, onClose, setOpenChooseBeast }: any) => {
 	const { data: session } = useSession();
+	const { beasts, raidBeast } = useUser();
 	return (
 		isOpen && (
 			<div className="fixed inset-0 flex justify-center items-center z-50 text-white">
@@ -43,13 +45,38 @@ const RaidProfileModal = ({ isOpen, onClose, setOpenChooseBeast }: any) => {
 							)}
 						</div>
 						<div className="flex justify-between items-center">
-							<div className="flex w-full">Beast: </div>
-							<button
-								onClick={() => setOpenChooseBeast(true)}
-								className="flex w-full justify-center border border-solid rounded-md py-1 px-4 hover:bg-white hover:text-black"
-							>
-								Choose Beast
-							</button>
+							<div className="flex w-full">
+								Beast:&nbsp;
+								<span className="font-bold">
+									{raidBeast && (
+										<>
+											{
+												beasts.filter(
+													(beast: any) =>
+														raidBeast == beast.id
+												)[0].nickname
+											}{' '}
+											#
+											{
+												beasts.filter(
+													(beast: any) =>
+														raidBeast == beast.id
+												)[0].serialNumber
+											}
+										</>
+									)}
+								</span>
+							</div>
+							{session && session.user ? (
+								<button
+									onClick={() => setOpenChooseBeast(true)}
+									className="flex w-full justify-center border border-solid rounded-md py-1 px-4 hover:bg-white hover:text-black"
+								>
+									Choose Beast
+								</button>
+							) : (
+								<></>
+							)}
 						</div>
 					</div>
 

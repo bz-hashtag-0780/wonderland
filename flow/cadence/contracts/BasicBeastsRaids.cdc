@@ -10,6 +10,7 @@ pub contract BasicBeastsRaids {
 
     pub let GameMasterStoragePath: StoragePath
     pub let GameMasterPrivatePath: PrivatePath
+    pub let PlayerStoragePath: StoragePath
 
     pub var currentSeason: UInt32
     pub var raidCount: UInt32
@@ -552,6 +553,7 @@ pub contract BasicBeastsRaids {
 
         self.GameMasterStoragePath = /storage/BasicBeastsRaidsGameMaster_1
         self.GameMasterPrivatePath = /private/BasicBeastsRaidsGameMaster_1
+        self.PlayerStoragePath = /storage/BasicBeastsRaidsPlayer_1
 
         // Put Game Master in storage
         self.account.save(<-create GameMaster(), to: self.GameMasterStoragePath)

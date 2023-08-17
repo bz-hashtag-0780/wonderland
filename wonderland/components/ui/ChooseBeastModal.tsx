@@ -2,10 +2,19 @@ import Image from 'next/image';
 import { useAuth } from 'providers/AuthProvider';
 import { useUser } from 'providers/UserProvider';
 import { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 const ChooseBeastModal = ({ isOpen, onClose }: any) => {
-	const { stakedBeasts, fetchUserBeasts, rewards, getRewards } = useUser();
+	const {
+		stakedBeasts,
+		fetchUserBeasts,
+		rewards,
+		getRewards,
+		userOptIn,
+		raidBeast,
+	} = useUser();
 	const { user } = useAuth();
+	const { data: session }: any = useSession();
 
 	useEffect(() => {
 		if (user?.addr != null) {
@@ -32,7 +41,13 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 					<div className="relative overflow-hidden w-full bg-transparent rounded-xl">
 						<div className="flex w-full absolute z-10 top-2">
 							<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
-								{beast.name} #{beast.serial}
+								{raidBeast == beast.id ? (
+									'⚔️ Raiding'
+								) : (
+									<>
+										{beast.name} #{beast.serial}
+									</>
+								)}
 							</div>
 						</div>
 						<Image
@@ -47,8 +62,9 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 						/>
 						<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 							<button
+								disabled={!session}
 								onClick={() => {
-									console.log('transformedData');
+									userOptIn(beast.id, session.user.discordId);
 								}}
 								className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-md drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 							>

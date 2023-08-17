@@ -4,6 +4,7 @@ import { createContext, useContext, ReactNode } from 'react';
 import useCurrentUser from '@/hooks/use-current-user.hook';
 import useUserBeasts from '@/hooks/use-user-beasts.hook';
 import useRewards from '@/hooks/use-staking-rewards.hook';
+import useRaids from '@/hooks/use-raids.hook';
 
 interface State {
 	beasts: any;
@@ -18,6 +19,9 @@ interface State {
 	getRewards: any;
 	getRewardPerSecond: any;
 	getTotalSupply: any;
+	raidBeast: any;
+	getRaidBeast: any;
+	userOptIn: any;
 }
 
 const UserContext = createContext<State | undefined>(undefined);
@@ -47,6 +51,8 @@ const UserProvider: React.FC<ProviderProps> = ({ children }) => {
 		getTotalSupply,
 	} = useRewards(user);
 
+	const { raidBeast, getRaidBeast, userOptIn } = useRaids(user);
+
 	return (
 		<UserContext.Provider
 			value={{
@@ -62,6 +68,9 @@ const UserProvider: React.FC<ProviderProps> = ({ children }) => {
 				getRewards,
 				getRewardPerSecond,
 				getTotalSupply,
+				raidBeast,
+				getRaidBeast,
+				userOptIn,
 			}}
 		>
 			{children}

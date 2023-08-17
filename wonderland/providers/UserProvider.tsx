@@ -22,6 +22,8 @@ interface State {
 	raidBeast: any;
 	getRaidBeast: any;
 	userOptIn: any;
+	exp: any;
+	getExp: any;
 }
 
 const UserContext = createContext<State | undefined>(undefined);
@@ -51,7 +53,7 @@ const UserProvider: React.FC<ProviderProps> = ({ children }) => {
 		getTotalSupply,
 	} = useRewards(user);
 
-	const { raidBeast, getRaidBeast, userOptIn } = useRaids(user);
+	const { raidBeast, exp, getExp, getRaidBeast, userOptIn } = useRaids(user);
 
 	return (
 		<UserContext.Provider
@@ -69,6 +71,8 @@ const UserProvider: React.FC<ProviderProps> = ({ children }) => {
 				getRewardPerSecond,
 				getTotalSupply,
 				raidBeast,
+				exp,
+				getExp,
 				getRaidBeast,
 				userOptIn,
 			}}

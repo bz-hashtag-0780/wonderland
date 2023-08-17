@@ -17,15 +17,18 @@ import * as t from '@onflow/types';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/utils/toastStatus';
 import { GET_RAID_BEAST } from '@/flow/scripts/get_raid_beast';
+import { GET_EXP } from '@/flow/scripts/get_exp';
 import { PLAYER_OPT_IN } from '@/flow/transactions/player_opt_in';
 
 export default function useRaids(user: any) {
 	const [raidBeast, setRaidBeast] = useState<any>(null);
+	const [exp, setExp] = useState<any>({});
 
 	useEffect(() => {
 		if (user?.addr != null) {
 			getRaidBeast();
 		}
+		getExp();
 	}, [user?.addr]);
 
 	const getRaidBeast = async () => {
@@ -36,6 +39,18 @@ export default function useRaids(user: any) {
 			});
 			setRaidBeast(raidBeast);
 			console.log('raidBeast: ', raidBeast);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const getExp = async () => {
+		try {
+			let exp = await query({
+				cadence: GET_EXP,
+			});
+			setExp(exp);
+			console.log(exp);
 		} catch (err) {
 			console.log(err);
 		}
@@ -81,6 +96,8 @@ export default function useRaids(user: any) {
 
 	return {
 		raidBeast,
+		exp,
+		getExp,
 		getRaidBeast,
 		userOptIn,
 	};

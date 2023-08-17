@@ -5,7 +5,7 @@ pub contract BasicBeastsRaids {
 
     pub event ContractInitialized()
     pub event PlayerOptIn(player: Address, nftID: UInt64, discordID: String)
-    pub event RaidEvent(winner: UInt64?, attackerNFT: UInt64, defenderNFT: UInt64, attackerAddress: Address, defenderAddress: Address, raidRecordID: UInt32)
+    pub event RaidEvent(winner: UInt64?, attackerNFT: UInt64, defenderNFT: UInt64, attackerAddress: Address, defenderAddress: Address, raidRecordID: UInt32, rewardTemplateID: UInt32)
     pub event NewSeasonStarted(newCurrentSeason: UInt32)
 
     pub let GameMasterStoragePath: StoragePath
@@ -166,7 +166,7 @@ pub contract BasicBeastsRaids {
                                     winner = attackerNftID
                                     // award reward to attacker
                                     BasicBeastsNFTStakingRewards.moveReward(fromID: defenderNftID!, toID: attackerNftID, rewardItemID: defenderRewardID!)
-                                    // award additional point to attacker
+                                    // award additional points to attacker for winning
                                     BasicBeastsRaids.awardPoint(nftID: attackerNftID, numOfPoints: additionalPoints)
                                     attackerPointCount = attackerPointCount + additionalPoints
                                 } else if (raidResult == 2) {
@@ -174,14 +174,18 @@ pub contract BasicBeastsRaids {
                                     winner = defenderNftID
                                     // award reward to defender
                                     BasicBeastsNFTStakingRewards.moveReward(fromID: attackerNftID, toID: defenderNftID!, rewardItemID: attackerRewardID!)
-                                    // award point to defender
+                                    // award addtional points to defender for winning
                                     BasicBeastsRaids.awardPoint(nftID: defenderNftID!, numOfPoints: additionalPoints)
                                     defenderPointCount = defenderPointCount + additionalPoints
                                 }
-                                // award 1 point and exp to attacker for raiding
+                                // award 1 point and exp to each for raiding
                                 BasicBeastsRaids.awardPoint(nftID: attackerNftID, numOfPoints: 1)
                                 attackerPointCount = attackerPointCount + 1
                                 BasicBeastsRaids.awardExp(nftID: attackerNftID)
+
+                                BasicBeastsRaids.awardPoint(nftID: defenderNftID!, numOfPoints: 1)
+                                defenderPointCount = defenderPointCount + 1
+                                BasicBeastsRaids.awardExp(nftID: defenderNftID!)
                                 
                                 // create record
                                 BasicBeastsRaids.raidCount = BasicBeastsRaids.raidCount + 1
@@ -201,7 +205,13 @@ pub contract BasicBeastsRaids {
                                 // start lock timer
                                 BasicBeastsRaids.playerLockStartDates[attacker] = getCurrentBlock().timestamp
 
-                                emit RaidEvent(winner: winner, attackerNFT: attackerNftID, defenderNFT: defenderNftID!, attackerAddress: attacker, defenderAddress: defenderAddress!, raidRecordID: BasicBeastsRaids.raidCount)
+                                emit RaidEvent(winner: winner, 
+                                            attackerNFT: attackerNftID, 
+                                            defenderNFT: defenderNftID!, 
+                                            attackerAddress: attacker, 
+                                            defenderAddress: defenderAddress!, 
+                                            raidRecordID: BasicBeastsRaids.raidCount,
+                                            rewardTemplateID: hasRewardTwo == attackerRewardID ? 2 : 1)
 
                             }
                             // no raid, no defender with valid rewards were found

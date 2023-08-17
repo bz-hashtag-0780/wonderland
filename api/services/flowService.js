@@ -427,8 +427,16 @@ transaction(attacker: Address) {
 			if (txid) {
 				let tx = await fcl.tx(txid).onceSealed();
 				this.AdminKeys[keyIndex] = false;
-				console.log('Raid succeeded!');
-				return tx;
+				let event = tx.events.find(
+					(e) =>
+						e.type ==
+						'A.4c74cb420f4eaa84.BasicBeastsRaids.RaidEvent'
+				);
+				if (!event) {
+					console.log('No raid');
+					return;
+				}
+				console.log('Raid succeeded!', event.data.raidRecordID);
 			}
 		} catch (e) {
 			this.AdminKeys[keyIndex] = false;

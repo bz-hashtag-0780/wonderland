@@ -42,7 +42,10 @@ const Beasts = () => {
 
 	const NFT = ({ item }: any) => (
 		<InView>
-			<div className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden">
+			<div
+				onClick={() => console.log(item.id)}
+				className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden"
+			>
 				<div className="flex-auto flex flex-col w-full group relative">
 					<div className="rounded-xl overflow-hidden flex items-center relative">
 						{stakingStartDates[item.id] != null &&

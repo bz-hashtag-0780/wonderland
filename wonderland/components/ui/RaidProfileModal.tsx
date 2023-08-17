@@ -54,7 +54,7 @@ const RaidProfileModal = ({ isOpen, onClose, setOpenChooseBeast }: any) => {
 												beasts.filter(
 													(beast: any) =>
 														raidBeast == beast.id
-												)[0].nickname
+												)[0].beastTemplate.name
 											}{' '}
 											#
 											{

@@ -143,15 +143,22 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 							stolen.
 						</div>
 					</div>
-					<div className="flex flex-col text-lg">
-						<div className="h-[300px] overflow-y-auto">
-							<div className="grid grid-cols-2 gap-4">
-								{filteredBeasts.map((beast: any) => (
-									<Beast key={beast.id} beast={beast} />
-								))}
+					{filteredBeasts.length > 0 ? (
+						<div className="flex flex-col text-lg">
+							<div className="h-[300px] overflow-y-auto">
+								<div className="grid grid-cols-2 gap-4">
+									{filteredBeasts.map((beast: any) => (
+										<Beast key={beast.id} beast={beast} />
+									))}
+								</div>
 							</div>
 						</div>
-					</div>
+					) : (
+						<div className="text-lg p-6">
+							You don´t have any staked beasts with sushi or ice
+							cream to join the raid
+						</div>
+					)}
 					<button
 						onClick={onClose}
 						className="flex justify-center items-center mt-6 border border-solid text-white hover:bg-white hover:text-black text-2xl py-1 px-4 w-full h-16 rounded-md font-bold transition duration-150 ease-in-out"

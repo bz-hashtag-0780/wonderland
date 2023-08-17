@@ -91,7 +91,7 @@ pub contract BasicBeastsRaids {
     // calls functions on player's behalf
     pub resource GameMaster {
 
-        pub fun randomRaid(attacker: Address) {
+        pub fun randomRaid(attacker: Address): UInt32? {
             // check if attacker is valid
             if(BasicBeastsRaids.playerOptIns.keys.contains(attacker)) { //todo: tested
                 // check cooldown
@@ -200,6 +200,9 @@ pub contract BasicBeastsRaids {
                                 // start lock timer
                                 BasicBeastsRaids.playerLockStartDates[attacker] = getCurrentBlock().timestamp
 
+                                // return raid count to find RaidRecord
+                                return BasicBeastsRaids.raidCount
+
                             }
                             // no raid, no defender with valid rewards were found
                         }
@@ -209,7 +212,8 @@ pub contract BasicBeastsRaids {
                 }
                 // no raid, player cannot attack
             }
-            // no raid, player has no opted in 
+            // no raid, player has not opted in 
+            return nil
         }
 
         // no points nor exp is awarded from this type of raid
@@ -347,7 +351,7 @@ pub contract BasicBeastsRaids {
             currentSeasonPoints[nftID] = numOfPoints
         }
 
-        // Save the updated currentSeasonPoints back to the points dictionary
+        // save the updated currentSeasonPoints back to the points dictionary
         BasicBeastsRaids.points[BasicBeastsRaids.currentSeason] = currentSeasonPoints
     }
 
@@ -360,23 +364,23 @@ pub contract BasicBeastsRaids {
     }
 
     access(contract) fun updateCooldownTimestamps(address: Address, nftID: UInt64) {
-        // Fetch the current timestamp
+        // fetch the current timestamp
         let timestamp = getCurrentBlock().timestamp
 
-        // Get or create the dictionary for the address
+        // get or create the dictionary for the address
         var innerDict = self.attackerCooldownTimestamps[address] ?? {}
 
-        // Check if the nftID exists for the given address and update timestamps
+        // check if the nftID exists for the given address and update timestamps
         var timestamps = innerDict[nftID] ?? []
         while timestamps.length >= 9 {
             timestamps.remove(at: 0)
         }
         timestamps.append(timestamp)
         
-        // Update the inner dictionary
+        // update the inner dictionary
         innerDict[nftID] = timestamps
 
-        // Assign the updated inner dictionary back to the main dictionary
+        // assign the updated inner dictionary back to the main dictionary
         self.attackerCooldownTimestamps[address] = innerDict
     }
 
@@ -411,17 +415,17 @@ pub contract BasicBeastsRaids {
         let SECONDS_IN_A_DAY: UFix64 = 86400.00
         let MAX_ATTACKS_IN_DAY: Int = 9
         
-        // Check if the attacker has opted-in
+        // check if the attacker has opted-in
         if let nftID = self.playerOptIns[attacker] {
-            // Check if the attacker has cooldowns
+            // check if the attacker has cooldowns
             if let nftCooldowns = self.attackerCooldownTimestamps[attacker] {
                 let currentTimestamp = getCurrentBlock().timestamp
 
-                // Check for the specific NFT's cooldowns
+                // check for the specific NFT's cooldowns
                 if let previousTimestamps = nftCooldowns[nftID] {
-                    // Count recent attacks
+                    // count recent attacks
                     var recentAttacksCount = 0
-                    // If the difference between the current timestamp and the stored timestamp is less than 24 hours,
+                    // if the difference between the current timestamp and the stored timestamp is less than 24 hours,
                     // increment the attacksOnCooldown counter
                     for timestamp in previousTimestamps {
                         if currentTimestamp - timestamp < SECONDS_IN_A_DAY {
@@ -429,16 +433,16 @@ pub contract BasicBeastsRaids {
                         }
                     }
 
-                    // Return whether the attacker can attack based on recent attacks count
+                    // return whether the attacker can attack based on recent attacks count
                     return recentAttacksCount < MAX_ATTACKS_IN_DAY
                 }
-                // If there's no specific record for the NFT's cooldowns, then it can attack
+                // if there's no specific record for the NFT's cooldowns, then it can attack
                 return true
             }
-            // If the attacker has no cooldowns, then it can attack
+            // if the attacker has no cooldowns, then it can attack
             return true
         }
-        // If there's no opt-in, then it cannot attack
+        // if there's no opt-in, then it cannot attack
         return false
     }
 
@@ -457,14 +461,14 @@ pub contract BasicBeastsRaids {
     }
 
     pub fun chooseRewardOneOrTwo(): UInt32 {
-        // Generate a random number between 0 and 100_000_000
+        // generate a random number between 0 and 100_000_000
         let randomNum = Int(unsafeRandom() % 100_000_000)
 
-        // Define the threshold based on 20% probability scaled up by 1_000_000
+        // define the threshold based on 20% probability scaled up by 1_000_000
         let threshold = 20_000_000
 
-        // Return reward 2 if the random number is below the threshold (20% chance)
-        // Otherwise return reward 1 (80% chance)
+        // return reward 2 if the random number is below the threshold (20% chance)
+        // otherwise return reward 1 (80% chance)
         if randomNum < threshold { return 2 }
         else { return 1 }
     }
@@ -482,13 +486,13 @@ pub contract BasicBeastsRaids {
         // 0 = tie
         // 1 = attacker wins
         // 2 = defender wins
-        // Generate a random number between 0 and 100_000_000
+        // generate a random number between 0 and 100_000_000
         let randomNum = Int(unsafeRandom() % 100_000_000)
         
         let threshold1 = 45_000_000 // for 45%
         let threshold2 = 93_100_000 // for 48.1%, cumulative 93.1%
         
-        // Return reward based on generated random number
+        // return reward based on generated random number
         if randomNum < threshold1 { return 1 }
         else if randomNum < threshold2 { return 2 }
         else { return 0 } // for remaining 6.9%

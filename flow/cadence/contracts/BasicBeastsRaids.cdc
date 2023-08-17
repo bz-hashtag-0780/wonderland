@@ -88,10 +88,9 @@ pub contract BasicBeastsRaids {
 
     }
 
-    // Calls functions on player's behalf
+    // calls functions on player's behalf
     pub resource GameMaster {
 
-        // No pre-condition to allow running multiple random raids in a single transaction
         pub fun randomRaid(attacker: Address) {
             // check if attacker is valid
             if(BasicBeastsRaids.playerOptIns.keys.contains(attacker)) { //todo: tested

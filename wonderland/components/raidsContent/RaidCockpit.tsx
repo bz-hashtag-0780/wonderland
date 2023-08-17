@@ -5,10 +5,20 @@ import Image from 'next/image';
 import { useSession, signIn } from 'next-auth/react';
 import { useUser } from 'providers/UserProvider';
 import { transform } from '@/utils/transform';
+import { useAuth } from 'providers/AuthProvider';
 
 const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 	const { data: session }: any = useSession();
-	const { raidBeast, beasts, rewards } = useUser();
+	const {
+		raidBeast,
+		beasts,
+		rewards,
+		exp,
+		points,
+		currentSeason,
+		allRecords,
+	} = useUser();
+	const { user } = useAuth();
 
 	const beast =
 		raidBeast && beasts
@@ -17,6 +27,86 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 					rewards
 			  )[0]
 			: null;
+
+	const totalBeastSeasonWins =
+		raidBeast && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						record.winner === raidBeast &&
+						record.season === currentSeason
+			  ).length
+			: 0;
+
+	const totalBeastSeasonLosses =
+		raidBeast && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						record.winner !== raidBeast &&
+						record.season === currentSeason
+			  ).length
+			: 0;
+
+	const totalBeastSushiWins =
+		raidBeast && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						record.winner === raidBeast &&
+						record.season === currentSeason &&
+						record.rewardTemplateID === '1'
+			  ).length
+			: 0;
+
+	const totalBeastSushiLosses =
+		raidBeast && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						record.attackerNFT === raidBeast &&
+						record.winner !== record.attackerNFT &&
+						record.season === currentSeason &&
+						record.rewardTemplateID === '1'
+			  ).length
+			: 0;
+
+	const totalBeastIceCreamWins =
+		raidBeast && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						record.winner === raidBeast &&
+						record.season === currentSeason &&
+						record.rewardTemplateID === '2'
+			  ).length
+			: 0;
+
+	const totalBeastIceCreamLosses =
+		raidBeast && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						record.attackerNFT === raidBeast &&
+						record.winner !== record.attackerNFT &&
+						record.season === currentSeason &&
+						record.rewardTemplateID === '2'
+			  ).length
+			: 0;
+
+	const totalRaids =
+		user?.addr && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						(record.attackerAddress === user?.addr &&
+							record.season === currentSeason) ||
+						(record.defenderAddress === user?.addr &&
+							record.season === currentSeason)
+			  ).length
+			: 0;
+
+	const totalRaided =
+		user?.addr && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						record.attackerAddress === user?.addr &&
+						record.season === currentSeason
+			  ).length
+			: 0;
 
 	const Info = ({ value, label, lastItem }: any) => (
 		<div
@@ -70,7 +160,7 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 								</div>
 								<div className="flex w-full mb-4">
 									<Info
-										value={'missing'}
+										value={exp[beast?.id] || 0}
 										label={'EXP Points'}
 									/>
 									<Info
@@ -90,22 +180,40 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 									</div>
 									<div className="flex w-full mb-4">
 										<Info
-											value={'20 - 3'}
+											value={
+												totalBeastSeasonWins +
+												' - ' +
+												totalBeastSeasonLosses
+											}
 											label={'Win - Lose'}
 										/>
-										<Info
-											value={'200'}
-											label={'Raid Points'}
-											lastItem={true}
-										/>
+										{points && points[currentSeason] && (
+											<Info
+												value={
+													points[currentSeason][
+														beast?.id
+													] || 0
+												}
+												label={'Raid Points'}
+												lastItem={true}
+											/>
+										)}
 									</div>
 									<div className="flex w-full">
 										<Info
-											value={'18 - 2'}
+											value={
+												totalBeastSushiWins +
+												' - ' +
+												totalBeastSushiLosses
+											}
 											label={'Sushi W - L'}
 										/>
 										<Info
-											value={'2 - 1'}
+											value={
+												totalBeastIceCreamWins +
+												' - ' +
+												totalBeastIceCreamLosses
+											}
 											label={'Ice Cream W - L'}
 											lastItem={true}
 										/>
@@ -130,19 +238,22 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 									}
 									label={'Discord'}
 								/>
-								<Info value={'200'} label={'Total W - L'} />
-								<Info value={'200'} label={'Raids'} />
+								<Info value={'200*'} label={'Total W - L'} />
+								<Info value={totalRaids} label={'Raids'} />
 								<Info
-									value={'190'}
+									value={totalRaided}
 									label={'Raided'}
 									lastItem={true}
 								/>
 							</div>
 							<div className="flex w-full">
-								<Info value={'18-2'} label={'Sushi W-L'} />
-								<Info value={'2 - 1'} label={'Ice Cream W-L'} />
+								<Info value={'18-2*'} label={'Sushi W-L'} />
 								<Info
-									value={'200'}
+									value={'2 - 1*'}
+									label={'Ice Cream W-L'}
+								/>
+								<Info
+									value={'200*'}
 									label={'Total Raid Points'}
 									lastItem={true}
 								/>

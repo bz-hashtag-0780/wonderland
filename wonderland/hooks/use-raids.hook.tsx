@@ -18,17 +18,26 @@ import { toast } from 'react-toastify';
 import { toastStatus } from '@/utils/toastStatus';
 import { GET_RAID_BEAST } from '@/flow/scripts/get_raid_beast';
 import { GET_EXP } from '@/flow/scripts/get_exp';
+import { GET_POINTS } from '@/flow/scripts/get_points';
+import { GET_CURRENT_SEASON } from '@/flow/scripts/get_current_season';
+import { GET_ALL_RAID_RECORDS } from '@/flow/scripts/get_all_raid_records';
 import { PLAYER_OPT_IN } from '@/flow/transactions/player_opt_in';
 
 export default function useRaids(user: any) {
 	const [raidBeast, setRaidBeast] = useState<any>(null);
 	const [exp, setExp] = useState<any>({});
+	const [points, setPoints] = useState<any>({});
+	const [currentSeason, setCurrentSeason] = useState<any>(0);
+	const [allRecords, setRecords] = useState<any>([]);
 
 	useEffect(() => {
 		if (user?.addr != null) {
 			getRaidBeast();
 		}
 		getExp();
+		getPoints();
+		getCurrentSeason();
+		getAllRaidRecords();
 	}, [user?.addr]);
 
 	const getRaidBeast = async () => {
@@ -50,7 +59,40 @@ export default function useRaids(user: any) {
 				cadence: GET_EXP,
 			});
 			setExp(exp);
-			console.log(exp);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const getPoints = async () => {
+		try {
+			let points = await query({
+				cadence: GET_POINTS,
+			});
+			setPoints(points);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const getCurrentSeason = async () => {
+		try {
+			let season = await query({
+				cadence: GET_CURRENT_SEASON,
+			});
+			setCurrentSeason(season);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const getAllRaidRecords = async () => {
+		try {
+			let records = await query({
+				cadence: GET_ALL_RAID_RECORDS,
+			});
+			setRecords(Object.values(records));
+			console.log(Object.values(records));
 		} catch (err) {
 			console.log(err);
 		}
@@ -100,5 +142,9 @@ export default function useRaids(user: any) {
 		getExp,
 		getRaidBeast,
 		userOptIn,
+		points,
+		getPoints,
+		currentSeason,
+		allRecords,
 	};
 }

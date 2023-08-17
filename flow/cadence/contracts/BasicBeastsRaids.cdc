@@ -509,6 +509,10 @@ pub contract BasicBeastsRaids {
         return self.raidRecords
     }
 
+    pub fun getRaidRecord(recordID: UInt32): RaidRecord? {
+        return self.raidRecords[recordID]
+    }
+
     pub fun getPlayerOptIns(): {Address: UInt64} {
         return self.playerOptIns
     }

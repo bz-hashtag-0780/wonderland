@@ -41,8 +41,12 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 		raidBeast && allRecords && currentSeason
 			? allRecords.filter(
 					(record: any) =>
-						record.winner !== raidBeast &&
-						record.season === currentSeason
+						(record.winner !== raidBeast &&
+							record.season === currentSeason &&
+							record.defenderNFT === raidBeast) ||
+						(record.winner !== raidBeast &&
+							record.season === currentSeason &&
+							record.attackerNFT === raidBeast)
 			  ).length
 			: 0;
 
@@ -193,6 +197,32 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 							record.winner !== record.defenderNFT)
 			  ).length
 			: 0;
+
+	const totalRaidPoints = getTotalPointsForAddress(
+		allRecords,
+		user?.addr,
+		currentSeason
+	);
+
+	function getTotalPointsForAddress(
+		allRecords: any[],
+		walletAddress: string,
+		currentSeason: any
+	): number {
+		return allRecords.reduce((total, record) => {
+			if (record.season !== currentSeason) {
+				return total;
+			}
+
+			if (record.attackerAddress === walletAddress) {
+				return total + parseInt(record.attackerPointsAwarded, 10);
+			} else if (record.defenderAddress === walletAddress) {
+				return total + parseInt(record.defenderPointsAwarded, 10);
+			}
+
+			return total;
+		}, 0);
+	}
 
 	const Info = ({ value, label, lastItem }: any) => (
 		<div
@@ -353,7 +383,7 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 									label={'Ice Cream W-L'}
 								/>
 								<Info
-									value={'200*'}
+									value={totalRaidPoints}
 									label={'Total Raid Points'}
 									lastItem={true}
 								/>

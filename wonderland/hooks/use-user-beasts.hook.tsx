@@ -18,7 +18,6 @@ export default function useUserBeasts(user: any) {
 		} else {
 			setBeasts([]);
 		}
-		console.log(process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID);
 	}, [user?.addr]);
 
 	const fetchUserBeasts = async () => {

@@ -108,6 +108,92 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 			  ).length
 			: 0;
 
+	const totalSushiWins =
+		user?.addr && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						(record.attackerAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.rewardTemplateID === '1' &&
+							record.winner === record.attackerNFT) ||
+						(record.defenderAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.rewardTemplateID === '1' &&
+							record.winner === record.defenderNFT)
+			  ).length
+			: 0;
+
+	const totalSushiLosses =
+		user?.addr && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						(record.attackerAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.rewardTemplateID === '1' &&
+							record.winner !== record.attackerNFT) ||
+						(record.defenderAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.rewardTemplateID === '1' &&
+							record.winner !== record.defenderNFT)
+			  ).length
+			: 0;
+
+	const totalIceCreamWins =
+		user?.addr && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						(record.attackerAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.rewardTemplateID === '2' &&
+							record.winner === record.attackerNFT) ||
+						(record.defenderAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.rewardTemplateID === '2' &&
+							record.winner === record.defenderNFT)
+			  ).length
+			: 0;
+
+	const totalIceCreamLosses =
+		user?.addr && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						(record.attackerAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.rewardTemplateID === '2' &&
+							record.winner !== record.attackerNFT) ||
+						(record.defenderAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.rewardTemplateID === '2' &&
+							record.winner !== record.defenderNFT)
+			  ).length
+			: 0;
+
+	const totalWins =
+		user?.addr && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						(record.attackerAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.winner === record.attackerNFT) ||
+						(record.defenderAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.winner === record.defenderNFT)
+			  ).length
+			: 0;
+
+	const totalLosses =
+		user?.addr && allRecords && currentSeason
+			? allRecords.filter(
+					(record: any) =>
+						(record.attackerAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.winner !== record.attackerNFT) ||
+						(record.defenderAddress === user?.addr &&
+							record.season === currentSeason &&
+							record.winner !== record.defenderNFT)
+			  ).length
+			: 0;
+
 	const Info = ({ value, label, lastItem }: any) => (
 		<div
 			className={`flex flex-col relative h-auto bg-opacity-10 bg-white rounded-xl w-full p-4 mt-0 ${
@@ -238,7 +324,10 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 									}
 									label={'Discord'}
 								/>
-								<Info value={'200*'} label={'Total W - L'} />
+								<Info
+									value={totalWins + ' - ' + totalLosses}
+									label={'Total W - L'}
+								/>
 								<Info value={totalRaids} label={'Raids'} />
 								<Info
 									value={totalRaided}
@@ -247,9 +336,20 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 								/>
 							</div>
 							<div className="flex w-full">
-								<Info value={'18-2*'} label={'Sushi W-L'} />
 								<Info
-									value={'2 - 1*'}
+									value={
+										totalSushiWins +
+										' - ' +
+										totalSushiLosses
+									}
+									label={'Sushi W-L'}
+								/>
+								<Info
+									value={
+										totalIceCreamWins +
+										' - ' +
+										totalIceCreamLosses
+									}
 									label={'Ice Cream W-L'}
 								/>
 								<Info

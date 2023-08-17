@@ -92,7 +92,7 @@ pub contract BasicBeastsRaids {
     // calls functions on player's behalf
     pub resource GameMaster {
 
-        pub fun randomRaid(attacker: Address): UInt32? {
+        pub fun randomRaid(attacker: Address) {
             // check if attacker is valid
             if(BasicBeastsRaids.playerOptIns.keys.contains(attacker)) { //todo: tested
                 // check cooldown
@@ -203,9 +203,6 @@ pub contract BasicBeastsRaids {
 
                                 emit RaidEvent(winner: winner, attackerNFT: attackerNftID, defenderNFT: defenderNftID!, attackerAddress: attacker, defenderAddress: defenderAddress!, raidRecordID: BasicBeastsRaids.raidCount)
 
-                                // return raid count to find RaidRecord
-                                return BasicBeastsRaids.raidCount
-
                             }
                             // no raid, no defender with valid rewards were found
                         }
@@ -216,7 +213,6 @@ pub contract BasicBeastsRaids {
                 // no raid, player cannot attack
             }
             // no raid, player has not opted in 
-            return nil
         }
 
         // no points nor exp is awarded from this type of raid

@@ -428,6 +428,7 @@ transaction(attacker: Address) {
 				let tx = await fcl.tx(txid).onceSealed();
 				this.AdminKeys[keyIndex] = false;
 				console.log('Raid succeeded!');
+				return tx;
 			}
 		} catch (e) {
 			this.AdminKeys[keyIndex] = false;

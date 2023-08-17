@@ -40,16 +40,18 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 						<div className="flex">
 							<div>
 								<div className="relative overflow-hidden w-full bg-transparent rounded-xl">
-									<Image
-										alt={'something'}
-										src={
-											'https://basicbeasts.mypinata.cloud/ipfs/' +
-											beast?.image
-										}
-										width={400}
-										height={400}
-										priority={true}
-									/>
+									{beast && (
+										<Image
+											alt={'something'}
+											src={
+												'https://basicbeasts.mypinata.cloud/ipfs/' +
+												beast?.image
+											}
+											width={400}
+											height={400}
+											priority={true}
+										/>
+									)}
 								</div>
 							</div>
 							<div className="ml-4 w-full">

@@ -5,7 +5,7 @@ pub contract BasicBeastsRaids {
 
     pub event ContractInitialized()
     pub event PlayerOptIn(player: Address, nftID: UInt64, discordID: String)
-    pub event RaidEvent(winner: UInt64?, attackerNFT: UInt64, defenderNFT: UInt64, attackerAddress: Address)
+    pub event RaidEvent(winner: UInt64?, attackerNFT: UInt64, defenderNFT: UInt64, attackerAddress: Address, defenderAddress: Address, raidRecordID: UInt32)
     pub event NewSeasonStarted(newCurrentSeason: UInt32)
 
     pub let GameMasterStoragePath: StoragePath
@@ -200,6 +200,8 @@ pub contract BasicBeastsRaids {
 
                                 // start lock timer
                                 BasicBeastsRaids.playerLockStartDates[attacker] = getCurrentBlock().timestamp
+
+                                emit RaidEvent(winner: winner, attackerNFT: attackerNftID, defenderNFT: defenderNftID!, attackerAddress: attacker, defenderAddress: defenderAddress!, raidRecordID: BasicBeastsRaids.raidCount)
 
                                 // return raid count to find RaidRecord
                                 return BasicBeastsRaids.raidCount

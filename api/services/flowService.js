@@ -7,7 +7,8 @@ fcl.config()
 	.put('flow.network', process.env.FLOW_NETWORK)
 	.put('accessNode.api', process.env.ACCESS_NODE_API)
 	.put('0xBasicBeastsNFTStaking', process.env.ADMIN_ADDRESS)
-	.put('0xBasicBeastsNFTStakingRewards', process.env.ADMIN_ADDRESS);
+	.put('0xBasicBeastsNFTStakingRewards', process.env.ADMIN_ADDRESS)
+	.put('0xBasicBeastsRaids', process.env.ADMIN_ADDRESS);
 
 class flowService {
 	static encryptPrivateKey(key) {
@@ -381,6 +382,52 @@ transaction(fromID: UInt64, toID: UInt64, rewardItemID: UInt32) {
 					return;
 				}
 				console.log('Reward transferred');
+			}
+		} catch (e) {
+			this.AdminKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async randomRaid(address) {
+		let transaction = `
+import BasicBeastsRaids from 0xBasicBeastsRaids
+
+transaction(attacker: Address) {
+
+	let gameMasterRef: &BasicBeastsRaids.GameMaster
+
+	prepare(signer: AuthAccount) {
+		self.gameMasterRef = signer.borrow<&BasicBeastsRaids.GameMaster>(from: BasicBeastsRaids.GameMasterStoragePath)!
+	}
+
+	execute {
+		self.gameMasterRef.randomRaid(attacker: attacker)
+	}
+}
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.AdminKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(address, t.Address),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.AdminKeys[keyIndex] = false;
+				console.log('Raid succeeded!');
 			}
 		} catch (e) {
 			this.AdminKeys[keyIndex] = false;

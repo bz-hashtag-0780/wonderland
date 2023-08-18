@@ -194,7 +194,7 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 							record.winner !== record.attackerNFT) ||
 						(record.defenderAddress === user?.addr &&
 							record.season === currentSeason &&
-							record.winner !== record.defenderNFT)
+							record.winner === record.attackerNFT) // only loss for defender if the attacker won
 			  ).length
 			: 0;
 

@@ -270,9 +270,9 @@ pub contract BasicBeastsNFTStakingRewards {
         }
         self.rewards = {}
 
-        self.RevealerStoragePath = /storage/BasicBeastsNFTStakingRewardsRevealer_1
-        self.AdminStoragePath = /storage/BasicBeastsNFTStakingRewardsAdmin_1
-        self.AdminPrivatePath = /private/BasicBeastsNFTStakingRewardsAdminUpgrade_1
+        self.RevealerStoragePath = /storage/BasicBeastsNFTStakingRewardsRevealer_2
+        self.AdminStoragePath = /storage/BasicBeastsNFTStakingRewardsAdmin_2
+        self.AdminPrivatePath = /private/BasicBeastsNFTStakingRewardsAdminUpgrade_2
 
         // Put Admin in storage
         self.account.save(<-create Admin(), to: self.AdminStoragePath)

@@ -129,8 +129,8 @@ pub contract BasicBeastsNFTStaking {
         self.stakingStartDates = {}
         self.adjustedStakingDates = {}
         
-        self.CollectionStoragePath = /storage/BasicBeastsNFTStakingCollection_1
-        self.CollectionPublicPath = /public/BasicBeastsNFTStakingCollection_1
+        self.CollectionStoragePath = /storage/BasicBeastsNFTStakingCollection_2
+        self.CollectionPublicPath = /public/BasicBeastsNFTStakingCollection_2
 
         emit ContractInitialized()
     }

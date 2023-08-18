@@ -18,6 +18,7 @@ pub contract BasicBeastsRaids {
     access(self) var raidRecords: {UInt32: RaidRecord}
     access(self) var playerOptIns: {Address: UInt64}
     access(self) var addressToDiscord: {Address: String}
+    access(self) var discordToAddress: {String: Address}
     access(self) var playerLockStartDates: {Address: UFix64}
     access(self) var points: {UInt32: {UInt64: UInt32}} // {season: {nftID: points}}
     access(self) var exp: {UInt64: UInt32}
@@ -71,6 +72,7 @@ pub contract BasicBeastsRaids {
                 BasicBeastsRaids.playerOptIns[playerAddress] = nftID
 
                 BasicBeastsRaids.addressToDiscord[playerAddress] = discordID
+                BasicBeastsRaids.discordToAddress[discordID] = playerAddress
 
                 emit PlayerOptIn(player: playerAddress, nftID: nftID, discordID: discordID)
             }
@@ -534,8 +536,12 @@ pub contract BasicBeastsRaids {
         return self.addressToDiscord
     }
 
-    pub fun getAddressFromDiscord(address: Address): String? {
+    pub fun getDiscordFromAddress(address: Address): String? {
         return self.addressToDiscord[address]
+    }
+
+    pub fun getAddressFromDiscord(discordID: String): Address? {
+        return self.discordToAddress[discordID]
     }
 
     pub fun getPlayerLockStartDates(): {Address: UFix64} {
@@ -561,14 +567,15 @@ pub contract BasicBeastsRaids {
         self.raidRecords = {}
         self.playerOptIns = {}
         self.addressToDiscord = {}
+        self.discordToAddress = {}
         self.playerLockStartDates = {}
         self.points = {}
         self.exp = {}
         self.attackerCooldownTimestamps = {}
 
-        self.GameMasterStoragePath = /storage/BasicBeastsRaidsGameMaster_1
-        self.GameMasterPrivatePath = /private/BasicBeastsRaidsGameMaster_1
-        self.PlayerStoragePath = /storage/BasicBeastsRaidsPlayer_1
+        self.GameMasterStoragePath = /storage/BasicBeastsRaidsGameMaster_2
+        self.GameMasterPrivatePath = /private/BasicBeastsRaidsGameMaster_2
+        self.PlayerStoragePath = /storage/BasicBeastsRaidsPlayer_2
 
         // Put Game Master in storage
         self.account.save(<-create GameMaster(), to: self.GameMasterStoragePath)

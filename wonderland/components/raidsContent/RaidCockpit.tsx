@@ -269,7 +269,12 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 										label={'Beast'}
 									/>
 									<Info
-										value={'Joined Raid'}
+										value={
+											beast?.sushiCount == 0 &&
+											beast?.iceCreamCount == 0
+												? 'Cannot Raid'
+												: 'Ready to Raid'
+										}
 										label={'Status'}
 										lastItem={true}
 									/>

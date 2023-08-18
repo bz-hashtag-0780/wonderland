@@ -534,7 +534,7 @@ pub contract BasicBeastsRaids {
         return self.addressToDiscord
     }
 
-    pub fun getAddressToDiscord(address: Address): String? {
+    pub fun getAddressFromDiscord(address: Address): String? {
         return self.addressToDiscord[address]
     }
 

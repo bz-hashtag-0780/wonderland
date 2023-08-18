@@ -236,7 +236,7 @@ pub contract BasicBeastsNFTStakingRewards {
 
         if rewards != nil {
             for item in rewards!.values {
-                if item.rewardItemTemplateID == 1 {
+                if item.rewardItemTemplateID == 1 && item.revealed {
                     return item.id
                 }
             }
@@ -249,7 +249,7 @@ pub contract BasicBeastsNFTStakingRewards {
 
         if rewards != nil {
             for item in rewards!.values {
-                if item.rewardItemTemplateID == 2 {
+                if item.rewardItemTemplateID == 2 && item.revealed {
                     return item.id
                 }
             }

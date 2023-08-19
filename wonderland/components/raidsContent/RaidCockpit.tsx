@@ -266,9 +266,11 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 										<div className="flex w-full mb-4">
 											<Info
 												value={
-													beast?.name +
-													' #' +
-													beast?.serial
+													beast
+														? beast?.name +
+														  ' #' +
+														  beast?.serial
+														: 'No Beast Selected'
 												}
 												label={'Beast'}
 											/>
@@ -276,8 +278,10 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 												value={
 													beast?.sushiCount == 0 &&
 													beast?.iceCreamCount == 0
-														? 'Cannot Raid'
-														: 'Ready to Raid'
+														? 'Need Raidable Rewards'
+														: beast
+														? 'Ready to Raid'
+														: 'Not Ready'
 												}
 												label={'Status'}
 												lastItem={true}
@@ -416,7 +420,9 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 									onClick={() => setOpenRaidProfile(true)}
 									className="flex justify-center items-center mt-6 border border-solid text-white hover:bg-white hover:text-black text-2xl py-1 px-4 w-full h-16 rounded-md font-bold transition duration-150 ease-in-out"
 								>
-									Edit Raid Profile
+									{beast
+										? 'Edit Raid Profile'
+										: 'Setup Raid Cockpit'}
 								</button>
 							</div>
 						</div>

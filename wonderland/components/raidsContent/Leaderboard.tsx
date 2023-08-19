@@ -11,7 +11,7 @@ type Stats = {
 
 const discordHandles = {
 	'0x4742010dbfe107da': 'zz',
-	'0x16af873a66616a17': 'bz_bb',
+	'0x16af873a66616a17': 'bz_bbclub',
 };
 
 const Leaderboard = ({}: any) => {

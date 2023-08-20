@@ -16,12 +16,10 @@ const discordHandles = {
 
 // eslint-disable-next-line react/display-name
 const RaidTable = React.memo(({ selectedSeason, allRecords }: any) => {
-	console.log('RaidTable rendered');
 	const stats = useMemo(
 		() => calculateStats(selectedSeason, allRecords),
 		[selectedSeason, allRecords]
 	);
-	console.log('stats', stats);
 
 	const filteredRecords = useMemo(
 		() =>
@@ -110,8 +108,6 @@ const calculateStats = (selectedSeason: any, allRecords: any) => {
 	const filteredRecords = allRecords.filter(
 		(record: any) => record.season === selectedSeason
 	);
-
-	console.log('filteredRecords', filteredRecords);
 
 	filteredRecords.forEach((record: any) => {
 		// Initialize if doesn't exist

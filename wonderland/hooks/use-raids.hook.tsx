@@ -34,11 +34,14 @@ export default function useRaids(user: any) {
 		if (user?.addr != null) {
 			getRaidBeast();
 		}
+	}, [user?.addr]);
+
+	useEffect(() => {
 		getExp();
 		getPoints();
 		getCurrentSeason();
 		getAllRaidRecords();
-	}, [user?.addr]);
+	}, []);
 
 	const getRaidBeast = async () => {
 		try {

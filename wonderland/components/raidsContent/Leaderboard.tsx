@@ -15,6 +15,8 @@ const discordHandles = {
 	'0x71cc0591ab7cb0ad': 'kylepatrick',
 	'0x29f293731fe0b0d6': 'swtvietgrl',
 	'0x624d7ad010c7092e': 'Robert Miller#1536',
+	'0x0ed7df0f7f4ca812': 'HowToTrainADragon#5084',
+	'0xaf5608f8c25d9ec7': 'betahunter_#9096',
 };
 
 // eslint-disable-next-line react/display-name

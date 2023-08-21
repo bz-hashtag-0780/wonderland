@@ -10,8 +10,11 @@ type Stats = {
 };
 
 const discordHandles = {
-	'0x4742010dbfe107da': 'zz',
-	'0x16af873a66616a17': 'bz_bb',
+	'0x4742010dbfe107da': 'bz_bbclub',
+	'0x16af873a66616a17': 'bb_tester',
+	'0x71cc0591ab7cb0ad': 'kylepatrick',
+	'0x29f293731fe0b0d6': 'swtvietgrl',
+	'0x624d7ad010c7092e': 'Robert Miller#1536',
 };
 
 // eslint-disable-next-line react/display-name

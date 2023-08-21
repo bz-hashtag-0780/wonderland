@@ -422,7 +422,7 @@ const RaidCockpit = ({ setOpenRaidProfile, setOpenChooseBeast }: any) => {
 								>
 									{beast
 										? 'Edit Raid Profile'
-										: 'Setup Raid Cockpit'}
+										: 'Choose Beast'}
 								</button>
 							</div>
 						</div>

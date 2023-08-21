@@ -18,6 +18,7 @@ import {
 import * as t from '@onflow/types';
 import { STAKE } from '@/flow/transactions/stake';
 import { UNSTAKE } from '@/flow/transactions/unstake';
+import { UNSTAKE_MULTIPLE } from '@/flow/transactions/unstake_multiple';
 import { STAKE_MULTIPLE } from '@/flow/transactions/stake_multiple';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/utils/toastStatus';
@@ -32,6 +33,7 @@ const Beasts = () => {
 
 	const {
 		beasts,
+		stakedBeasts,
 		unstakedBeasts,
 		fetchUserBeasts,
 		stakingStartDates,
@@ -288,9 +290,50 @@ const Beasts = () => {
 		}
 	};
 
+	const unstakeMultiple = async () => {
+		const id = toast.loading('Initializing...');
+
+		const IDs = stakedBeasts.map((beast: any) => beast.id).slice(-10);
+
+		try {
+			const res = await send([
+				transaction(UNSTAKE_MULTIPLE),
+				args([arg(IDs, t.Array(t.UInt64))]),
+				payer(authz),
+				proposer(authz),
+				authorizations([authz]),
+				limit(9999),
+			]).then(decode);
+			tx(res).subscribe((res: any) => {
+				toastStatus(id, res.status);
+				console.log(res);
+			});
+			await tx(res)
+				.onceSealed()
+				.then(() => {
+					toast.update(id, {
+						render: 'Transaction Sealed',
+						type: 'success',
+						isLoading: false,
+						autoClose: 5000,
+					});
+				});
+			fetchUserBeasts();
+		} catch (err) {
+			toast.update(id, {
+				render: () => <div>Error, try again later...</div>,
+				type: 'error',
+				isLoading: false,
+				autoClose: 5000,
+			});
+			console.log(err);
+		}
+	};
+
 	return (
 		<>
 			<ActionHeader buttonText="Quest All" action={questAll} />
+			{/* <ActionHeader buttonText="Cancel 10" action={unstakeMultiple} /> */}
 			<div className="pt-6 h-[645px] overflow-y-auto">
 				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
 					{beasts != null && (

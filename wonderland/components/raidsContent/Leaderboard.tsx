@@ -19,6 +19,7 @@ const discordHandles = {
 	'0xaf5608f8c25d9ec7': 'betahunter_#9096',
 	'0xe1cfe1ba997b5aac': 'williblue',
 	'0x3111a249b59e2e25': 'solleb',
+	'0x98394e6f0712f5d7': 'nish_d',
 };
 
 // eslint-disable-next-line react/display-name

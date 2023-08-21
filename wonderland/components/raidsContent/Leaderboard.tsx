@@ -20,6 +20,7 @@ const discordHandles = {
 	'0xe1cfe1ba997b5aac': 'williblue',
 	'0x3111a249b59e2e25': 'solleb',
 	'0x98394e6f0712f5d7': 'nish_d',
+	'0xce4f5ad4674d0995': '2amzabka',
 };
 
 // eslint-disable-next-line react/display-name

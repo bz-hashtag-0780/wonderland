@@ -12,7 +12,7 @@ const rewardTemplates = [
 		rewardItemTemplateID: 2,
 		name: 'Ice Cream',
 		description: '',
-		image: '/images/basicBeasts/poop.png',
+		image: '/images/basicBeasts/ice_cream.png',
 		emoji: '🍦',
 	},
 	{
@@ -20,7 +20,7 @@ const rewardTemplates = [
 		rewardItemTemplateID: 3,
 		name: 'Noodles',
 		description: '',
-		image: '/images/basicBeasts/poop.png',
+		image: '/images/basicBeasts/noodles.png',
 		emoji: '🍜',
 	},
 	{

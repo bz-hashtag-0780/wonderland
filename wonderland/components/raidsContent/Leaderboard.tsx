@@ -18,6 +18,7 @@ const discordHandles = {
 	'0x0ed7df0f7f4ca812': 'HowToTrainADragon#5084',
 	'0xaf5608f8c25d9ec7': 'betahunter_#9096',
 	'0xe1cfe1ba997b5aac': 'williblue',
+	'0x3111a249b59e2e25': 'solleb',
 };
 
 // eslint-disable-next-line react/display-name

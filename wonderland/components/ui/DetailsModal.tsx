@@ -56,7 +56,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
 			></div>
 
 			{/* Modal Content */}
-			<div className="relative rounded-md p-6 max-w-lg w-full bg-black p-5 mx-2 text-white">
+			<div className="relative rounded-md p-6 max-w-lg w-full bg-black bg-opacity-80 p-5 mx-2 text-white">
 				<h2 className="text-xl font-bold mb-4">Beast Details</h2>
 
 				<div className="flex mb-4">

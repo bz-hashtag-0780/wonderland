@@ -7,7 +7,7 @@ const RewardTableModal = ({ isOpen, onClose }: any) => {
 					className="absolute inset-0 bg-black opacity-50"
 					onClick={onClose}
 				></div>
-				<div className="bg-black bg-opacity-80 p-6 rounded-lg shadow-xl max-w-xl overflow-scroll z-10">
+				<div className="bg-black p-6 rounded-lg shadow-xl max-w-xl overflow-scroll z-10">
 					<table className="min-w-full text-white divide-y divide-gray-200">
 						<thead>
 							<tr>

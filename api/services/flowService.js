@@ -98,9 +98,99 @@ pub fun main(): [UInt64] {
 		8: false,
 		9: false,
 		10: false,
+		11: false,
+		12: false,
+		13: false,
+		14: false,
+		15: false,
+		16: false,
+		17: false,
+		18: false,
+		19: false,
+		20: false,
+		21: false,
+		22: false,
+		23: false,
+		24: false,
+		25: false,
+		26: false,
+		27: false,
+		28: false,
+		29: false,
+		30: false,
+		31: false,
+		32: false,
+		33: false,
+		34: false,
+		35: false,
+		36: false,
+		37: false,
+		38: false,
+		39: false,
+		40: false,
+		41: false,
+		42: false,
+		43: false,
+		44: false,
+		45: false,
+		46: false,
+		47: false,
+		48: false,
+		49: false,
+		50: false,
+		51: false,
+		52: false,
+		53: false,
+		54: false,
+		55: false,
+		56: false,
+		57: false,
+		58: false,
+		59: false,
+		60: false,
+		61: false,
+		62: false,
+		63: false,
+		64: false,
+		65: false,
+		66: false,
+		67: false,
+		68: false,
+		69: false,
+		70: false,
+		71: false,
+		72: false,
+		73: false,
+		74: false,
+		75: false,
+		76: false,
+		77: false,
+		78: false,
+		79: false,
+		80: false,
+		81: false,
+		82: false,
+		83: false,
+		84: false,
+		85: false,
+		86: false,
+		87: false,
+		88: false,
+		89: false,
+		90: false,
+		91: false,
+		92: false,
+		93: false,
+		94: false,
+		95: false,
+		96: false,
+		97: false,
+		98: false,
+		99: false,
+		100: false,
 	};
 
-	static async giveRewards(IDs, keyID) {
+	static async giveRewards(IDs) {
 		let transaction = `
 import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
 
@@ -131,8 +221,8 @@ transaction(IDs: [UInt64]) {
 		if (keyIndex == null) {
 			return;
 		}
-
-		const signer = await this.getAdminAccountWithKeyIndex(keyID);
+		this.AdminKeys[keyIndex] = true;
+		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
 		try {
 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
 				arg(IDs, t.Array(t.UInt64)),
@@ -189,6 +279,7 @@ transaction(rewardPerSecond: UFix64) {
 			return;
 		}
 
+		this.AdminKeys[keyIndex] = true;
 		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
 		try {
 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
@@ -256,6 +347,7 @@ pub fun main(): UFix64 {
 			return;
 		}
 
+		this.AdminKeys[keyIndex] = true;
 		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
 		try {
 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
@@ -304,6 +396,7 @@ transaction(nftID: UInt64, rewardItemID: UInt32) {
 			return;
 		}
 
+		this.AdminKeys[keyIndex] = true;
 		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
 		try {
 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
@@ -362,6 +455,7 @@ transaction(fromID: UInt64, toID: UInt64, rewardItemID: UInt32) {
 			return;
 		}
 
+		this.AdminKeys[keyIndex] = true;
 		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
 		try {
 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
@@ -419,6 +513,7 @@ transaction(attacker: Address) {
 			return;
 		}
 
+		this.AdminKeys[keyIndex] = true;
 		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
 		try {
 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
@@ -476,6 +571,82 @@ pub fun main(): {String: String} {
 		});
 
 		return idsToDiscordHandles;
+	}
+
+	static async updateIdsToDiscordHandles(idsToDiscordHandles) {
+		console.log('hello');
+		console.log(idsToDiscordHandles);
+		let transaction = `
+import DiscordHandles from 0xDiscordHandles
+
+transaction(idsToDiscordHandles: {String: String}) {
+
+	let adminRef: &DiscordHandles.Admin
+
+	prepare(signer: AuthAccount) { 
+		self.adminRef = signer.borrow<&DiscordHandles.Admin>(from: DiscordHandles.AdminStoragePath)
+			?? panic("No admin resource in storage")
+
+	}
+
+	execute {
+		let IDs = idsToDiscordHandles.keys
+		var i = 0
+		while i < IDs.length {
+			let discordID = IDs[i]
+			self.adminRef.updateHandle(discordID: discordID, discordHandle: idsToDiscordHandles[discordID]!)
+			i = i + 1
+		}
+	}
+}
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.AdminKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		const transformedArray = Object.entries(idsToDiscordHandles).map(
+			([key, value]) => ({
+				key: key,
+				value: value,
+			})
+		);
+
+		this.AdminKeys[keyIndex] = true;
+		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(
+					transformedArray,
+					t.Dictionary({ key: t.String, value: t.String })
+				),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.AdminKeys[keyIndex] = false;
+				let event = tx.events.find(
+					(e) =>
+						e.type ==
+						'A.4c74cb420f4eaa84.DiscordHandles.UpdatedHandle'
+				);
+				if (!event) {
+					console.log('No updated handles');
+					return;
+				}
+				console.log('Updated idsToDiscordHandles', update);
+			}
+		} catch (e) {
+			this.AdminKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
 	}
 }
 

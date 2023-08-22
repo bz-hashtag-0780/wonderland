@@ -8,7 +8,8 @@ fcl.config()
 	.put('accessNode.api', process.env.ACCESS_NODE_API)
 	.put('0xBasicBeastsNFTStaking', process.env.ADMIN_ADDRESS)
 	.put('0xBasicBeastsNFTStakingRewards', process.env.ADMIN_ADDRESS)
-	.put('0xBasicBeastsRaids', process.env.ADMIN_ADDRESS);
+	.put('0xBasicBeastsRaids', process.env.ADMIN_ADDRESS)
+	.put('0xDiscordHandles', process.env.ADMIN_ADDRESS);
 
 class flowService {
 	static encryptPrivateKey(key) {
@@ -443,6 +444,38 @@ transaction(attacker: Address) {
 			console.log(e);
 			return;
 		}
+	}
+
+	static async getAddressToDiscord() {
+		let script = `
+import BasicBeastsRaids from 0xBasicBeastsRaids
+
+pub fun main(): {Address: String} {
+    return BasicBeastsRaids.getAddressToDiscords()
+}
+        `;
+
+		const addressToDiscords = await fcl.query({
+			cadence: script,
+		});
+
+		return addressToDiscords;
+	}
+
+	static async getIdsToDiscordHandles() {
+		let script = `
+import DiscordHandles from 0xDiscordHandles
+
+pub fun main(): {String: String} {
+    return DiscordHandles.getIdsToDiscordHandles()
+}
+        `;
+
+		const idsToDiscordHandles = await fcl.query({
+			cadence: script,
+		});
+
+		return idsToDiscordHandles;
 	}
 }
 

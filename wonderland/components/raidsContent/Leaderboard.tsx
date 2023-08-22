@@ -24,91 +24,98 @@ const discordHandles = {
 };
 
 // eslint-disable-next-line react/display-name
-const RaidTable = React.memo(({ selectedSeason, allRecords }: any) => {
-	const stats = useMemo(
-		() => calculateStats(selectedSeason, allRecords),
-		[selectedSeason, allRecords]
-	);
+const RaidTable = React.memo(
+	({
+		selectedSeason,
+		allRecords,
+		idsToDiscordHandles,
+		addressToDiscordIds,
+	}: any) => {
+		const stats = useMemo(
+			() => calculateStats(selectedSeason, allRecords),
+			[selectedSeason, allRecords]
+		);
 
-	const filteredRecords = useMemo(
-		() =>
-			allRecords.filter(
-				(record: any) => record.season === selectedSeason
-			),
-		[allRecords, selectedSeason]
-	);
+		const filteredRecords = useMemo(
+			() =>
+				allRecords.filter(
+					(record: any) => record.season === selectedSeason
+				),
+			[allRecords, selectedSeason]
+		);
 
-	const totalRewardsWon = useMemo(
-		() =>
-			filteredRecords.filter((record: any) => record.winner !== null)
-				.length,
-		[filteredRecords]
-	);
+		const totalRewardsWon = useMemo(
+			() =>
+				filteredRecords.filter((record: any) => record.winner !== null)
+					.length,
+			[filteredRecords]
+		);
 
-	const allParticipants = useMemo(
-		() => [
-			...filteredRecords.map((record: any) => record.attackerAddress),
-			...filteredRecords.map((record: any) => record.defenderAddress),
-		],
-		[filteredRecords]
-	);
+		const allParticipants = useMemo(
+			() => [
+				...filteredRecords.map((record: any) => record.attackerAddress),
+				...filteredRecords.map((record: any) => record.defenderAddress),
+			],
+			[filteredRecords]
+		);
 
-	const numberOfUniqueParticipants = useMemo(() => {
-		const uniqueParticipants = new Set(allParticipants);
-		return uniqueParticipants.size;
-	}, [allParticipants]);
+		const numberOfUniqueParticipants = useMemo(() => {
+			const uniqueParticipants = new Set(allParticipants);
+			return uniqueParticipants.size;
+		}, [allParticipants]);
 
-	return (
-		<div className="w-full">
-			<div className="flex flex-end">
-				<div className="flex gap-5 text-2xl mb-4">
-					<div>
-						<div className="flex font-bold text-white opacity-40 text-lg">
-							Total Rewards Won
+		return (
+			<div className="w-full">
+				<div className="flex flex-end">
+					<div className="flex gap-5 text-2xl mb-4">
+						<div>
+							<div className="flex font-bold text-white opacity-40 text-lg">
+								Total Rewards Won
+							</div>
+							<div className="flex font-bold">
+								{totalRewardsWon.toLocaleString()}
+							</div>
 						</div>
-						<div className="flex font-bold">
-							{totalRewardsWon.toLocaleString()}
-						</div>
-					</div>
-					<div>
-						<div className="flex font-bold text-white opacity-40 text-lg">
-							Total Participants
-						</div>
-						<div className="flex font-bold">
-							{numberOfUniqueParticipants.toLocaleString()}
+						<div>
+							<div className="flex font-bold text-white opacity-40 text-lg">
+								Total Participants
+							</div>
+							<div className="flex font-bold">
+								{numberOfUniqueParticipants.toLocaleString()}
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<table className="w-full text-xl">
-				<thead>
-					<tr>
-						<th>Rank</th>
-						<th className="text-left">Discord Handle</th>
-						<th>Total W - L</th>
-						<th>Total Raid Points</th>
-					</tr>
-				</thead>
-				<tbody className="text-center">
-					{stats.map((stat, index) => (
-						<tr key={stat.address}>
-							<td>{index + 1}</td>
-							<td className="text-left">
-								{discordHandles[
-									stat.address as keyof typeof discordHandles
-								] || stat.address}
-							</td>
-							<td>
-								{stat.wins} - {stat.losses}
-							</td>
-							<td>{stat.points}</td>
+				<table className="w-full text-xl">
+					<thead>
+						<tr>
+							<th>Rank</th>
+							<th className="text-left">Discord Handle</th>
+							<th>Total W - L</th>
+							<th>Total Raid Points</th>
 						</tr>
-					))}
-				</tbody>
-			</table>
-		</div>
-	);
-});
+					</thead>
+					<tbody className="text-center">
+						{stats.map((stat, index) => (
+							<tr key={stat.address}>
+								<td>{index + 1}</td>
+								<td className="text-left">
+									{idsToDiscordHandles[
+										addressToDiscordIds[stat.address]
+									] || stat.address}
+								</td>
+								<td>
+									{stat.wins} - {stat.losses}
+								</td>
+								<td>{stat.points}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		);
+	}
+);
 
 const calculateStats = (selectedSeason: any, allRecords: any) => {
 	let statsMap: { [address: string]: Stats } = {};
@@ -169,7 +176,7 @@ const calculateStats = (selectedSeason: any, allRecords: any) => {
 };
 
 const Leaderboard = ({}: any) => {
-	const { allRecords } = useUser();
+	const { allRecords, idsToDiscordHandles, addressToDiscordIds } = useUser();
 
 	return (
 		<div className="w-full max-w-5xl bg-custom-orange bg-opacity-10 p-8 rounded-lg mx-2 text-white border border-custom-orange mt-10">
@@ -177,7 +184,12 @@ const Leaderboard = ({}: any) => {
 				Leaderboard
 			</div>
 			<div className="w-full flex flex-col p-4">
-				<RaidTable selectedSeason={'0'} allRecords={allRecords} />
+				<RaidTable
+					selectedSeason={'0'}
+					allRecords={allRecords}
+					idsToDiscordHandles={idsToDiscordHandles}
+					addressToDiscordIds={addressToDiscordIds}
+				/>
 			</div>
 		</div>
 	);

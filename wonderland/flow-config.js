@@ -8,4 +8,5 @@ config({
 	'0xBasicBeastsNFTStaking': '0x4c74cb420f4eaa84',
 	'0xBasicBeastsNFTStakingRewards': '0x4c74cb420f4eaa84',
 	'0xBasicBeastsRaids': '0x4c74cb420f4eaa84',
+	'0xDiscordHandles': '0x4c74cb420f4eaa84',
 });

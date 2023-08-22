@@ -217,6 +217,10 @@ const Rewards = ({ rewards }: any) => {
 				toastStatus(id, res.status);
 				console.log(res);
 			});
+			await tx(res).onceExecuted();
+			setCurrentRevealed(toReveal);
+			setRevealed(true);
+			getRewards();
 			await tx(res)
 				.onceSealed()
 				.then(() => {
@@ -228,8 +232,6 @@ const Rewards = ({ rewards }: any) => {
 					});
 				});
 			getRewards();
-			setCurrentRevealed(toReveal);
-			setRevealed(true);
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,

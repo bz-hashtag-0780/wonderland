@@ -5,6 +5,7 @@ import useCurrentUser from '@/hooks/use-current-user.hook';
 import useUserBeasts from '@/hooks/use-user-beasts.hook';
 import useRewards from '@/hooks/use-staking-rewards.hook';
 import useRaids from '@/hooks/use-raids.hook';
+import useDiscordHandles from '@/hooks/use-discord-handles.hook';
 
 interface State {
 	beasts: any;
@@ -28,6 +29,8 @@ interface State {
 	getPoints: any;
 	currentSeason: any;
 	allRecords: any;
+	idsToDiscordHandles: any;
+	addressToDiscordIds: any;
 }
 
 const UserContext = createContext<State | undefined>(undefined);
@@ -69,6 +72,8 @@ const UserProvider: React.FC<ProviderProps> = ({ children }) => {
 		allRecords,
 	} = useRaids(user);
 
+	const { idsToDiscordHandles, addressToDiscordIds } = useDiscordHandles();
+
 	return (
 		<UserContext.Provider
 			value={{
@@ -93,6 +98,8 @@ const UserProvider: React.FC<ProviderProps> = ({ children }) => {
 				getPoints,
 				currentSeason,
 				allRecords,
+				idsToDiscordHandles,
+				addressToDiscordIds,
 			}}
 		>
 			{children}

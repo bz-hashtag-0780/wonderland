@@ -18,7 +18,7 @@ async function processEligibleNFTs() {
 	const eligibleNFTs = await flowService.getRewardEligibleNFTs();
 	console.log('Eligible NFTs: ', eligibleNFTs.length);
 
-	const max = 50;
+	const max = 20;
 	const keysLimit = 201;
 	const rewardPerSecond = await flowService.getRewardPerSecond();
 	console.log('Reward Per Second', rewardPerSecond);

@@ -1,30 +1,40 @@
 'use client';
+import React, { useRef, useEffect } from 'react';
+import gsap from 'gsap';
+import { Draggable } from 'gsap/Draggable';
 
-// components/MapWithMarkers.js
-import React from 'react';
-
-const markers = [
-	{ id: 1, left: '10%', top: '20%' },
-	{ id: 2, left: '40%', top: '30%' },
-	// ... add all 10 markers with their relative positions
-];
+gsap.registerPlugin(Draggable);
 
 const MapWithMarkers = () => {
+	const mapRef = useRef(null);
+
+	useEffect(() => {
+		const draggable = Draggable.create(mapRef.current, {
+			type: 'x,y',
+			bounds: '#container',
+			onDrag: function () {
+				// Custom logic to check bounds and adjust position
+				// If the image is reaching one edge, adjust its position to the other edge
+			},
+		});
+
+		return () => {
+			// Clean up on component unmount
+			draggable.kill();
+		};
+	}, []);
+
 	return (
-		<div className="relative w-full max-w-xl mx-auto">
+		<div
+			id="container"
+			className="relative w-screen h-screen overflow-hidden"
+		>
 			<img
+				ref={mapRef}
 				src="/images/placeholders/placeholder-map.jpg"
 				alt="Custom Map"
-				className="w-full"
+				className="w-full h-full scale-150 transform"
 			/>
-			{markers.map((marker) => (
-				<div
-					key={marker.id}
-					className="absolute w-6 h-6 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-					style={{ left: marker.left, top: marker.top }}
-					onClick={() => alert(`Marker ${marker.id} clicked!`)}
-				></div>
-			))}
 		</div>
 	);
 };

@@ -9,7 +9,7 @@ const MapWithMarkers = () => {
 	const mapRef = useRef(null);
 
 	useEffect(() => {
-		const draggable = Draggable.create(mapRef.current, {
+		const draggable: any = Draggable.create(mapRef.current, {
 			type: 'x,y',
 			bounds: '#container',
 			onDrag: function () {
@@ -31,7 +31,7 @@ const MapWithMarkers = () => {
 		>
 			<img
 				ref={mapRef}
-				src="/images/placeholders/placeholder-map.jpg"
+				src="/images/placeholders/placeholder-theme-map.png"
 				alt="Custom Map"
 				className="w-full h-full scale-150 transform"
 			/>

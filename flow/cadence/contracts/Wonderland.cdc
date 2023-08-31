@@ -8,8 +8,17 @@ pub contract Wonderland {
     access(self) var worlds: @{UInt64: World}
     access(self) let coinRequirement: {UInt64:UFix64}
 
+    pub resource Plot {
+        pub let id: UInt32
+
+        init() {
+            
+        }
+    }
+
     pub resource World {
         pub let id: UInt64
+        pub let plots: @{UInt32: Plot}
 
         init() {
             self.id = Wonderland.totalSupply
@@ -29,8 +38,12 @@ pub contract Wonderland {
     }
 
     pub fun borrowWorld(id: UInt64): &Wonderland.World? {
-        let ref = &self.worlds[id] as &Wonderland.World? //TODO: check if it's fine
+        let ref = &self.worlds[id] as &Wonderland.World?
         return ref
+    }
+
+    access(account) fun nameWorld(name: String, plotID: UInt32) {
+
     }
 
     init() {

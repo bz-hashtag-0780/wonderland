@@ -5,24 +5,24 @@ pub contract Wonderland {
     pub event ContractInitialized()
 
     pub let MAX_SUPPLY: UInt64
-    pub let DOMAIN_LIMIT_PER_WORLD: Int
+    pub let TERRITORY_LIMIT_PER_WORLD: Int
 
     pub var totalSupply: UInt64
-    pub var totalDomains: UInt32
+    pub var totalTerritories: UInt32
     access(self) var worlds: @{UInt64: World}
     access(self) let coinRequirement: {UInt64:UFix64}
 
-    pub resource Domain {
+    pub resource Territory {
         pub let id: UInt32
         pub let coins: @CleoCoin.Minter?
         access(self) var farmableResources: @{UInt64:AnyResource} // future farmable resources
 
         init() {
-            self.id = Wonderland.totalDomains
+            self.id = Wonderland.totalTerritories
             self.coins <- nil
             self.farmableResources <- {}
 
-            Wonderland.totalDomains = Wonderland.totalDomains + 1
+            Wonderland.totalTerritories = Wonderland.totalTerritories + 1
         }
 
         destroy() {
@@ -33,27 +33,27 @@ pub contract Wonderland {
 
     pub resource World {
         pub let id: UInt64
-        access(self) var domains: @{UInt32:Domain}
+        access(self) var territories: @{UInt32:Territory}
 
         init() {
             self.id = Wonderland.totalSupply
 
-            self.domains <- {}
+            self.territories <- {}
             var i = 0
-            while i < Wonderland.DOMAIN_LIMIT_PER_WORLD {
-                self.domains[Wonderland.totalDomains] <-! create Domain()
+            while i < Wonderland.TERRITORY_LIMIT_PER_WORLD {
+                self.territories[Wonderland.totalTerritories] <-! create Territory()
                 i = i + 1
             }
 
             Wonderland.totalSupply = Wonderland.totalSupply + 1
         }
 
-        pub fun borrowDomain(id: UInt32): &Wonderland.Domain? {
-            return &self.domains[id] as &Wonderland.Domain?
+        pub fun borrowTerritory(id: UInt32): &Wonderland.Territory? {
+            return &self.territories[id] as &Wonderland.Territory?
         }
 
         destroy() {
-            destroy self.domains
+            destroy self.territories
         }
     }
 
@@ -67,7 +67,7 @@ pub contract Wonderland {
     // -----------------------------------------------------------------------
     // access(account) functions
     // -----------------------------------------------------------------------
-    access(account) fun nameWorld(name: String, plotID: UInt32) {
+    access(account) fun nameWorld(name: String, territoryID: UInt32) {
 
     }
 
@@ -90,10 +90,10 @@ pub contract Wonderland {
 
     init() {
         self.MAX_SUPPLY = 10
-        self.DOMAIN_LIMIT_PER_WORLD = 10
+        self.TERRITORY_LIMIT_PER_WORLD = 10
 
         self.totalSupply = 0
-        self.totalDomains = 0
+        self.totalTerritories = 0
         self.worlds <- {}
         self.coinRequirement = {
             0: 0.0,

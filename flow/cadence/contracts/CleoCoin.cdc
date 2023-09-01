@@ -9,7 +9,9 @@ pub contract CleoCoin: FungibleToken {
 
     pub let MAX_SUPPLY: UFix64
     pub let ALLOWED_AMOUNT_PER_MINTER: UFix64
+    pub let MAX_MINTERS: UInt32
     pub var totalSupply: UFix64
+    pub var totalMinters: UInt32
 
     pub resource Vault: FungibleToken.Provider, FungibleToken.Receiver, FungibleToken.Balance {
         pub var balance: UFix64
@@ -60,7 +62,11 @@ pub contract CleoCoin: FungibleToken {
         }
 
         init() {
+            pre {
+                CleoCoin.totalMinters <= CleoCoin.MAX_MINTERS: "Total minters must be less than or equal to the max minters"
+            }
             self.allowedAmount = CleoCoin.ALLOWED_AMOUNT_PER_MINTER
+            CleoCoin.totalMinters = CleoCoin.totalMinters + 1
         }
     }
 
@@ -71,7 +77,9 @@ pub contract CleoCoin: FungibleToken {
     init() {
         self.MAX_SUPPLY = 69_000_000_000.0
         self.ALLOWED_AMOUNT_PER_MINTER = 690_000_000.0
+        self.MAX_MINTERS = 100
         self.totalSupply = 0.0
+        self.totalMinters = 0
 
 
         emit TokensInitialized(initialSupply: self.totalSupply)

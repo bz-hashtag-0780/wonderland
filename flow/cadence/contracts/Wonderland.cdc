@@ -4,62 +4,79 @@ pub contract Wonderland {
 
     pub event ContractInitialized()
 
-    pub let PLOT_LIMIT_PER_WORLD: Int
+    pub let MAX_SUPPLY: UInt64
+    pub let DOMAIN_LIMIT_PER_WORLD: Int
 
     pub var totalSupply: UInt64
-    pub var totalPlotSupply: UInt32
+    pub var totalDomains: UInt32
     access(self) var worlds: @{UInt64: World}
     access(self) let coinRequirement: {UInt64:UFix64}
 
-    pub resource Plot {
+    pub resource Domain {
         pub let id: UInt32
         pub let coins: @CleoCoin.Minter?
-        access(self) var data: @{UInt64:AnyResource} // future farmable resources
+        access(self) var farmableResources: @{UInt64:AnyResource} // future farmable resources
 
         init() {
-            self.id = Wonderland.totalPlotSupply
+            self.id = Wonderland.totalDomains
             self.coins <- nil
-            self.data <- {}
+            self.farmableResources <- {}
 
-            Wonderland.totalPlotSupply = Wonderland.totalPlotSupply + 1
+            Wonderland.totalDomains = Wonderland.totalDomains + 1
         }
 
         destroy() {
             destroy self.coins
-            destroy self.data
+            destroy self.farmableResources
         }
     }
 
     pub resource World {
         pub let id: UInt64
-        access(self) var plots: @{UInt32:Plot}
+        access(self) var domains: @{UInt32:Domain}
 
         init() {
             self.id = Wonderland.totalSupply
 
-            self.plots <- {}
-
+            self.domains <- {}
             var i = 0
-            while i < Wonderland.PLOT_LIMIT_PER_WORLD {
-                self.plots[Wonderland.totalPlotSupply] <-! create Plot()
+            while i < Wonderland.DOMAIN_LIMIT_PER_WORLD {
+                self.domains[Wonderland.totalDomains] <-! create Domain()
                 i = i + 1
             }
 
             Wonderland.totalSupply = Wonderland.totalSupply + 1
         }
 
-        pub fun borrowPlot(id: UInt32): &Wonderland.Plot? {
-            return &self.plots[id] as &Wonderland.Plot?
+        pub fun borrowDomain(id: UInt32): &Wonderland.Domain? {
+            return &self.domains[id] as &Wonderland.Domain?
         }
 
         destroy() {
-            destroy self.plots
+            destroy self.domains
         }
     }
 
+    // -----------------------------------------------------------------------
+    // interim admin resource controlled by BB Club DAO
+    // -----------------------------------------------------------------------
+    pub resource BBClubDAO {
+        pub fun addNewFarmableResource() {}
+    }
+
+    // -----------------------------------------------------------------------
+    // access(account) functions
+    // -----------------------------------------------------------------------
+    access(account) fun nameWorld(name: String, plotID: UInt32) {
+
+    }
+
+    // -----------------------------------------------------------------------
+    // public contract functions
+    // -----------------------------------------------------------------------
     pub fun mintNewWonderland(cleoCoinVault: @CleoCoin.Vault) {
         pre {
-            Wonderland.totalSupply < 10 : "Cannot mint new Wonderland: Max supply has been reached."
+            Wonderland.totalSupply < Wonderland.MAX_SUPPLY : "Cannot mint new Wonderland: Max supply has been reached."
             cleoCoinVault.balance == Wonderland.coinRequirement[Wonderland.totalSupply] : "Cannot mint new Wonderland: Need exact amount of Cleo Coins required"
         }
         destroy cleoCoinVault
@@ -71,14 +88,12 @@ pub contract Wonderland {
         return &self.worlds[id] as &Wonderland.World?
     }
 
-    access(account) fun nameWorld(name: String, plotID: UInt32) {
-
-    }
-
     init() {
-        self.PLOT_LIMIT_PER_WORLD = 10
+        self.MAX_SUPPLY = 10
+        self.DOMAIN_LIMIT_PER_WORLD = 10
+
         self.totalSupply = 0
-        self.totalPlotSupply = 0
+        self.totalDomains = 0
         self.worlds <- {}
         self.coinRequirement = {
             0: 0.0,

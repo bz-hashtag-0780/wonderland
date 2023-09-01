@@ -5,7 +5,9 @@ access(all) contract CleoCoin: FungibleToken {
     access(all) event TokensInitialized(initialSupply: UFix64)
     access(all) event TokensWithdrawn(amount: UFix64, from: Address?)
     access(all) event TokensDeposited(amount: UFix64, to: Address?)
+    access(all) event TokensBurned(amount: UFix64)
     access(all) event TokensMinted(amount: UFix64)
+    access(all) event MinterCreated(allowedAmount: UFix64)
 
     access(all) let MAX_SUPPLY: UFix64
     access(all) let ALLOWED_AMOUNT_PER_MINTER: UFix64
@@ -36,6 +38,7 @@ access(all) contract CleoCoin: FungibleToken {
 
         destroy() {
             CleoCoin.totalSupply = CleoCoin.totalSupply - self.balance
+            emit TokensBurned(amount: self.balance)
         }
 
     }
@@ -67,6 +70,7 @@ access(all) contract CleoCoin: FungibleToken {
             }
             self.allowedAmount = CleoCoin.ALLOWED_AMOUNT_PER_MINTER
             CleoCoin.totalMinters = CleoCoin.totalMinters + 1
+            emit MinterCreated(allowedAmount: self.allowedAmount)
         }
     }
 
@@ -80,7 +84,6 @@ access(all) contract CleoCoin: FungibleToken {
         self.MAX_MINTERS = 100
         self.totalSupply = 0.0
         self.totalMinters = 0
-
 
         emit TokensInitialized(initialSupply: self.totalSupply)
     }

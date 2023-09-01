@@ -1,4 +1,7 @@
+import NonFungibleToken from "./utility/NonFungibleToken.cdc"
+import FungibleToken from "./utility/FungibleToken.cdc"
 import CleoCoin from "./CleoCoin.cdc"
+import Deedz from "./Deedz.cdc"
 
 pub contract Wonderland {
 
@@ -15,12 +18,25 @@ pub contract Wonderland {
     pub resource Territory {
         pub let id: UInt32
         pub let coins: @CleoCoin.Minter?
-        access(self) var farmableResources: @{UInt64:AnyResource} // future farmable resources
+
+        // fields controlled by deedz holder
+        access(self) var name: String?
+        access(self) var expeditionFees: UFix64
+        access(self) var coinReceiver: Capability<&CleoCoin.Vault{FungibleToken.Receiver}>?
+
+        // future farmable resources
+        access(self) var farmableResources: @{UInt64:AnyResource} 
+        // any future metadata
+        access(self) var metadata: {String:String}
 
         init() {
             self.id = Wonderland.totalTerritories
             self.coins <- nil
+            self.name = nil
+            self.expeditionFees = 0.0
+            self.coinReceiver = nil
             self.farmableResources <- {}
+            self.metadata = {}
 
             Wonderland.totalTerritories = Wonderland.totalTerritories + 1
         }
@@ -35,15 +51,10 @@ pub contract Wonderland {
         pub let id: UInt64
         access(self) var territories: @{UInt32:Territory}
 
-        init() {
+        init(territories: @{UInt32:Territory}) {
             self.id = Wonderland.totalSupply
 
-            self.territories <- {}
-            var i = 0
-            while i < Wonderland.TERRITORY_LIMIT_PER_WORLD {
-                self.territories[Wonderland.totalTerritories] <-! create Territory()
-                i = i + 1
-            }
+            self.territories <- territories
 
             Wonderland.totalSupply = Wonderland.totalSupply + 1
         }
@@ -74,14 +85,38 @@ pub contract Wonderland {
     // -----------------------------------------------------------------------
     // public contract functions
     // -----------------------------------------------------------------------
-    pub fun mintNewWonderland(cleoCoinVault: @CleoCoin.Vault) {
+    pub fun mintNewWonderland(cleoCoinVault: @CleoCoin.Vault): @NonFungibleToken.Collection {
         pre {
             Wonderland.totalSupply < Wonderland.MAX_SUPPLY : "Cannot mint new Wonderland: Max supply has been reached."
             cleoCoinVault.balance == Wonderland.coinRequirement[Wonderland.totalSupply] : "Cannot mint new Wonderland: Need exact amount of Cleo Coins required"
         }
+
+        let territories: @{UInt32:Territory} <- {}
+
+        let deedz <- Deedz.createEmptyCollection()
+
+        var i = 0
+        while i < Wonderland.TERRITORY_LIMIT_PER_WORLD {
+            let newID = Wonderland.totalTerritories
+
+            // create new Territory
+            territories[newID] <-! create Territory()
+
+            // create new Deedz
+            let newDeedz <- Deedz.mintDeedz(territoryID: newID)
+            deedz.deposit(token: <-newDeedz)
+
+            i = i + 1
+        }
+
+        // create new World
+        let newWorld <- create World(territories: <-territories)
+        self.worlds[self.totalSupply] <-! newWorld
+
+        // burn Cleo Coins
         destroy cleoCoinVault
 
-        self.worlds[self.totalSupply] <-! create World()
+        return <- deedz
     }
 
     pub fun borrowWorld(id: UInt64): &Wonderland.World? {
@@ -107,6 +142,8 @@ pub contract Wonderland {
             8: 420_000_000.0,
             9: 690_000_000.0
         }
+
+        //todo: mint genesis wonderland 
 
         emit ContractInitialized()
     }

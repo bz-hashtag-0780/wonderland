@@ -18,11 +18,13 @@ pub contract Deedz: NonFungibleToken {
 
     pub resource NFT: NonFungibleToken.INFT, Public, MetadataViews.Resolver {
         pub let id: UInt64
-        pub let plotID: UInt32
+        pub let territoryID: UInt32
 
-        init(plotID: UInt32) {
+        init(territoryID: UInt32) {
             self.id = self.uuid
-            self.plotID = plotID
+            self.territoryID = territoryID
+
+            Deedz.totalSupply = Deedz.totalSupply + 1
         }
 
         pub fun nameWorld(name: String) {
@@ -200,8 +202,8 @@ pub contract Deedz: NonFungibleToken {
         panic("TODO")
     }
 
-    access(account) fun mintDeedz() {
-
+    access(account) fun mintDeedz(territoryID: UInt32): @Deedz.NFT {
+        return <- create NFT(territoryID: territoryID)
     }
 
     init() {

@@ -17,7 +17,7 @@ pub contract Wonderland {
 
     pub resource Territory {
         pub let id: UInt32
-        pub let coins: @CleoCoin.Minter?
+        pub let coins: @CleoCoin.Minter
 
         // fields controlled by deedz holder
         access(self) var name: String?
@@ -29,9 +29,9 @@ pub contract Wonderland {
         // any future metadata
         access(self) var metadata: {String:String}
 
-        init() {
+        init(minter: @CleoCoin.Minter) {
             self.id = Wonderland.totalTerritories
-            self.coins <- nil
+            self.coins <- minter
             self.name = nil
             self.expeditionFees = 0.0
             self.coinReceiver = nil
@@ -100,7 +100,7 @@ pub contract Wonderland {
             let newID = Wonderland.totalTerritories
 
             // create new Territory
-            territories[newID] <-! create Territory()
+            territories[newID] <-! create Territory(minter: <- CleoCoin.createMinter())
 
             // create new Deedz
             let newDeedz <- Deedz.mintDeedz(territoryID: newID)

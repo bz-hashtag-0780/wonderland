@@ -5,8 +5,10 @@ pub contract CleoCoin: FungibleToken {
     pub event TokensInitialized(initialSupply: UFix64)
     pub event TokensWithdrawn(amount: UFix64, from: Address?)
     pub event TokensDeposited(amount: UFix64, to: Address?)
+    pub event TokensMinted(amount: UFix64)
 
     pub let MAX_SUPPLY: UFix64
+    pub let ALLOWED_AMOUNT_PER_MINTER: UFix64
     pub var totalSupply: UFix64
 
     pub resource Vault: FungibleToken.Provider, FungibleToken.Receiver, FungibleToken.Balance {
@@ -41,7 +43,25 @@ pub contract CleoCoin: FungibleToken {
     }
 
     pub resource Minter {
-        init() {}
+        pub var allowedAmount: UFix64
+
+        pub fun mintTokens(amount: UFix64): @CleoCoin.Vault {
+            pre {
+                amount > 0.0: "Amount minted must be greater than zero"
+                amount <= self.allowedAmount: "Amount minted must be less than the allowed amount"
+            }
+            post {
+                CleoCoin.totalSupply <= CleoCoin.MAX_SUPPLY: "Total supply must be less than or equal to the max supply"
+            }
+            self.allowedAmount = self.allowedAmount - amount
+            CleoCoin.totalSupply = CleoCoin.totalSupply + amount
+            emit TokensMinted(amount: amount)
+            return <-create Vault(balance: amount)
+        }
+
+        init() {
+            self.allowedAmount = CleoCoin.ALLOWED_AMOUNT_PER_MINTER
+        }
     }
 
     access(account) fun createMinter(): @Minter {
@@ -50,6 +70,7 @@ pub contract CleoCoin: FungibleToken {
 
     init() {
         self.MAX_SUPPLY = 69_000_000_000.0
+        self.ALLOWED_AMOUNT_PER_MINTER = 690_000_000.0
         self.totalSupply = 0.0
 
 

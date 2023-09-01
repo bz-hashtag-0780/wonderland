@@ -1,37 +1,44 @@
 import NonFungibleToken from "./utility/NonFungibleToken.cdc"
 import MetadataViews from "./utility/MetadataViews.cdc"
 
-pub contract Deedz: NonFungibleToken {
+access(all) contract Deedz: NonFungibleToken {
 
     // -----------------------------------------------------------------------
     // NonFungibleToken Standard Events
     // -----------------------------------------------------------------------
-    pub event ContractInitialized()
-    pub event Withdraw(id: UInt64, from: Address?)
-    pub event Deposit(id: UInt64, to: Address?)
+    access(all) event ContractInitialized()
+    access(all) event Withdraw(id: UInt64, from: Address?)
+    access(all) event Deposit(id: UInt64, to: Address?)
 
-    pub var totalSupply: UInt64
+    access(all) var totalSupply: UInt64
 
-    pub resource interface Public {
-        pub let id: UInt64
+    access(all) resource interface Public {
+        access(all) let id: UInt64
     }
 
-    pub resource NFT: NonFungibleToken.INFT, Public, MetadataViews.Resolver {
-        pub let id: UInt64
-        pub let territoryID: UInt32
+    access(all) resource NFT: NonFungibleToken.INFT, Public, MetadataViews.Resolver {
+        access(all) let id: UInt64
+        access(all) let worldID: UInt64
+        access(all) let territoryID: UInt32
 
-        init(territoryID: UInt32) {
+        init(worldID: UInt64, territoryID: UInt32) {
             self.id = self.uuid
+            self.worldID = worldID
             self.territoryID = territoryID
 
             Deedz.totalSupply = Deedz.totalSupply + 1
         }
 
-        pub fun nameWorld(name: String) {
+        access(all) fun something() {}
 
+        access(all) fun nameWorld(name: String) {
+            
+            // if let worldRef = Wonderland.borrowWorld(id: self.worldID) {
+
+            // }
         }
 
-        pub fun getViews(): [Type] {
+        access(all) fun getViews(): [Type] {
 			return [
 			Type<MetadataViews.Display>(),
 			Type<MetadataViews.Royalties>(),
@@ -43,7 +50,7 @@ pub contract Deedz: NonFungibleToken {
 			]
 		}
 
-        pub fun resolveView(_ view: Type): AnyStruct? {
+        access(all) fun resolveView(_ view: Type): AnyStruct? {
 			// switch view {
             //     case Type<MetadataViews.Display>():
             //         return MetadataViews.Display(
@@ -131,11 +138,11 @@ pub contract Deedz: NonFungibleToken {
         
     }
 
-    pub resource interface DeedzCollectionPublic {
-        pub fun deposit(token: @NonFungibleToken.NFT)
-        pub fun getIDs(): [UInt64]
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
-        pub fun borrowDeedz(id: UInt64): &Deedz.NFT{Public}? { 
+    access(all) resource interface DeedzCollectionPublic {
+        access(all) fun deposit(token: @NonFungibleToken.NFT)
+        access(all) fun getIDs(): [UInt64]
+        access(all) fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
+        access(all) fun borrowDeedz(id: UInt64): &Deedz.NFT{Public}? { 
             post {
                 (result == nil) || (result?.id == id): 
                     "Cannot borrow Deedz reference: The ID of the returned reference is incorrect"
@@ -144,22 +151,22 @@ pub contract Deedz: NonFungibleToken {
 
     }
 
-    pub resource Collection: DeedzCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection {
+    access(all) resource Collection: DeedzCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection {
 
-        pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
+        access(all) var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
 
         init() {
             self.ownedNFTs <- {}
         }
 
-        pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
+        access(all) fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
             let token <- self.ownedNFTs.remove(key: withdrawID) 
                 ?? panic("Cannot withdraw: The Beast does not exist in the Collection")
             emit Withdraw(id: token.id, from: self.owner?.address)
             return <-token
         }
 
-        pub fun deposit(token: @NonFungibleToken.NFT) {
+        access(all) fun deposit(token: @NonFungibleToken.NFT) {
             let token <- token as! @Deedz.NFT
             let id = token.id
             let oldToken <- self.ownedNFTs[id] <- token
@@ -169,25 +176,25 @@ pub contract Deedz: NonFungibleToken {
             destroy oldToken
         }
 
-        pub fun getIDs(): [UInt64] {
+        access(all) fun getIDs(): [UInt64] {
             return self.ownedNFTs.keys
         }
 
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
+        access(all) fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
             return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
         }
 
-        pub fun borrowDeedz(id: UInt64): &Deedz.NFT{Public}? {
+        access(all) fun borrowDeedz(id: UInt64): &Deedz.NFT{Public}? {
             let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
             return ref as! &Deedz.NFT?
         }
 
-        pub fun borrowEntireDeedz(id: UInt64): &Deedz.NFT? {
+        access(all) fun borrowEntireDeedz(id: UInt64): &Deedz.NFT? {
             let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
             return ref as! &Deedz.NFT?
         }
 
-        pub fun borrowViewResolver(id: UInt64): &AnyResource{MetadataViews.Resolver} {
+        access(all) fun borrowViewResolver(id: UInt64): &AnyResource{MetadataViews.Resolver} {
 			let nft = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
 			let deedzNFT = nft as! &Deedz.NFT
 			return deedzNFT 
@@ -198,12 +205,12 @@ pub contract Deedz: NonFungibleToken {
         }
     }
 
-    pub fun createEmptyCollection(): @NonFungibleToken.Collection {
+    access(all) fun createEmptyCollection(): @NonFungibleToken.Collection {
         panic("TODO")
     }
 
-    access(account) fun mintDeedz(territoryID: UInt32): @Deedz.NFT {
-        return <- create NFT(territoryID: territoryID)
+    access(account) fun mintDeedz(worldID: UInt64, territoryID: UInt32): @Deedz.NFT {
+        return <- create NFT(worldID: worldID, territoryID: territoryID)
     }
 
     init() {

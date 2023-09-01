@@ -18,11 +18,11 @@ pub contract Deedz: NonFungibleToken {
 
     pub resource NFT: NonFungibleToken.INFT, Public, MetadataViews.Resolver {
         pub let id: UInt64
-        pub let worldID: UInt64
+        pub let plotID: UInt32
 
-        init(worldID: UInt64) {
+        init(plotID: UInt32) {
             self.id = self.uuid
-            self.worldID = worldID
+            self.plotID = plotID
         }
 
         pub fun nameWorld(name: String) {
@@ -201,7 +201,7 @@ pub contract Deedz: NonFungibleToken {
     }
 
     access(account) fun mintDeedz() {
-        
+
     }
 
     init() {

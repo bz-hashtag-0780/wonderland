@@ -6,4 +6,10 @@ pub contract CleoCoin {
             self.balance = balance
         }
     }
+
+    pub resource Minter {
+        
+    }
+
+    access(account) 
 }

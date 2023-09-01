@@ -4,26 +4,56 @@ pub contract Wonderland {
 
     pub event ContractInitialized()
 
+    pub let PLOT_LIMIT_PER_WORLD: Int
+
     pub var totalSupply: UInt64
+    pub var totalPlotSupply: UInt32
     access(self) var worlds: @{UInt64: World}
     access(self) let coinRequirement: {UInt64:UFix64}
 
     pub resource Plot {
         pub let id: UInt32
+        pub let coins: @CleoCoin.Minter?
+        access(self) var data: @{UInt64:AnyResource} // future farmable resources
 
         init() {
-            
+            self.id = Wonderland.totalPlotSupply
+            self.coins <- nil
+            self.data <- {}
+
+            Wonderland.totalPlotSupply = Wonderland.totalPlotSupply + 1
+        }
+
+        destroy() {
+            destroy self.coins
+            destroy self.data
         }
     }
 
     pub resource World {
         pub let id: UInt64
-        pub let plots: @{UInt32: Plot}
+        access(self) var plots: @{UInt32:Plot}
 
         init() {
             self.id = Wonderland.totalSupply
 
+            self.plots <- {}
+
+            var i = 0
+            while i < Wonderland.PLOT_LIMIT_PER_WORLD {
+                self.plots[Wonderland.totalPlotSupply] <-! create Plot()
+                i = i + 1
+            }
+
             Wonderland.totalSupply = Wonderland.totalSupply + 1
+        }
+
+        pub fun borrowPlot(id: UInt32): &Wonderland.Plot? {
+            return &self.plots[id] as &Wonderland.Plot?
+        }
+
+        destroy() {
+            destroy self.plots
         }
     }
 
@@ -38,8 +68,7 @@ pub contract Wonderland {
     }
 
     pub fun borrowWorld(id: UInt64): &Wonderland.World? {
-        let ref = &self.worlds[id] as &Wonderland.World?
-        return ref
+        return &self.worlds[id] as &Wonderland.World?
     }
 
     access(account) fun nameWorld(name: String, plotID: UInt32) {
@@ -47,7 +76,9 @@ pub contract Wonderland {
     }
 
     init() {
+        self.PLOT_LIMIT_PER_WORLD = 10
         self.totalSupply = 0
+        self.totalPlotSupply = 0
         self.worlds <- {}
         self.coinRequirement = {
             0: 0.0,

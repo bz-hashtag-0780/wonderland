@@ -40,6 +40,17 @@ access(all) contract Wonderland {
             Wonderland.totalTerritories = Wonderland.totalTerritories + 1
         }
 
+        //todo: add all getters and setters
+        // Set name of territory once
+        access(all) fun setName(name: String, deedz: @Deedz.NFT): @Deedz.NFT {
+            pre {
+                self.name == nil : "Cannot set name of territory: Name has already been set."
+                deedz.territoryID == self.id : "Cannot set name of territory: Deedz does not match territory."
+            }
+            self.name = name
+            return <- deedz
+        }
+
         destroy() {
             destroy self.coins
             destroy self.farmableResources
@@ -119,7 +130,7 @@ access(all) contract Wonderland {
     access(all) fun nameWorld(name: String, deedz: @Deedz.NFT): @Deedz.NFT {
         if let worldRef = self.borrowWorld(id: deedz.worldID) {
             if let territoryRef = worldRef.borrowTerritory(id: deedz.territoryID) {
-                territoryRef.name = name
+                return <- territoryRef.setName(name: name, deedz: <- deedz)
             }
         }
         return <- deedz

@@ -19,7 +19,7 @@ access(all) contract Wonderland {
         access(all) let id: UInt32
         access(self) let coins: @CleoCoin.Minter
         // future farmable resources
-        access(self) var farmableResources: @{UInt64:AnyResource} 
+        access(self) var farmableResources: @{UInt64:AnyResource} //todo: figure out how farming will work with either this solution or something else.
         // any future metadata
         access(self) var metadata: {String:String}
 
@@ -49,6 +49,38 @@ access(all) contract Wonderland {
             }
             self.name = name
             return <- deedz
+        }
+
+        access(all) fun setExpeditionFees(fees: UFix64, deedz: @Deedz.NFT): @Deedz.NFT {
+            pre {
+                deedz.territoryID == self.id : "Cannot set expedition fees: Deedz does not match territory."
+            }
+            self.expeditionFees = fees
+            return <- deedz
+        }
+
+        access(all) fun setCoinReceiver(receiver: Capability<&CleoCoin.Vault{FungibleToken.Receiver}>, deedz: @Deedz.NFT): @Deedz.NFT {
+            pre {
+                deedz.territoryID == self.id : "Cannot set coin receiver: Deedz does not match territory."
+            }
+            self.coinReceiver = receiver
+            return <- deedz
+        }
+
+        access(all) fun getName(): String? {
+            return self.name
+        }
+
+        access(all) fun getExpeditionFees(): UFix64 {
+            return self.expeditionFees
+        }
+
+        access(all) fun getAllMetadata(): {String:String} {
+            return self.metadata
+        }
+
+        access(all) fun getMetadata(key: String): String? {
+            return self.metadata[key]
         }
 
         destroy() {
@@ -131,6 +163,24 @@ access(all) contract Wonderland {
         if let worldRef = self.borrowWorld(id: deedz.worldID) {
             if let territoryRef = worldRef.borrowTerritory(id: deedz.territoryID) {
                 return <- territoryRef.setName(name: name, deedz: <- deedz)
+            }
+        }
+        return <- deedz
+    }
+
+    access(all) fun setExpeditionFees(fees: UFix64, deedz: @Deedz.NFT): @Deedz.NFT {
+        if let worldRef = self.borrowWorld(id: deedz.worldID) {
+            if let territoryRef = worldRef.borrowTerritory(id: deedz.territoryID) {
+                return <- territoryRef.setExpeditionFees(fees: fees, deedz: <- deedz)
+            }
+        }
+        return <- deedz
+    }
+
+    access(all) fun setCoinReceiver(receiver: Capability<&CleoCoin.Vault{FungibleToken.Receiver}>, deedz: @Deedz.NFT): @Deedz.NFT {
+        if let worldRef = self.borrowWorld(id: deedz.worldID) {
+            if let territoryRef = worldRef.borrowTerritory(id: deedz.territoryID) {
+                return <- territoryRef.setCoinReceiver(receiver: receiver, deedz: <- deedz)
             }
         }
         return <- deedz

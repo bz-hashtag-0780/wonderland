@@ -1,5 +1,6 @@
 import FungibleToken from "./utility/FungibleToken.cdc"
 
+//todo add metadataviews
 access(all) contract CleoCoin: FungibleToken {
 
     access(all) event TokensInitialized(initialSupply: UFix64)

@@ -9,8 +9,10 @@
 import CleoCoin from "./CleoCoin.cdc"
 
 access(all) contract WonderlandEligibleCollections {
+    access(all) let BASE_STAKING_REQUIREMENT: UFix64
     access(all) var totalSupply: UInt64
     access(self) var eligibleCollections: @{UInt64: EligibleCollection}
+    access(self) var collectionsIDs: [UInt64]
 
     pub resource CollectionManager {
         access(all) fun makeCollectionEligible(type: Type, coins: @CleoCoin.Vault) {
@@ -19,6 +21,7 @@ access(all) contract WonderlandEligibleCollections {
             }
             let newID = WonderlandEligibleCollections.totalSupply
             let newEligibleCollection <- create EligibleCollection(type: type, collectionManagerAddress: self.owner!.address, coins: <- coins)
+            WonderlandEligibleCollections.collectionsIDs.append(newID)
             WonderlandEligibleCollections.eligibleCollections[newID] <-! newEligibleCollection
         }
 
@@ -27,6 +30,21 @@ access(all) contract WonderlandEligibleCollections {
                 WonderlandEligibleCollections.eligibleCollections[id] != nil: "Cannot remove collection, collection does not exist"
                 
             }
+            // check if collection manager of the collection
+            // update eligibleCollections
+            // update collectionsIDs
+
+            return <- CleoCoin.createEmptyVault()
+        }
+
+        access(all) fun withdrawStakedCoins(id: UInt64, amount: UFix64): @CleoCoin.Vault {
+            pre {
+                WonderlandEligibleCollections.eligibleCollections[id] != nil: "Cannot withdraw staked coins, collection does not exist"
+            }
+            // check if collection manager of the collection
+            // update eligibleCollections
+            // update collectionsIDs
+
             return <- CleoCoin.createEmptyVault()
         }
     }
@@ -48,16 +66,26 @@ access(all) contract WonderlandEligibleCollections {
 
         destroy() {
             destroy self.stakedCoins
+            WonderlandEligibleCollections.totalSupply = WonderlandEligibleCollections.totalSupply - 1
         }
     }
 
     access(all) fun stakingRequirement(id: UInt64): UFix64 {
-        return 0.0
+        var position = 0.0
+        for collectionID in WonderlandEligibleCollections.collectionsIDs {
+            if collectionID == id {
+                break
+            }
+            position = position + 1.0
+        }
+        return position * WonderlandEligibleCollections.BASE_STAKING_REQUIREMENT
     }
 
     init() {
+        self.BASE_STAKING_REQUIREMENT = 2023.0
         self.totalSupply = 0
         self.eligibleCollections <- {}
+        self.collectionsIDs = []
     }
 
 }

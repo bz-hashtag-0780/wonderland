@@ -18,12 +18,18 @@ access(all) contract Farming {
         //todo: problem with NFTs, how to get them stay in the questing contract?
         // or should they? They need to be locked somehow
         // access(all) fun exploreUsingNFT(nft: @NonFungibleToken.NFT) {
+        access(all) fun exploreUsingNFT(nft: UInt64) {
             /* 
             let token <- token as! @BasicBeasts.NFT
             let id = token.id
             let oldToken <- self.ownedNFTs[id] <- token
             */
-        // }
+            // 1. check if nft is from a questing collection that is eligible for farming
+            // 2. lock the nft in the questing contract using a capability
+            // 3. add the nft to the lockedNFTs dictionary
+            // 4. add the nft to the lockedStartDate dictionary
+            // 
+        }
 
         access(all) fun exploreUsingHybrids(hybrids: UInt64) {
             //TODO & fix arguments
@@ -31,6 +37,10 @@ access(all) contract Farming {
 
         access(all) fun exploreUsingShadowNFTs(shadowNFTs: UInt64) {
             //TODO & fix arguments
+        }
+
+        access(all) fun recallNFT(nftID: UInt64) {
+
         }
 
         destroy() {
@@ -43,7 +53,7 @@ access(all) contract Farming {
         // access(all) let worldID: UInt64
         // access(all) let territoryID: UInt32
         // needs capability to lock NFT from questing contract
-        // access(self) var lockingNFTsCaps: {UInt64: Capability From questing, will it be the same}
+        // access(self) var lockingNFTsCaps: {UInt64: Capability From questing, will it be the same}?
         init(baseDuration: UFix64) {
 
         }

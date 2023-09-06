@@ -29,15 +29,6 @@ access(all) contract Deedz: NonFungibleToken {
             Deedz.totalSupply = Deedz.totalSupply + 1
         }
 
-        access(all) fun something() {}
-
-        access(all) fun nameWorld(name: String) {
-            
-            // if let worldRef = Wonderland.borrowWorld(id: self.worldID) {
-
-            // }
-        }
-
         access(all) fun getViews(): [Type] {
 			return [
 			Type<MetadataViews.Display>(),
@@ -206,7 +197,7 @@ access(all) contract Deedz: NonFungibleToken {
     }
 
     access(all) fun createEmptyCollection(): @NonFungibleToken.Collection {
-        panic("TODO")
+        return <- create Deedz.Collection()
     }
 
     access(account) fun mintDeedz(worldID: UInt64, territoryID: UInt32): @Deedz.NFT {

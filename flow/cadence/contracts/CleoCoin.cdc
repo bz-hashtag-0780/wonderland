@@ -1,6 +1,7 @@
 /*  
-    Cleo Coin 6/9/2023
+    CLΣΘ CΘΙΝ 6/9/2023
 */
+
 import FungibleToken from "./utility/FungibleToken.cdc"
 
 access(all) contract CleoCoin: FungibleToken {

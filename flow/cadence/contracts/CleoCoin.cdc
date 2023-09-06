@@ -84,7 +84,7 @@ access(all) contract CleoCoin: FungibleToken {
     }
 
     access(account) fun createMinter(): @Minter {
-        return <- create Minter()
+        return <-create Minter()
     }
 
     init() {

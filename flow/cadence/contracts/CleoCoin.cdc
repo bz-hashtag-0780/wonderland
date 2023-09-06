@@ -1,6 +1,8 @@
+/*  
+    Cleo Coin 6/9/2023
+*/
 import FungibleToken from "./utility/FungibleToken.cdc"
 
-//todo add metadataviews
 access(all) contract CleoCoin: FungibleToken {
 
     access(all) event TokensInitialized(initialSupply: UFix64)
@@ -10,9 +12,14 @@ access(all) contract CleoCoin: FungibleToken {
     access(all) event TokensMinted(amount: UFix64)
     access(all) event MinterCreated(allowedAmount: UFix64)
 
+    pub let VaultStoragePath: StoragePath
+    pub let VaultReceiverPath: PublicPath
+    pub let VaultBalancePath: PublicPath
+
     access(all) let MAX_SUPPLY: UFix64
     access(all) let ALLOWED_AMOUNT_PER_MINTER: UFix64
     access(all) let MAX_MINTERS: UInt32
+
     access(all) var totalSupply: UFix64
     access(all) var totalMinters: UInt32
 
@@ -54,7 +61,7 @@ access(all) contract CleoCoin: FungibleToken {
         access(all) fun mintTokens(amount: UFix64): @CleoCoin.Vault {
             pre {
                 amount > 0.0: "Amount minted must be greater than zero"
-                amount <= self.allowedAmount: "Amount minted must be less than the allowed amount"
+                amount <= self.allowedAmount: "Amount minted must be less than or equal to the allowed amount"
             }
             post {
                 CleoCoin.totalSupply <= CleoCoin.MAX_SUPPLY: "Total supply must be less than or equal to the max supply"
@@ -80,9 +87,14 @@ access(all) contract CleoCoin: FungibleToken {
     }
 
     init() {
+        self.VaultStoragePath = /storage/CleoCoinVault
+        self.VaultReceiverPath = /public/CleoCoinVaultReceiver
+        self.VaultBalancePath = /public/CleoCoinVaultBalance
+
         self.MAX_SUPPLY = 69_000_000_000.0
         self.ALLOWED_AMOUNT_PER_MINTER = 690_000_000.0
         self.MAX_MINTERS = 100
+
         self.totalSupply = 0.0
         self.totalMinters = 0
 

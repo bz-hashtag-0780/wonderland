@@ -21,7 +21,7 @@ access(all) contract Wonderland {
         // future farmable resources
         access(self) var farmableResources: @{UInt64:AnyResource} //todo: figure out how farming will work with either this solution or something else.
         // any future metadata
-        access(self) var metadata: {String:String}
+        access(self) var metadata: {String:AnyStruct}
 
         // fields controlled by deedz holder
         access(self) var name: String?

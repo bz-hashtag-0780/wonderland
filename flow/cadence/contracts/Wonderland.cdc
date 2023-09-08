@@ -19,7 +19,7 @@ access(all) contract Wonderland {
         access(all) let id: UInt32
         access(self) let coins: @CleoCoin.Minter
         // future farmable resources
-        access(self) var farmableResources: @{UInt64:AnyResource} //todo: figure out how farming will work with either this solution or something else.
+        access(self) var farmableResources: @{String:AnyResource} //todo: figure out how farming will work with either this solution or something else.
         // any future metadata
         access(self) var metadata: {String:AnyStruct}
 

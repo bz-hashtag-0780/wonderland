@@ -75,11 +75,11 @@ access(all) contract Wonderland {
             return self.expeditionFees
         }
 
-        access(all) fun getAllMetadata(): {String:String} {
+        access(all) fun getAllMetadata(): {String:AnyStruct} {
             return self.metadata
         }
 
-        access(all) fun getMetadata(key: String): String? {
+        access(all) fun getMetadata(key: String): AnyStruct? {
             return self.metadata[key]
         }
 

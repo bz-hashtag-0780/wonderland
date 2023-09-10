@@ -16,6 +16,15 @@ access(all) contract Questing {
         }
     }
 
+    //todo: update contract to store the quests on user accounts instead
+    access(all) resource QuestsContainer {
+        access(all) let quest: Quest
+
+        init(quest: Quest) {
+            self.quest = quest
+        }
+    }
+
     access(all) fun getQuest(type: Type, admin: Address, id: UInt32): Quest? {
         let key = type.identifier.concat(admin.toString().concat(id.toString()))
 

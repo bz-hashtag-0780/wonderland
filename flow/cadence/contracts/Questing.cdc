@@ -1,45 +1,87 @@
 access(all) contract Questing {
 
     access(all) var totalSupply: UInt64
-    access(self) var quests: {String: Quest}
-    access(self) var adminQuestIDs: {Address: [UInt64]}
 
-    access(all) struct Quest {
+    access(all) resource Quest {
         access(all) let id: UInt64
         access(all) let type: Type
         access(all) let admin: Address
+        access(self) var rewards: @{UInt64: RewardCollection} // nft.uuid: Rewards
+        access(self) var metadata: {String: AnyStruct}
+        access(self) var resources: @{String: AnyResource}
 
         init(type: Type, admin: Address) {
             self.type = type
             self.admin = admin
             let id: [UInt64] = Questing.getAdminQuestIDs(admin: admin) == nil ? Questing.getAdminQuestIDs(admin: admin)! : []
             self.id = UInt64(id.length)
+            self.rewards <- {}
+            self.metadata = {}
+            self.resources <- {}
         }
+
+        access(all) fun quest() {}
+
+        access(all) fun unquest() {}
+
+        access(all) fun removeFromQuest() {}
+
+        access(all) fun addReward() {
+
+        }
+
+        access(all) fun removeReward() {
+
+        }
+
+        access(all) fun moveReward() {}
+
+        destroy() {
+            destroy self.resources
+        }
+    
     }
 
     //todo: update contract to store the quests on user accounts instead
     access(all) resource QuestManager {
-        access(self) var quests: {String: Quest}
+        access(self) var quests: @{String: Quest}
         access(self) var questIDs: [UInt64]
-        access(self) var questRewards: @{UInt64: Bins} //NFTid: Bin
 
         init() {
-            self.quests = {}
+            self.quests <- {}
             self.questIDs = []
-            self.questRewards = {}
         }
+
+        access(all) fun createQuest() {
+        }
+
+        access(all) fun transferQuest() {
+
+        }
+
+        access(all) fun destroyQuest() {
+
+        }
+
+        access(all) fun borrowQuest() {
+
+        }
+
+        access(all) fun getQuestKeys(): [String] {
+            return self.quests.keys
+        }
+
+        access(all) fun getQuestIDs(): [UInt64] {
+            return self.questIDs
+        }
+
+        destroy() {
+            destroy self.quests
+        }
+
     }
 
-
-    access(all) resource QuestsContainer {
-        access(all) let quest: Quest
-
-        init(quest: Quest) {
-            self.quest = quest
-        }
-    }
-
-    access(all) fun getQuest(type: Type, admin: Address, id: UInt64): Quest? {
+    access(all) fun getQuest(type: Type, admin: Address, id: UInt64): &Quest? {
         let key = type.identifier.concat(admin.toString().concat(id.toString()))
 
         return self.quests[key]
@@ -59,7 +101,5 @@ access(all) contract Questing {
 
     init() {
         self.totalSupply = 0
-        self.quests = {}
-        self.adminQuestIDs = {}
     }
 }

@@ -35,6 +35,7 @@ access(all) contract Questing {
         access(all) let id: UInt64
         access(all) let type: Type
         access(all) let questCreator: Address
+        access(self) var questers: [Address]
         access(self) var questingStartDates: {UInt64: UFix64}
         access(self) var adjustedQuestingStartDates: {UInt64: UFix64}
         access(self) var rewards: @{UInt64: QuestReward.Collection} // nft.uuid: Rewards
@@ -45,6 +46,9 @@ access(all) contract Questing {
             self.id = self.uuid
             self.type = type
             self.questCreator = questCreator
+            self.questers = []
+            self.questingStartDates = {}
+            self.adjustedQuestingStartDates = {}
             self.rewards <- {}
             self.metadata = {}
             self.resources <- {}

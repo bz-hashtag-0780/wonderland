@@ -1,3 +1,6 @@
+
+import QuestReward from "./QuestReward.cdc"
+
 access(all) contract Questing {
 
     // -----------------------------------------------------------------------
@@ -32,7 +35,9 @@ access(all) contract Questing {
         access(all) let id: UInt64
         access(all) let type: Type
         access(all) let questCreator: Address
-        access(self) var rewards: @{UInt64: RewardCollection} // nft.uuid: Rewards
+        access(self) var questingStartDates: {UInt64: UFix64}
+        access(self) var adjustedQuestingStartDates: {UInt64: UFix64}
+        access(self) var rewards: @{UInt64: QuestReward.Collection} // nft.uuid: Rewards
         access(self) var metadata: {String: AnyStruct}
         access(self) var resources: @{String: AnyResource}
 
@@ -73,6 +78,7 @@ access(all) contract Questing {
         }
 
         destroy() {
+            destroy self.rewards
             destroy self.resources
         }
     
@@ -135,7 +141,7 @@ access(all) contract Questing {
 
         self.totalSupply = 0
         self.featuredQuestManagers = []
-        
+
         self.metadata = {}
         self.resources <- {}
     }

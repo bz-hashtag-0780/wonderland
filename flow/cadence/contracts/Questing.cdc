@@ -1,8 +1,28 @@
 access(all) contract Questing {
 
+    // -----------------------------------------------------------------------
+    // Events
+    // -----------------------------------------------------------------------
+    access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
+
+    // -----------------------------------------------------------------------
+    // Paths
+    // -----------------------------------------------------------------------
+    access(all) let QuestManagerStoragePath: StoragePath
+    access(all) let QuestManagerPublicPath: PublicPath
     access(all) let QuestManagerPrivatePath: PrivatePath
 
+    // -----------------------------------------------------------------------
+    // Contract Fields
+    // -----------------------------------------------------------------------
     access(all) var totalSupply: UInt64
+    access(all) var featuredQuestManagers: [Address] //maybe to promote certain quests permissionlessly on the clients. Must require a certain amount of coins staked to be featured and to avoid spam. Big maybe as the clients in the end have the power to decide what to show.
+    
+    // -----------------------------------------------------------------------
+    // Future Contract Extensions
+    // -----------------------------------------------------------------------
+    access(self) var metadata: {String: AnyStruct}
+    access(self) var resources: @{String: AnyResource}
 
     access(all) resource interface Public {
 
@@ -48,7 +68,9 @@ access(all) contract Questing {
 
         }
 
-        access(all) fun moveReward() {}
+        access(all) fun moveReward() {
+
+        }
 
         destroy() {
             destroy self.resources
@@ -66,6 +88,10 @@ access(all) contract Questing {
 
         init() {
             self.quests <- {}
+        }
+
+        access(all) fun getIDs(): [UInt64] {
+            return self.quests.keys
         }
 
         access(all) fun createQuest(type: Type) {
@@ -88,35 +114,29 @@ access(all) contract Questing {
 
         }
 
-        access(all) fun getIDs(): [UInt64] {
-            return self.quests.keys
-        }
-
         destroy() {
             destroy self.quests
         }
 
     }
 
-    access(all) fun getQuest(type: Type, admin: Address, id: UInt64): &Quest? {
-        let key = type.identifier.concat(admin.toString().concat(id.toString()))
+    access(all) fun getQuest(questManager: Address, id: UInt64): &Quest? {
+        let questManager = getAccount(questManager).getCapability<&QuestManager{QuestManagerPublic}>(QuestManagerPublicPath).borrow()
+            ?? panic("Could not borrow QuestManagerPublic reference")
 
-        return self.quests[key]
-    }
-
-    access(all) fun addQuest(quest: Quest) {
-        self.quests[Questing.getKey(quest: quest)] = quest
-    }
-
-    access(all) fun getKey(quest: Quest): String {
-        return quest.type.identifier.concat(quest.admin.toString().concat(quest.id.toString()))
-    }
-
-    access(all) fun getAdminQuestIDs(admin: Address): [UInt64]? {
-        return self.adminQuestIDs[admin]
+        let quest = questManager.borrowQuest(id: id)
+        return quest
     }
 
     init() {
+        self.QuestManagerStoragePath = /storage/QuestManager
+        self.QuestManagerPublicPath = /public/QuestManager
+        self.QuestManagerPrivatePath = /private/QuestManager
+
         self.totalSupply = 0
+        self.featuredQuestManagers = []
+        
+        self.metadata = {}
+        self.resources <- {}
     }
 }

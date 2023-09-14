@@ -28,7 +28,14 @@ access(all) contract Questing {
     access(self) var resources: @{String: AnyResource}
 
     access(all) resource interface Public {
-
+        access(all) let id: UInt64
+        access(all) let type: Type
+        access(all) let questCreator: Address
+        access(all) fun getQuesters(): [Address]
+        access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
+        access(all) fun getQuestingStartDate(questingResourceID: UInt64): UFix64?
+        access(all) fun getAdjustedQuestingStartDates(): {UInt64: UFix64}
+        access(all) fun getAdjustedQuestingStartDate(questingResourceID: UInt64): UFix64?
     }
 
     access(all) resource Quest: Public {
@@ -80,6 +87,28 @@ access(all) contract Questing {
         access(all) fun moveReward() {
 
         }
+
+        access(all) fun getQuesters(): [Address] {
+            return self.questers
+        }
+
+        access(all) fun getAllQuestingStartDates(): {UInt64: UFix64} {
+            return self.questingStartDates
+        }
+
+        access(all) fun getQuestingStartDate(questingResourceID: UInt64): UFix64? {
+            return self.questingStartDates[questingResourceID]
+        }
+
+        access(all) fun getAdjustedQuestingStartDates(): {UInt64: UFix64} {
+            return self.adjustedQuestingStartDates
+        }
+
+        access(all) fun getAdjustedQuestingStartDate(questingResourceID: UInt64): UFix64? {
+            return self.adjustedQuestingStartDates[questingResourceID]
+        }
+
+        //todo: add rest of the getters
 
         destroy() {
             destroy self.rewards

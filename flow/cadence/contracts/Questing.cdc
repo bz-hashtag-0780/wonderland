@@ -31,6 +31,8 @@ access(all) contract Questing {
         access(all) let id: UInt64
         access(all) let type: Type
         access(all) let questCreator: Address
+        access(all) fun quest(questingResource: @AnyResource): @AnyResource
+        access(all) fun unquest(questingResource: @AnyResource): @AnyResource
         access(all) fun getQuesters(): [Address]
         access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
         access(all) fun getQuestingStartDate(questingResourceID: UInt64): UFix64?
@@ -72,9 +74,18 @@ access(all) contract Questing {
             return <- questingResource        
         }
 
-        access(all) fun unquest() {}
+        access(all) fun unquest(questingResource: @AnyResource): @AnyResource {
+            pre {
+                questingResource.getType() == self.type: "questingResource type does not match type required by quest"
+            }
+            let type = questingResource.getType()
 
-        access(all) fun removeFromQuest() {}
+            return <- questingResource
+        }
+
+        access(all) fun removeFromQuest(questingResourceID: UInt64) {
+
+        }
 
         access(all) fun addReward() {
 
@@ -118,7 +129,7 @@ access(all) contract Questing {
     }
 
     access(all) resource interface QuestManagerPublic {
-
+        access(all) fun borrowQuest(id: UInt64): &Quest{Public}
     }
 
     //todo: update contract to store the quests on user accounts instead
@@ -149,8 +160,12 @@ access(all) contract Questing {
 
         }
 
-        access(all) fun borrowQuest() {
+        access(all) fun borrowQuest(id: UInt64): &Questing.Quest{Public}? {
+            
+        }
 
+        access(all) fun borrowEntireQuest(id: UInt64): &Questing.Quest? {
+            return &self.quests[id] as &Questing.Quest?
         }
 
         destroy() {

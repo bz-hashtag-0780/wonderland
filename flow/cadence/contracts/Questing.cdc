@@ -1,5 +1,6 @@
 
 import QuestReward from "./QuestReward.cdc"
+import NonFungibleToken from "./utility/NonFungibleToken.cdc"
 
 access(all) contract Questing {
 
@@ -78,12 +79,20 @@ access(all) contract Questing {
             pre {
                 questingResource.getType() == self.type: "Cannot quest: questingResource type does not match type required by quest"
             }
+            let type = self.type
+            var uuid: UInt64? = nil
+            if(questingResource.isInstance(Type<@NonFungibleToken.NFT>())) {
+                let resource <- questingResource as! @NonFungibleToken.NFT
+                uuid = resource.uuid
+                destroy resource
+
+            }
+            // let resource <- questingResource as! type
 
             // add quester to the list of questers
             self.questers.append(address)
-
             // add timers
-            self.questingStartDates[questingResource.uuid] = getCurrentBlock().timestamp
+            self.questingStartDates[uuid!] = getCurrentBlock().timestamp
             self.adjustedQuestingStartDates[questingResource.uuid] = getCurrentBlock().timestamp
 
             emit QuestStarted(questID: self.id, resourceType: questingResource.getType(), questingResourceID: questingResource.uuid, quester: address)

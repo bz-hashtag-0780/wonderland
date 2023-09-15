@@ -33,7 +33,7 @@ access(all) contract Questing {
         access(all) let id: UInt64
         access(all) let type: Type
         access(all) let questCreator: Address
-        access(all) fun quest(questingResource: @AnyResource): @AnyResource
+        access(all) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
         access(all) fun unquest(questingResource: @AnyResource): @AnyResource
         access(all) fun getQuesters(): [Address]
         access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
@@ -154,7 +154,12 @@ access(all) contract Questing {
     }
 
     access(all) resource interface QuestManagerPublic {
-        access(all) fun borrowQuest(id: UInt64): &Quest{Public}
+        access(all) fun borrowQuest(id: UInt64): &Quest{Public}? { 
+            post {
+                (result == nil) || (result?.id == id): 
+                    "Cannot borrow Quest reference: The ID of the returned reference is incorrect"
+            }
+        }
     }
 
     //todo: update contract to store the quests on user accounts instead
@@ -186,7 +191,7 @@ access(all) contract Questing {
         }
 
         access(all) fun borrowQuest(id: UInt64): &Questing.Quest{Public}? {
-            
+            return &self.quests[id] as &Questing.Quest{Public}?
         }
 
         access(all) fun borrowEntireQuest(id: UInt64): &Questing.Quest? {
@@ -199,13 +204,13 @@ access(all) contract Questing {
 
     }
 
-    access(all) fun getQuest(questManager: Address, id: UInt64): &Quest? {
-        let questManager = getAccount(questManager).getCapability<&QuestManager{QuestManagerPublic}>(QuestManagerPublicPath).borrow()
-            ?? panic("Could not borrow QuestManagerPublic reference")
+    // access(all) fun getQuest(questManager: Address, id: UInt64): &Quest? {
+    //     let questManager = getAccount(questManager).getCapability<&QuestManager{QuestManagerPublic}>(self.QuestManagerPublicPath).borrow()
+    //         ?? panic("Could not borrow QuestManagerPublic reference")
 
-        let quest = questManager.borrowQuest(id: id)
-        return quest
-    }
+    //     let quest = questManager.borrowQuest(id: id)
+    //     return quest
+    // }
 
     init() {
         self.QuestManagerStoragePath = /storage/QuestManager

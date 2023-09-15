@@ -81,11 +81,11 @@ access(all) contract Questing {
             }
             let type = self.type
             var uuid: UInt64? = nil
+            var container: @{UInt64: AnyResource} <- {}
             if(questingResource.isInstance(Type<@NonFungibleToken.NFT>())) {
                 let resource <- questingResource as! @NonFungibleToken.NFT
                 uuid = resource.uuid
-                destroy resource
-
+                container[0] <-! resource as @AnyResource
             }
             // let resource <- questingResource as! type
 
@@ -97,7 +97,9 @@ access(all) contract Questing {
 
             emit QuestStarted(questID: self.id, resourceType: questingResource.getType(), questingResourceID: questingResource.uuid, quester: address)
 
-            return <- questingResource
+            let returnResource <- container.remove(key: 0)!
+            destroy container
+            return <- returnResource
         }
 
         access(all) fun unquest(questingResource: @AnyResource): @AnyResource {

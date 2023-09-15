@@ -6,6 +6,8 @@ access(all) contract Questing {
     // -----------------------------------------------------------------------
     // Events
     // -----------------------------------------------------------------------
+    access(all) event QuestStarted(questID: UInt64, resourceType: Type, questingResourceID: UInt64, quester: Address)
+    access(all) event QuestEnded(questID: UInt64, resourceType: Type, questingResourceID: UInt64)
     access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
 
     // -----------------------------------------------------------------------
@@ -48,6 +50,10 @@ access(all) contract Questing {
         access(self) var questingStartDates: {UInt64: UFix64}
         access(self) var adjustedQuestingStartDates: {UInt64: UFix64}
         access(self) var rewards: @{UInt64: QuestReward.Collection} // nft.uuid: Rewards
+
+        /*
+            Future extensions
+        */
         access(self) var metadata: {String: AnyStruct}
         access(self) var resources: @{String: AnyResource}
 
@@ -65,38 +71,38 @@ access(all) contract Questing {
             Questing.totalSupply = Questing.totalSupply + 1
         }
 
-        access(all) fun quest(questingResource: @AnyResource): @AnyResource {
+        /*
+            Public functions
+        */
+        access(all) fun quest(questingResource: @AnyResource, address: Address): @AnyResource {
             pre {
-                questingResource.getType() == self.type: "questingResource type does not match type required by quest"
+                questingResource.getType() == self.type: "Cannot quest: questingResource type does not match type required by quest"
             }
-            let type = questingResource.getType()
 
-            return <- questingResource        
-        }
+            // add quester to the list of questers
+            self.questers.append(address)
 
-        access(all) fun unquest(questingResource: @AnyResource): @AnyResource {
-            pre {
-                questingResource.getType() == self.type: "questingResource type does not match type required by quest"
-            }
-            let type = questingResource.getType()
+            // add timers
+            self.questingStartDates[questingResource.uuid] = getCurrentBlock().timestamp
+            self.adjustedQuestingStartDates[questingResource.uuid] = getCurrentBlock().timestamp
+
+            emit QuestStarted(questID: self.id, resourceType: questingResource.getType(), questingResourceID: questingResource.uuid, quester: address)
 
             return <- questingResource
         }
 
-        access(all) fun removeFromQuest(questingResourceID: UInt64) {
+        access(all) fun unquest(questingResource: @AnyResource): @AnyResource {
+            pre {
+                self.questingStartDates.keys.contains(questingResource.uuid): "Cannot unquest: questingResource is not currently questing"
+            }
+            
+            // remove timers
+            self.questingStartDates.remove(key: questingResource.uuid)
+            self.adjustedQuestingStartDates.remove(key: questingResource.uuid)
 
-        }
+            emit QuestEnded(questID: self.id, resourceType: questingResource.getType(), questingResourceID: questingResource.uuid)
 
-        access(all) fun addReward() {
-
-        }
-
-        access(all) fun removeReward() {
-
-        }
-
-        access(all) fun moveReward() {
-
+            return <- questingResource
         }
 
         access(all) fun getQuesters(): [Address] {
@@ -120,6 +126,25 @@ access(all) contract Questing {
         }
 
         //todo: add rest of the getters
+
+        /*
+            QuestManager functions
+        */
+        access(all) fun unquestResource(questingResourceID: UInt64) {
+
+        }
+
+        access(all) fun addReward() {
+
+        }
+
+        access(all) fun removeReward() {
+
+        }
+
+        access(all) fun moveReward() {
+
+        }
 
         destroy() {
             destroy self.rewards

@@ -34,7 +34,7 @@ access(all) contract Questing {
         access(all) let id: UInt64
         access(all) let type: Type
         access(all) let questCreator: Address
-        access(all) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
+        access(contract) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
         // access(all) fun unquest(questingResource: @AnyResource): @AnyResource
         access(all) fun getQuesters(): [Address]
         access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
@@ -75,7 +75,7 @@ access(all) contract Questing {
         /*
             Public functions
         */
-        access(all) fun quest(questingResource: @AnyResource, address: Address): @AnyResource {
+        access(contract) fun quest(questingResource: @AnyResource, address: Address): @AnyResource {
             pre {
                 questingResource.getType() == self.type: "Cannot quest: questingResource type does not match type required by quest"
             }
@@ -85,22 +85,13 @@ access(all) contract Questing {
             container[0] <-! questingResource
 
             if (container[0]?.isInstance(Type<@NonFungibleToken.NFT>()) == true) {
-                // We're sure that this cast will succeed because of the above check
                 let ref = &container[0] as auth &AnyResource?
                 let resource = ref as! &NonFungibleToken.NFT
                 uuid = resource.uuid
             }
 
-
-            // Ensure we always have a UUID by this point
+            // ensure we always have a UUID by this point
             assert(uuid != nil, message: "UUID should not be nil")
-
-            // if(questingResource.isInstance(Type<@NonFungibleToken.NFT>())) {
-            //     let resource <- questingResource as! @NonFungibleToken.NFT
-            //     uuid = resource.uuid
-            //     // container[0] <-! resource as @AnyResource
-            // }
-            // let resource <- questingResource as! type
 
             // add quester to the list of questers
             self.questers.append(address)
@@ -226,6 +217,29 @@ access(all) contract Questing {
 
         destroy() {
             destroy self.quests
+        }
+
+    }
+
+    access(all) resource Quester {
+
+        access(all) fun quest(questManager: Address, questID: UInt64, questingResource: @AnyResource): @AnyResource {
+
+            var questManagerRef: &QuestManager{QuestManagerPublic}?  = nil
+
+            if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
+                questManagerRef = cap.borrow()
+            }
+
+            var questRef: &Quest{Public}? = nil
+
+            if(questManagerRef != nil) {
+                questRef = questManagerRef!.borrowQuest(id: questID)
+            }
+
+            assert(questRef != nil, message: "Quest reference should not be nil")
+
+            return <- questRef!.quest(questingResource: <-questingResource, address: self.owner!.address)
         }
 
     }

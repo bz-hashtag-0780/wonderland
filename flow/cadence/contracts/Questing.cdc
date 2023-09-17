@@ -35,7 +35,7 @@ access(all) contract Questing {
         access(all) let type: Type
         access(all) let questCreator: Address
         access(contract) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
-        // access(all) fun unquest(questingResource: @AnyResource): @AnyResource
+        access(all) fun unquest(questingResource: @AnyResource): @AnyResource
         access(all) fun getQuesters(): [Address]
         access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
         access(all) fun getQuestingStartDate(questingResourceID: UInt64): UFix64?
@@ -108,19 +108,31 @@ access(all) contract Questing {
             return <- returnResource
         }
 
-        // access(all) fun unquest(questingResource: @AnyResource): @AnyResource {
-        //     pre {
-        //         self.questingStartDates.keys.contains(questingResource.uuid): "Cannot unquest: questingResource is not currently questing"
-        //     }
+        access(all) fun unquest(questingResource: @AnyResource): @AnyResource {
+
+            var uuid: UInt64? = nil
+            var container: @{UInt64: AnyResource} <- {}
+            container[0] <-! questingResource
+
+            if (container[0]?.isInstance(Type<@NonFungibleToken.NFT>()) == true) {
+                let ref = &container[0] as auth &AnyResource?
+                let resource = ref as! &NonFungibleToken.NFT
+                uuid = resource.uuid
+            }
+
+            assert(self.questingStartDates.keys.contains(uuid!), message: "Cannot unquest: questingResource is not currently questing")
             
-        //     // remove timers
-        //     self.questingStartDates.remove(key: questingResource.uuid)
-        //     self.adjustedQuestingStartDates.remove(key: questingResource.uuid)
+            // remove timers
+            self.questingStartDates.remove(key: uuid!)
+            self.adjustedQuestingStartDates.remove(key: uuid!)
 
-        //     emit QuestEnded(questID: self.id, resourceType: questingResource.getType(), questingResourceID: questingResource.uuid)
+            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: uuid!)
 
-        //     return <- questingResource
-        // }
+            let returnResource <- container.remove(key: 0)!
+            destroy container
+
+            return <- returnResource
+        }
 
         access(all) fun getQuesters(): [Address] {
             return self.questers
@@ -179,7 +191,6 @@ access(all) contract Questing {
         }
     }
 
-    //todo: update contract to store the quests on user accounts instead
     access(all) resource QuestManager: QuestManagerPublic {
         access(self) var quests: @{UInt64: Quest}
 
@@ -240,6 +251,25 @@ access(all) contract Questing {
             assert(questRef != nil, message: "Quest reference should not be nil")
 
             return <- questRef!.quest(questingResource: <-questingResource, address: self.owner!.address)
+        }
+
+        access(all) fun unquest(questManager: Address, questID: UInt64, questingResource: @AnyResource): @AnyResource {
+
+            var questManagerRef: &QuestManager{QuestManagerPublic}?  = nil
+
+            if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
+                questManagerRef = cap.borrow()
+            }
+
+            var questRef: &Quest{Public}? = nil
+
+            if(questManagerRef != nil) {
+                questRef = questManagerRef!.borrowQuest(id: questID)
+            }
+
+            assert(questRef != nil, message: "Quest reference should not be nil")
+
+            return <- questRef!.unquest(questingResource: <-questingResource)
         }
 
     }

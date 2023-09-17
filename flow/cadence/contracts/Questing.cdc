@@ -35,7 +35,7 @@ access(all) contract Questing {
         access(all) let type: Type
         access(all) let questCreator: Address
         access(all) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
-        access(all) fun unquest(questingResource: @AnyResource): @AnyResource
+        // access(all) fun unquest(questingResource: @AnyResource): @AnyResource
         access(all) fun getQuesters(): [Address]
         access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
         access(all) fun getQuestingStartDate(questingResourceID: UInt64): UFix64?
@@ -82,40 +82,54 @@ access(all) contract Questing {
             let type = self.type
             var uuid: UInt64? = nil
             var container: @{UInt64: AnyResource} <- {}
-            
-            if(questingResource.isInstance(Type<@NonFungibleToken.NFT>())) {
-                let resource <- questingResource as! @NonFungibleToken.NFT
+            container[0] <-! questingResource
+
+            if (container[0]?.isInstance(Type<@NonFungibleToken.NFT>()) == true) {
+                // We're sure that this cast will succeed because of the above check
+                let ref = &container[0] as auth &AnyResource?
+                let resource = ref as! &NonFungibleToken.NFT
                 uuid = resource.uuid
-                container[0] <-! resource as @AnyResource
             }
+
+
+            // Ensure we always have a UUID by this point
+            assert(uuid != nil, message: "UUID should not be nil")
+
+            // if(questingResource.isInstance(Type<@NonFungibleToken.NFT>())) {
+            //     let resource <- questingResource as! @NonFungibleToken.NFT
+            //     uuid = resource.uuid
+            //     // container[0] <-! resource as @AnyResource
+            // }
             // let resource <- questingResource as! type
 
             // add quester to the list of questers
             self.questers.append(address)
+
             // add timers
             self.questingStartDates[uuid!] = getCurrentBlock().timestamp
             self.adjustedQuestingStartDates[uuid!] = getCurrentBlock().timestamp
 
             emit QuestStarted(questID: self.id, resourceType: type, questingResourceID: uuid!, quester: address)
 
-            let questingResource <- container.remove(key: 0)!
+            let returnResource <- container.remove(key: 0)!
             destroy container
-            return <- questingResource
+
+            return <- returnResource
         }
 
-        access(all) fun unquest(questingResource: @AnyResource): @AnyResource {
-            pre {
-                self.questingStartDates.keys.contains(questingResource.uuid): "Cannot unquest: questingResource is not currently questing"
-            }
+        // access(all) fun unquest(questingResource: @AnyResource): @AnyResource {
+        //     pre {
+        //         self.questingStartDates.keys.contains(questingResource.uuid): "Cannot unquest: questingResource is not currently questing"
+        //     }
             
-            // remove timers
-            self.questingStartDates.remove(key: questingResource.uuid)
-            self.adjustedQuestingStartDates.remove(key: questingResource.uuid)
+        //     // remove timers
+        //     self.questingStartDates.remove(key: questingResource.uuid)
+        //     self.adjustedQuestingStartDates.remove(key: questingResource.uuid)
 
-            emit QuestEnded(questID: self.id, resourceType: questingResource.getType(), questingResourceID: questingResource.uuid)
+        //     emit QuestEnded(questID: self.id, resourceType: questingResource.getType(), questingResourceID: questingResource.uuid)
 
-            return <- questingResource
-        }
+        //     return <- questingResource
+        // }
 
         access(all) fun getQuesters(): [Address] {
             return self.questers

@@ -82,6 +82,7 @@ access(all) contract Questing {
             let type = self.type
             var uuid: UInt64? = nil
             var container: @{UInt64: AnyResource} <- {}
+            
             if(questingResource.isInstance(Type<@NonFungibleToken.NFT>())) {
                 let resource <- questingResource as! @NonFungibleToken.NFT
                 uuid = resource.uuid
@@ -93,13 +94,13 @@ access(all) contract Questing {
             self.questers.append(address)
             // add timers
             self.questingStartDates[uuid!] = getCurrentBlock().timestamp
-            self.adjustedQuestingStartDates[questingResource.uuid] = getCurrentBlock().timestamp
+            self.adjustedQuestingStartDates[uuid!] = getCurrentBlock().timestamp
 
-            emit QuestStarted(questID: self.id, resourceType: questingResource.getType(), questingResourceID: questingResource.uuid, quester: address)
+            emit QuestStarted(questID: self.id, resourceType: type, questingResourceID: uuid!, quester: address)
 
-            let returnResource <- container.remove(key: 0)!
+            let questingResource <- container.remove(key: 0)!
             destroy container
-            return <- returnResource
+            return <- questingResource
         }
 
         access(all) fun unquest(questingResource: @AnyResource): @AnyResource {

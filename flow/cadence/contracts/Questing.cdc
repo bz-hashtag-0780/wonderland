@@ -79,7 +79,6 @@ access(all) contract Questing {
             pre {
                 questingResource.getType() == self.type: "Cannot quest: questingResource type does not match type required by quest"
             }
-            let type = self.type
             var uuid: UInt64? = nil
             var container: @{UInt64: AnyResource} <- {}
             container[0] <-! questingResource
@@ -100,7 +99,7 @@ access(all) contract Questing {
             self.questingStartDates[uuid!] = getCurrentBlock().timestamp
             self.adjustedQuestingStartDates[uuid!] = getCurrentBlock().timestamp
 
-            emit QuestStarted(questID: self.id, resourceType: type, questingResourceID: uuid!, quester: address)
+            emit QuestStarted(questID: self.id, resourceType: self.type, questingResourceID: uuid!, quester: address)
 
             let returnResource <- container.remove(key: 0)!
             destroy container
@@ -122,11 +121,7 @@ access(all) contract Questing {
 
             assert(self.questingStartDates.keys.contains(uuid!), message: "Cannot unquest: questingResource is not currently questing")
             
-            // remove timers
-            self.questingStartDates.remove(key: uuid!)
-            self.adjustedQuestingStartDates.remove(key: uuid!)
-
-            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: uuid!)
+            self.unquestResource(questingResourceID: uuid!)
 
             let returnResource <- container.remove(key: 0)!
             destroy container
@@ -160,7 +155,11 @@ access(all) contract Questing {
             QuestManager functions
         */
         access(all) fun unquestResource(questingResourceID: UInt64) {
+            // remove timers
+            self.questingStartDates.remove(key: questingResourceID)
+            self.adjustedQuestingStartDates.remove(key: questingResourceID)
 
+            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID)
         }
 
         access(all) fun addReward() {
@@ -173,6 +172,23 @@ access(all) contract Questing {
 
         access(all) fun moveReward() {
 
+        }
+
+        access(self) fun randomReward(): Int {
+            // Generate a random number between 0 and 100_000_000
+            let randomNum = Int(unsafeRandom() % 100_000_000)
+            
+            let threshold1 = 69_000_000 // for 69%
+            let threshold2 = 87_000_000 // for 18%, cumulative 87%
+            let threshold3 = 95_000_000 // for 8%, cumulative 95%
+            let threshold4 = 99_000_000 // for 4%, cumulative 99%
+            
+            // Return reward based on generated random number
+            if randomNum < threshold1 { return 1 }
+            else if randomNum < threshold2 { return 2 }
+            else if randomNum < threshold3 { return 3 }
+            else if randomNum < threshold4 { return 4 }
+            else { return 5 } // for remaining 1%
         }
 
         destroy() {
@@ -210,12 +226,14 @@ access(all) contract Questing {
             emit QuestCreated(questID: id, type: type, questCreator: self.owner!.address)
         }
 
-        access(all) fun transferQuest() {
-
+        access(all) fun transferQuest(id: UInt64): @Quest {
+            let quest <- self.quests.remove(key: id) ?? panic("Quest does not exist")
+            return <- quest
         }
 
-        access(all) fun destroyQuest() {
-
+        access(all) fun destroyQuest(id: UInt64) {
+            let quest <- self.quests.remove(key: id) ?? panic("Quest does not exist")
+            destroy quest
         }
 
         access(all) fun borrowQuest(id: UInt64): &Questing.Quest{Public}? {
@@ -236,17 +254,7 @@ access(all) contract Questing {
 
         access(all) fun quest(questManager: Address, questID: UInt64, questingResource: @AnyResource): @AnyResource {
 
-            var questManagerRef: &QuestManager{QuestManagerPublic}?  = nil
-
-            if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
-                questManagerRef = cap.borrow()
-            }
-
-            var questRef: &Quest{Public}? = nil
-
-            if(questManagerRef != nil) {
-                questRef = questManagerRef!.borrowQuest(id: questID)
-            }
+            let questRef = Questing.getQuest(questManager: questManager, id: questID)
 
             assert(questRef != nil, message: "Quest reference should not be nil")
 
@@ -255,17 +263,7 @@ access(all) contract Questing {
 
         access(all) fun unquest(questManager: Address, questID: UInt64, questingResource: @AnyResource): @AnyResource {
 
-            var questManagerRef: &QuestManager{QuestManagerPublic}?  = nil
-
-            if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
-                questManagerRef = cap.borrow()
-            }
-
-            var questRef: &Quest{Public}? = nil
-
-            if(questManagerRef != nil) {
-                questRef = questManagerRef!.borrowQuest(id: questID)
-            }
+            let questRef = Questing.getQuest(questManager: questManager, id: questID)
 
             assert(questRef != nil, message: "Quest reference should not be nil")
 
@@ -274,13 +272,21 @@ access(all) contract Questing {
 
     }
 
-    // access(all) fun getQuest(questManager: Address, id: UInt64): &Quest? {
-    //     let questManager = getAccount(questManager).getCapability<&QuestManager{QuestManagerPublic}>(self.QuestManagerPublicPath).borrow()
-    //         ?? panic("Could not borrow QuestManagerPublic reference")
+    access(all) fun getQuest(questManager: Address, id: UInt64): &Quest{Public}? {
+        var questManagerRef: &QuestManager{QuestManagerPublic}?  = nil
 
-    //     let quest = questManager.borrowQuest(id: id)
-    //     return quest
-    // }
+        if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
+            questManagerRef = cap.borrow()
+        }
+
+        var questRef: &Quest{Public}? = nil
+
+        if(questManagerRef != nil) {
+            questRef = questManagerRef!.borrowQuest(id: id)
+        }
+
+        return questRef
+    }
 
     init() {
         self.QuestManagerStoragePath = /storage/QuestManager

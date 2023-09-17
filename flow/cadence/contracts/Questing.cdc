@@ -166,8 +166,12 @@ access(all) contract Questing {
 
         }
 
-        access(all) fun removeReward() {
-
+        access(all) fun burnReward(questingResourceID: UInt64, rewardID: UInt64) {
+            let collectionRef = &self.rewards[questingResourceID] as &QuestReward.Collection?
+            assert(collectionRef != nil, message: "Cannot burn reward: questingResource does not have any rewards")
+            let reward <- collectionRef!.withdraw(withdrawID: rewardID)
+            destroy reward
+            
         }
 
         access(all) fun moveReward() {

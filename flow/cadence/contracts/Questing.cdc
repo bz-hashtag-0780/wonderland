@@ -171,11 +171,15 @@ access(all) contract Questing {
             assert(collectionRef != nil, message: "Cannot burn reward: questingResource does not have any rewards")
             let reward <- collectionRef!.withdraw(withdrawID: rewardID)
             destroy reward
-            
         }
 
-        access(all) fun moveReward() {
+        access(all) fun moveReward(fromID: UInt64, toID: UInt64, rewardID: UInt64) {
+            let fromRef = &self.rewards[fromID] as &QuestReward.Collection?
+            assert(fromRef != nil, message: "Cannot move reward: fromID does not have any rewards")
 
+            let toRef: &QuestReward.Collection? = &self.rewards[toID] as &QuestReward.Collection?
+            assert(toID != nil, message: "Cannot move reward: toID does not have any rewards")
+            toRef!.deposit(token: <-fromRef!.withdraw(withdrawID: rewardID))
         }
 
         access(self) fun randomReward(): Int {

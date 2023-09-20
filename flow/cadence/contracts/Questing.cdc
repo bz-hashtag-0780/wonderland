@@ -163,7 +163,7 @@ access(all) contract Questing {
         }
 
         access(all) fun addReward() {
-
+            //TODO
         }
 
         access(all) fun burnReward(questingResourceID: UInt64, rewardID: UInt64) {

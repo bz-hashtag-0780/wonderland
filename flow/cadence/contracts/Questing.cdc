@@ -1,6 +1,7 @@
 
 import QuestReward from "./QuestReward.cdc"
 import NonFungibleToken from "./utility/NonFungibleToken.cdc"
+import RewardAlgorithm from "./RewardAlgorithm.cdc"
 
 access(all) contract Questing {
 
@@ -162,8 +163,9 @@ access(all) contract Questing {
             emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID)
         }
 
-        access(all) fun addReward() {
+        access(all) fun addReward(rewardAlgo: &AnyResource{RewardAlgorithm.Algorithm}) {
             //TODO
+            //get reward algorithm
         }
 
         access(all) fun burnReward(questingResourceID: UInt64, rewardID: UInt64) {

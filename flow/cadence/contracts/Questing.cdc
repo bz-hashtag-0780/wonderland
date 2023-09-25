@@ -129,6 +129,9 @@ access(all) contract Questing {
                 uuid = resource.uuid
             }
 
+            // ensure we always have a UUID by this point
+            assert(uuid != nil, message: "UUID should not be nil")
+
             assert(self.questingStartDates.keys.contains(uuid!), message: "Cannot unquest: questingResource is not currently questing")
             
             self.unquestResource(questingResourceID: uuid!)
@@ -183,6 +186,7 @@ access(all) contract Questing {
         access(all) fun addReward(rewardAlgo: &AnyResource{RewardAlgorithm.Algorithm}) {
             //TODO
             //get reward algorithm
+            
         }
 
         access(all) fun burnReward(questingResourceID: UInt64, rewardID: UInt64) {
@@ -207,8 +211,8 @@ access(all) contract Questing {
 
         access(contract) fun updateAdjustedQuestingStartDate(questingResourceID: UInt64, rewardPerSecond: UFix64) {
             if(self.adjustedQuestingStartDates[questingResourceID] != nil) {
-            self.adjustedQuestingStartDates[questingResourceID] = self.adjustedQuestingStartDates[questingResourceID]! + rewardPerSecond
-        }
+                self.adjustedQuestingStartDates[questingResourceID] = self.adjustedQuestingStartDates[questingResourceID]! + rewardPerSecond
+            }
         }
 
         access(self) fun randomReward(): Int {

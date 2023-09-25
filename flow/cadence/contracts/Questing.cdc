@@ -35,12 +35,13 @@ access(all) contract Questing {
         access(all) let id: UInt64
         access(all) let type: Type
         access(all) let questCreator: Address
+        access(all) var rewardPerSecond: UFix64
         access(contract) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
         access(all) fun unquest(questingResource: @AnyResource): @AnyResource
         access(all) fun getQuesters(): [Address]
         access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
         access(all) fun getQuestingStartDate(questingResourceID: UInt64): UFix64?
-        access(all) fun getAdjustedQuestingStartDates(): {UInt64: UFix64}
+        access(all) fun getAllAdjustedQuestingStartDates(): {UInt64: UFix64}
         access(all) fun getAdjustedQuestingStartDate(questingResourceID: UInt64): UFix64?
         access(all) fun getQuestingResourceIDs(): [UInt64]
         access(all) fun borrowRewardCollection(questingResourceID: UInt64): &QuestReward.Collection?
@@ -53,7 +54,12 @@ access(all) contract Questing {
         access(self) var questers: [Address]
         access(self) var questingStartDates: {UInt64: UFix64}
         access(self) var adjustedQuestingStartDates: {UInt64: UFix64}
-        access(self) var rewards: @{UInt64: QuestReward.Collection}
+
+        /*
+            Questing Rewards
+        */
+        access(all) var rewardPerSecond: UFix64
+        access(self) var rewards: @{UInt64: QuestReward.Collection} //todo: think more about this, whether a quest reward interface will be needed.
 
         /*
             Future extensions
@@ -70,6 +76,7 @@ access(all) contract Questing {
             self.adjustedQuestingStartDates = {}
             self.rewards <- {}
             self.metadata = {}
+            self.rewardPerSecond = 604800.0
             self.resources <- {}
 
             Questing.totalSupply = Questing.totalSupply + 1
@@ -144,7 +151,7 @@ access(all) contract Questing {
             return self.questingStartDates[questingResourceID]
         }
 
-        access(all) fun getAdjustedQuestingStartDates(): {UInt64: UFix64} {
+        access(all) fun getAllAdjustedQuestingStartDates(): {UInt64: UFix64} {
             return self.adjustedQuestingStartDates
         }
 
@@ -192,6 +199,16 @@ access(all) contract Questing {
             let toRef: &QuestReward.Collection? = &self.rewards[toID] as &QuestReward.Collection?
             assert(toID != nil, message: "Cannot move reward: toID does not have any rewards")
             toRef!.deposit(token: <-fromRef!.withdraw(withdrawID: rewardID))
+        }
+
+        access(all) fun changeRewardPerSecond(seconds: UFix64) {
+            self.rewardPerSecond = seconds
+        }
+
+        access(contract) fun updateAdjustedQuestingStartDate(questingResourceID: UInt64, rewardPerSecond: UFix64) {
+            if(self.adjustedQuestingStartDates[questingResourceID] != nil) {
+            self.adjustedQuestingStartDates[questingResourceID] = self.adjustedQuestingStartDates[questingResourceID]! + rewardPerSecond
+        }
         }
 
         access(self) fun randomReward(): Int {

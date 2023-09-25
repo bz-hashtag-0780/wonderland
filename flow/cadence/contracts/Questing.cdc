@@ -23,7 +23,7 @@ access(all) contract Questing {
     // Contract Fields
     // -----------------------------------------------------------------------
     access(all) var totalSupply: UInt64
-    access(all) var featuredQuestManagers: [Address] //maybe to promote certain quests permissionlessly on the clients. Must require a certain amount of coins staked to be featured and to avoid spam. Big maybe as the clients in the end have the power to decide what to show.
+    access(all) var featuredQuestManagers: [Address] //maybe to promote certain quests permissionlessly on the clients. Must require a certain amount of coins staked to be featured and to avoid spam. it's a big maybe as the clients in the end have the power to decide what to show.
     
     // -----------------------------------------------------------------------
     // Future Contract Extensions

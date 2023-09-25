@@ -42,6 +42,8 @@ access(all) contract Questing {
         access(all) fun getQuestingStartDate(questingResourceID: UInt64): UFix64?
         access(all) fun getAdjustedQuestingStartDates(): {UInt64: UFix64}
         access(all) fun getAdjustedQuestingStartDate(questingResourceID: UInt64): UFix64?
+        access(all) fun getQuestingResourceIDs(): [UInt64]
+        access(all) fun borrowRewardCollection(questingResourceID: UInt64): &QuestReward.Collection?
     }
 
     access(all) resource Quest: Public {
@@ -51,7 +53,7 @@ access(all) contract Questing {
         access(self) var questers: [Address]
         access(self) var questingStartDates: {UInt64: UFix64}
         access(self) var adjustedQuestingStartDates: {UInt64: UFix64}
-        access(self) var rewards: @{UInt64: QuestReward.Collection} // nft.uuid: Rewards
+        access(self) var rewards: @{UInt64: QuestReward.Collection}
 
         /*
             Future extensions
@@ -148,6 +150,14 @@ access(all) contract Questing {
 
         access(all) fun getAdjustedQuestingStartDate(questingResourceID: UInt64): UFix64? {
             return self.adjustedQuestingStartDates[questingResourceID]
+        }
+
+        access(all) fun getQuestingResourceIDs(): [UInt64] {
+            return self.rewards.keys
+        }
+
+        access(all) fun borrowRewardCollection(questingResourceID: UInt64): &QuestReward.Collection? {
+            return &self.rewards[questingResourceID] as &QuestReward.Collection?
         }
 
         //todo: add rest of the getters

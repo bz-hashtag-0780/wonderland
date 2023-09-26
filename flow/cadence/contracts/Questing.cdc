@@ -215,6 +215,7 @@ access(all) contract Questing {
             }
         }
 
+        // todo: move random algo outside of the contract
         access(self) fun randomReward(): Int {
             // Generate a random number between 0 and 100_000_000
             let randomNum = Int(unsafeRandom() % 100_000_000)

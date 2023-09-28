@@ -8,11 +8,13 @@ access(all) contract QuestReward: NonFungibleToken {
 
     access(all) var totalSupply: UInt64
 
+    access(all) struct RewardTemplate {}
+
     access(all) resource NFT: NonFungibleToken.INFT {
 
         access(all) let id: UInt64
 
-        init(id: UInt64) {
+        init(rewardTemplateID: UInt64) {
             self.id = self.uuid
         }
     }
@@ -44,6 +46,20 @@ access(all) contract QuestReward: NonFungibleToken {
         destroy() {
             destroy self.ownedNFTs
         }
+    }
+
+    access(all) resource Minter {
+        access(self) var rewardTemplates: {UInt64: RewardTemplate}
+
+        init() {
+            self.rewardTemplates = {}
+        }
+
+        access(all) fun mintReward(rewardTemplateID: UInt64): @NFT {
+            return <- create NFT(rewardTemplateID: rewardTemplateID)
+        }
+
+        
     }
 
 

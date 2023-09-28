@@ -183,7 +183,22 @@ access(all) contract Questing {
             emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID)
         }
 
-        access(all) fun addReward(rewardAlgo: &AnyResource{RewardAlgorithm.Algorithm}) {
+        access(all) fun addReward(questingResourceID: UInt64, minter: &QuestReward.Minter, rewardAlgo: &AnyResource{RewardAlgorithm.Algorithm}) {
+            //check if resource is questing
+            if let adjustedQuestingStartDate = self.adjustedQuestingStartDates[questingResourceID] {
+                let timeQuested = getCurrentBlock().timestamp - adjustedQuestingStartDate 
+
+                //check if resource is eligible for reward
+                if(timeQuested >= self.rewardPerSecond) {
+                    let rewardTemplateID = UInt64(rewardAlgo.randomAlgorithm())
+                    var newReward <- minter.mintReward(rewardTemplateID: rewardTemplateID)
+
+                    //check if the resource already has a reward collection
+
+                    self.updateAdjustedQuestingStartDate(questingResourceID: questingResourceID, rewardPerSecond: self.rewardPerSecond)
+                }
+                
+            }
             //TODO
             //get reward algorithm
             

@@ -193,7 +193,15 @@ access(all) contract Questing {
                     let rewardTemplateID = UInt64(rewardAlgo.randomAlgorithm())
                     var newReward <- minter.mintReward(rewardTemplateID: rewardTemplateID)
 
-                    //check if the resource already has a reward collection
+                    let toRef: &QuestReward.Collection? = &self.rewards[questingResourceID] as &QuestReward.Collection?
+
+                    if(toRef == nil) {
+                        let newCollection <- QuestReward.createEmptyCollection()
+                        newCollection.deposit(token: <-newReward)
+                        self.rewards[questingResourceID] <-! newCollection as! @QuestReward.Collection
+                    } else {
+                        toRef!.deposit(token: <-newReward)
+                    }
 
                     self.updateAdjustedQuestingStartDate(questingResourceID: questingResourceID, rewardPerSecond: self.rewardPerSecond)
                 }
@@ -216,7 +224,7 @@ access(all) contract Questing {
             assert(fromRef != nil, message: "Cannot move reward: fromID does not have any rewards")
 
             let toRef: &QuestReward.Collection? = &self.rewards[toID] as &QuestReward.Collection?
-            assert(toID != nil, message: "Cannot move reward: toID does not have any rewards")
+            assert(toRef != nil, message: "Cannot move reward: toID does not have any rewards")
             toRef!.deposit(token: <-fromRef!.withdraw(withdrawID: rewardID))
         }
 

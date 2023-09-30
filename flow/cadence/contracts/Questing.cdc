@@ -36,7 +36,7 @@ access(all) contract Questing {
         access(all) let type: Type
         access(all) let questCreator: Address
         access(all) var rewardPerSecond: UFix64
-        access(contract) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
+        access(all) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
         access(all) fun unquest(questingResource: @AnyResource): @AnyResource
         access(all) fun getQuesters(): [Address]
         access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
@@ -85,7 +85,7 @@ access(all) contract Questing {
         /*
             Public functions
         */
-        access(contract) fun quest(questingResource: @AnyResource, address: Address): @AnyResource {
+        access(all) fun quest(questingResource: @AnyResource, address: Address): @AnyResource {
             pre {
                 questingResource.getType() == self.type: "Cannot quest: questingResource type does not match type required by quest"
             }

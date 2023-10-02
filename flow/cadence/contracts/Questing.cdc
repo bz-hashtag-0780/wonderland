@@ -14,7 +14,9 @@ access(all) contract Questing {
     access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
     access(all) event RewardAdded(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
     access(all) event RewardBurned(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
-    access(all) event RewardMoved(questID: UInt64, resourceType: Type, fromQuestingResourceID: UInt64, toQuestingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
+    access(all) event RewardMoved(questID: UInt64, resourceType: Type, fromQuestingResourceID: UInt64, toQuestingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
+    access(all) event RewardPerSecondChanged(questID: UInt64, resourceType: Type, rewardPerSecond: UFix64)
+    access(all) event AdjustedQuestingStartDateUpdated(questID: UInt64, resourceType: Type, questingResourceID: UInt64, newAdjustedQuestingStartDate: UFix64)
 
     // -----------------------------------------------------------------------
     // Paths
@@ -77,9 +79,9 @@ access(all) contract Questing {
             self.questers = []
             self.questingStartDates = {}
             self.adjustedQuestingStartDates = {}
+            self.rewardPerSecond = 604800.0
             self.rewards <- {}
             self.metadata = {}
-            self.rewardPerSecond = 604800.0
             self.resources <- {}
 
             Questing.totalSupply = Questing.totalSupply + 1
@@ -178,8 +180,6 @@ access(all) contract Questing {
             return &self.rewards[questingResourceID] as &QuestReward.Collection?
         }
 
-        //todo: add rest of the getters
-
         /*
             QuestManager functions
         */
@@ -243,16 +243,24 @@ access(all) contract Questing {
 
             let toRef: &QuestReward.Collection? = &self.rewards[toID] as &QuestReward.Collection?
             assert(toRef != nil, message: "Cannot move reward: toID does not have any rewards")
-            toRef!.deposit(token: <-fromRef!.withdraw(withdrawID: rewardID))
+
+            let reward <- fromRef!.withdraw(withdrawID: rewardID) as! @QuestReward.NFT
+
+            emit RewardMoved(questID: self.id, resourceType: self.type, fromQuestingResourceID: fromID, toQuestingResourceID: toID, rewardID: rewardID, rewardTemplateID: reward.rewardTemplateID, minterID: reward.minterID)
+
+            toRef!.deposit(token: <-reward)
         }
 
         access(all) fun changeRewardPerSecond(seconds: UFix64) {
             self.rewardPerSecond = seconds
+            emit RewardPerSecondChanged(questID: self.id, resourceType: self.type, rewardPerSecond: seconds)
         }
 
         access(contract) fun updateAdjustedQuestingStartDate(questingResourceID: UInt64, rewardPerSecond: UFix64) {
             if(self.adjustedQuestingStartDates[questingResourceID] != nil) {
                 self.adjustedQuestingStartDates[questingResourceID] = self.adjustedQuestingStartDates[questingResourceID]! + rewardPerSecond
+
+                emit AdjustedQuestingStartDateUpdated(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, newAdjustedQuestingStartDate: self.adjustedQuestingStartDates[questingResourceID]!)
             }
         }
 

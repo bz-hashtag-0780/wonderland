@@ -13,7 +13,7 @@ access(all) contract Questing {
     access(all) event QuestEnded(questID: UInt64, resourceType: Type, questingResourceID: UInt64)
     access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
     access(all) event RewardAdded(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
-    access(all) event RewardBurned(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
+    access(all) event RewardBurned(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
     access(all) event RewardMoved(questID: UInt64, resourceType: Type, fromQuestingResourceID: UInt64, toQuestingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
 
     // -----------------------------------------------------------------------
@@ -216,7 +216,7 @@ access(all) contract Questing {
 
                     self.updateAdjustedQuestingStartDate(questingResourceID: questingResourceID, rewardPerSecond: self.rewardPerSecond)
 
-                    emit RewardAdded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, rewardID: rewardID, rewardTemplateID: rewardTemplateID, rewardTemplate: minter.getRewardTemplate(rewardTemplateID: rewardTemplateID))
+                    emit RewardAdded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, rewardID: rewardID, rewardTemplateID: rewardTemplateID, rewardTemplate: minter.getRewardTemplate(id: rewardTemplateID)!)
 
                 }
                 
@@ -226,9 +226,15 @@ access(all) contract Questing {
 
         access(all) fun burnReward(questingResourceID: UInt64, rewardID: UInt64) {
             let collectionRef = &self.rewards[questingResourceID] as &QuestReward.Collection?
+
             assert(collectionRef != nil, message: "Cannot burn reward: questingResource does not have any rewards")
-            let reward <- collectionRef!.withdraw(withdrawID: rewardID)
+
+            let reward <- collectionRef!.withdraw(withdrawID: rewardID) as! @QuestReward.NFT
+
+            emit RewardBurned(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, rewardID: rewardID, rewardTemplateID: reward.rewardTemplateID, minterID: reward.minterID)
+
             destroy reward
+            
         }
 
         access(all) fun moveReward(fromID: UInt64, toID: UInt64, rewardID: UInt64) {

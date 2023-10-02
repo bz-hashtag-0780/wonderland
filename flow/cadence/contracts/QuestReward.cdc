@@ -138,6 +138,9 @@ access(all) contract QuestReward: NonFungibleToken {
         }
 
         access(all) fun mintReward(rewardTemplateID: UInt32): @NFT {
+            pre {
+                self.rewardTemplates[rewardTemplateID] != nil: "Reward Template does not exist"
+            }
             return <- create NFT(minterID: self.id, rewardTemplateID: rewardTemplateID)
         }
 

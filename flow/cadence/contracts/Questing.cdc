@@ -11,12 +11,18 @@ access(all) contract Questing {
     access(all) event ContractInitialized()
     access(all) event QuestStarted(questID: UInt64, resourceType: Type, questingResourceID: UInt64, quester: Address)
     access(all) event QuestEnded(questID: UInt64, resourceType: Type, questingResourceID: UInt64)
-    access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
     access(all) event RewardAdded(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
     access(all) event RewardBurned(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
     access(all) event RewardMoved(questID: UInt64, resourceType: Type, fromQuestingResourceID: UInt64, toQuestingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
     access(all) event RewardPerSecondChanged(questID: UInt64, resourceType: Type, rewardPerSecond: UFix64)
     access(all) event AdjustedQuestingStartDateUpdated(questID: UInt64, resourceType: Type, questingResourceID: UInt64, newAdjustedQuestingStartDate: UFix64)
+    access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
+    //todo emit events
+    access(all) event QuestDeposited(questID: UInt64, type: Type, questCreator: Address, questReceiver: Address?)
+    access(all) event QuestWithdrawn(questID: UInt64, type: Type, questCreator: Address)
+    access(all) event QuestDestroyed(questID: UInt64, type: Type, questCreator: Address)
+    access(all) event MinterDeposited(minterID: UInt64, type: Type, receiverAddress: Address?)
+    access(all) event MinterWithdrawn(minterID: UInt64, type: Type, providerAddress: Address?)
 
     // -----------------------------------------------------------------------
     // Paths

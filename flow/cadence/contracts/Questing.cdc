@@ -12,6 +12,9 @@ access(all) contract Questing {
     access(all) event QuestStarted(questID: UInt64, resourceType: Type, questingResourceID: UInt64, quester: Address)
     access(all) event QuestEnded(questID: UInt64, resourceType: Type, questingResourceID: UInt64)
     access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
+    access(all) event RewardAdded(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
+    access(all) event RewardBurned(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
+    access(all) event RewardMoved(questID: UInt64, resourceType: Type, fromQuestingResourceID: UInt64, toQuestingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
 
     // -----------------------------------------------------------------------
     // Paths
@@ -139,7 +142,10 @@ access(all) contract Questing {
             self.unquestResource(questingResourceID: uuid!)
 
             let returnResource <- container.remove(key: 0)!
+
             destroy container
+
+            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: uuid!)
 
             return <- returnResource
         }
@@ -196,6 +202,8 @@ access(all) contract Questing {
                     
                     var newReward <- minter.mintReward(rewardTemplateID: rewardTemplateID)
 
+                    let rewardID = newReward.id
+
                     let toRef: &QuestReward.Collection? = &self.rewards[questingResourceID] as &QuestReward.Collection?
 
                     if(toRef == nil) {
@@ -208,7 +216,8 @@ access(all) contract Questing {
 
                     self.updateAdjustedQuestingStartDate(questingResourceID: questingResourceID, rewardPerSecond: self.rewardPerSecond)
 
-                    //todo: emit event
+                    emit RewardAdded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, rewardID: rewardID, rewardTemplateID: rewardTemplateID, rewardTemplate: minter.getRewardTemplate(rewardTemplateID: rewardTemplateID))
+
                 }
                 
             }
@@ -286,12 +295,14 @@ access(all) contract Questing {
             self.quests[id] <-! quest
         }
 
-        access(all) fun transferQuest(id: UInt64): @Quest {
+        access(all) fun depositQuest(quest: @Quest) {
+            self.quests[quest.id] <-! quest
+        }
+
+        access(all) fun withdrawQuest(id: UInt64): @Quest {
             let quest <- self.quests.remove(key: id) ?? panic("Quest does not exist")
             return <- quest
         }
-
-        // access(all) fun 
 
         access(all) fun destroyQuest(id: UInt64) {
             let quest <- self.quests.remove(key: id) ?? panic("Quest does not exist")

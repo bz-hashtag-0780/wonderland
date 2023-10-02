@@ -12,7 +12,7 @@ access(all) contract QuestReward: NonFungibleToken {
     // -----------------------------------------------------------------------
     // Contract Events
     // -----------------------------------------------------------------------
-    access(all) event Minted(id: UInt64, minterID: UInt64, rewardTemplateID: UInt32, minterAddress: Address)
+    access(all) event Minted(id: UInt64, minterID: UInt64, rewardTemplateID: UInt32, rewardTemplate: RewardTemplate, minterAddress: Address?)
     access(all) event RewardTemplateAdded(id: UInt32, name: String, description: String, image: String)
     access(all) event RewardTemplateUpdated(id: UInt32, name: String, description: String, image: String)
 
@@ -58,7 +58,7 @@ access(all) contract QuestReward: NonFungibleToken {
         access(self) var metadata: {String: AnyStruct}
         access(self) var resources: @{String: AnyResource}
 
-        init(minterID: UInt64, rewardTemplateID: UInt32) {
+        init(minterID: UInt64, rewardTemplateID: UInt32, rewardTemplate: RewardTemplate, minterAddress: Address?) {
             self.id = self.uuid
             self.minterID = minterID
             self.rewardTemplateID = rewardTemplateID
@@ -66,6 +66,8 @@ access(all) contract QuestReward: NonFungibleToken {
             self.resources <- {}
 
             QuestReward.totalSupply = QuestReward.totalSupply + 1
+
+            emit Minted(id: self.id, minterID: self.minterID, rewardTemplateID: self.rewardTemplateID, rewardTemplate: rewardTemplate, minterAddress: minterAddress)
         }
 
         destroy() {
@@ -139,7 +141,8 @@ access(all) contract QuestReward: NonFungibleToken {
             pre {
                 self.rewardTemplates[rewardTemplateID] != nil: "Reward Template does not exist"
             }
-            return <- create NFT(minterID: self.id, rewardTemplateID: rewardTemplateID)
+
+            return <- create NFT(minterID: self.id, rewardTemplateID: rewardTemplateID, rewardTemplate: self.getRewardTemplate(id: rewardTemplateID)!, minterAddress: self.owner?.address)
         }
 
         access(all) fun addRewardTemplate(name: String, description: String, image: String) {

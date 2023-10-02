@@ -2,20 +2,72 @@ import NonFungibleToken from "./utility/NonFungibleToken.cdc"
 
 access(all) contract QuestReward: NonFungibleToken {
 
+    // -----------------------------------------------------------------------
+    // NonFungibleToken Standard Events
+    // -----------------------------------------------------------------------
     access(all) event ContractInitialized()
-    pub event Withdraw(id: UInt64, from: Address?)
-    pub event Deposit(id: UInt64, to: Address?)
+    access(all) event Withdraw(id: UInt64, from: Address?)
+    access(all) event Deposit(id: UInt64, to: Address?)
 
+    // -----------------------------------------------------------------------
+    // Contract Events
+    // -----------------------------------------------------------------------
+    access(all) event Minted(id: UInt64, minterID: UInt64, rewardTemplateID: UInt32, minterAddress: Address)
+    access(all) event RewardTemplateAdded(id: UInt32, name: String, description: String, image: String)
+    access(all) event RewardTemplateUpdated(id: UInt32, name: String, description: String, image: String)
+
+    // -----------------------------------------------------------------------
+    // Named Paths
+    // -----------------------------------------------------------------------
+    access(all) let CollectionStoragePath: StoragePath
+    access(all) let CollectionPublicPath: PublicPath
+    access(all) let CollectionPrivatePath: PrivatePath
+
+    // -----------------------------------------------------------------------
+    // Contract Fields
+    // -----------------------------------------------------------------------
     access(all) var totalSupply: UInt64
+    access(all) var rewardTemplateSupply: UInt32
+    access(all) var minterSupply: UInt64
 
-    access(all) struct RewardTemplate {}
+    // -----------------------------------------------------------------------
+    // Future Contract Extensions
+    // -----------------------------------------------------------------------
+    access(self) var metadata: {String: AnyStruct}
+    access(self) var resources: @{String: AnyResource}
+
+    access(all) struct RewardTemplate {
+        access(all) let id: UInt32
+        access(all) let name: String
+        access(all) let description: String
+        access(all) let image: String
+
+        init(id: UInt32, name: String, description: String, image: String) {
+            self.id = id
+            self.name = name
+            self.description = description
+            self.image = image
+        }
+    }
 
     access(all) resource NFT: NonFungibleToken.INFT {
 
         access(all) let id: UInt64
+        access(all) let minterID: UInt64
+        access(all) let rewardTemplateID: UInt32
+        access(self) var metadata: {String: AnyStruct}
+        access(self) var resources: @{String: AnyResource}
 
-        init(rewardTemplateID: UInt64) {
+        init(minterID: UInt64, rewardTemplateID: UInt32) {
             self.id = self.uuid
+            self.minterID = minterID
+            self.rewardTemplateID = rewardTemplateID
+            self.metadata = {}
+            self.resources <- {}
+        }
+
+        destroy() {
+            destroy self.resources
         }
     }
 
@@ -28,19 +80,31 @@ access(all) contract QuestReward: NonFungibleToken {
         }
 
         access(all) fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
-            panic("TODO")
+            let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("missing NFT")
+
+            emit Withdraw(id: withdrawID, from: self.owner?.address)
+
+            return <-token
         }
 
         access(all) fun deposit(token: @NonFungibleToken.NFT) {
-            panic("TODO")
+            let token <- token as! @QuestReward.NFT
+
+            let id: UInt64 = token.id
+
+            let oldToken <- self.ownedNFTs[id] <- token
+
+            emit Deposit(id: id, to: self.owner?.address)
+
+            destroy oldToken
         }
 
         access(all) fun getIDs(): [UInt64] {
-            panic("TODO")
+            return self.ownedNFTs.keys
         }
 
         access(all) fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
-            panic("TODO")
+            return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
         }
 
         destroy() {
@@ -48,27 +112,80 @@ access(all) contract QuestReward: NonFungibleToken {
         }
     }
 
+    access(all) resource interface MinterPublic {
+        access(all) fun getRewardTemplate(id: UInt64): RewardTemplate?
+        access(all) fun getRewardTemplates(): {UInt64: RewardTemplate}
+    }
+
     access(all) resource Minter {
-        access(self) var rewardTemplates: {UInt64: RewardTemplate}
+        access(all) let id: UInt64
+        access(self) var rewardTemplates: {UInt32: RewardTemplate}
+        access(self) var metadata: {String: AnyStruct}
+        access(self) var resources: @{String: AnyResource}
 
         init() {
+            self.id = QuestReward.minterSupply
             self.rewardTemplates = {}
+            self.metadata = {}
+            self.resources <- {}
+
+            QuestReward.minterSupply = QuestReward.minterSupply + 1
         }
 
-        access(all) fun mintReward(rewardTemplateID: UInt64): @NFT {
-            return <- create NFT(rewardTemplateID: rewardTemplateID)
+        access(all) fun mintReward(rewardTemplateID: UInt32): @NFT {
+            return <- create NFT(minterID: self.id, rewardTemplateID: rewardTemplateID)
         }
 
+        access(all) fun addRewardTemplate(name: String, description: String, image: String) {
+            let id: UInt32 = QuestReward.rewardTemplateSupply
+
+            self.rewardTemplates[id] = RewardTemplate(id: id, name: name, description: description, image: image)
+
+            QuestReward.rewardTemplateSupply = QuestReward.rewardTemplateSupply + 1
+
+        }
+
+        access(all) fun updateRewardTemplate(id: UInt32, name: String, description: String, image: String) {
+            pre {
+                self.rewardTemplates[id] != nil: "Reward Template does not exist"
+            }
+            self.rewardTemplates[id] = RewardTemplate(id: id, name: name, description: description, image: image)
+        }
+
+        access(all) fun getRewardTemplate(id: UInt32): RewardTemplate? {
+            return self.rewardTemplates[id]
+        }
+
+        access(all) fun getRewardTemplates(): {UInt32: RewardTemplate} {
+            return self.rewardTemplates
+        }
         
+        destroy() {
+            destroy self.resources
+        }
     }
 
 
     access(all) fun createEmptyCollection(): @NonFungibleToken.Collection {
-        panic("TODO")
+        return <- create Collection()
+    }
+
+    access(all) fun createMinter(): @Minter {
+        return <- create Minter()
     }
 
     init() {
+        self.CollectionStoragePath = /storage/QuestRewardCollection
+        self.CollectionPublicPath = /public/QuestRewardCollection
+        self.CollectionPrivatePath = /private/QuestRewardCollection
+
         self.totalSupply = 0
+        self.rewardTemplateSupply = 0
+        self.minterSupply = 0
+
+        self.metadata = {}
+        self.resources <- {}
+
         emit ContractInitialized()
     }
 }

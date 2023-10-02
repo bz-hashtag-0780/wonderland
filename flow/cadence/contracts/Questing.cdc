@@ -8,6 +8,7 @@ access(all) contract Questing {
     // -----------------------------------------------------------------------
     // Events
     // -----------------------------------------------------------------------
+    access(all) event ContractInitialized()
     access(all) event QuestStarted(questID: UInt64, resourceType: Type, questingResourceID: UInt64, quester: Address)
     access(all) event QuestEnded(questID: UInt64, resourceType: Type, questingResourceID: UInt64)
     access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
@@ -23,7 +24,6 @@ access(all) contract Questing {
     // Contract Fields
     // -----------------------------------------------------------------------
     access(all) var totalSupply: UInt64
-    access(self) var featuredQuestManagers: [Address] //maybe to promote certain quests permissionlessly on the clients. Must require a certain amount of coins staked to be featured and to avoid spam. it's a big maybe as the clients in the end have the power to decide what to show.
     
     // -----------------------------------------------------------------------
     // Future Contract Extensions
@@ -342,9 +342,10 @@ access(all) contract Questing {
         self.QuestManagerPrivatePath = /private/QuestManager
 
         self.totalSupply = 0
-        self.featuredQuestManagers = []
 
         self.metadata = {}
         self.resources <- {}
+
+        emit ContractInitialized()
     }
 }

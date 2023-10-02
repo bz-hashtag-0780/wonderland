@@ -1,6 +1,7 @@
 import RewardAlgorithm from "./RewardAlgorithm.cdc";
 
 access(all) contract WonderlandRewardAlgorithm: RewardAlgorithm {
+    access(all) event ContractInitialized()
 
     access(all) resource Alhorithm: RewardAlgorithm.Algorithm {
         access(all) fun randomAlgorithm(): Int {
@@ -21,5 +22,7 @@ access(all) contract WonderlandRewardAlgorithm: RewardAlgorithm {
         }
     }
 
-    init() {}
+    init() {
+        emit ContractInitialized()
+    }
 }

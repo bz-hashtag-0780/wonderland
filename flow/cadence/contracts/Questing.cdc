@@ -80,6 +80,8 @@ access(all) contract Questing {
             self.resources <- {}
 
             Questing.totalSupply = Questing.totalSupply + 1
+
+            emit QuestCreated(questID: self.id, type: type, questCreator: questCreator)
         }
 
         /*
@@ -246,7 +248,13 @@ access(all) contract Questing {
     
     }
 
+    access(all) resource interface MinterReceiver {
+        access(all) fun depositMinter(minter: @QuestReward.Minter)
+    }
+
     access(all) resource interface QuestManagerPublic {
+        access(all) fun getIDs(): [UInt64]
+        access(all) fun getMinterIDs(): [UInt64]
         access(all) fun borrowQuest(id: UInt64): &Quest{Public}? { 
             post {
                 (result == nil) || (result?.id == id): 
@@ -255,29 +263,35 @@ access(all) contract Questing {
         }
     }
 
-    access(all) resource QuestManager: QuestManagerPublic {
+    access(all) resource QuestManager: QuestManagerPublic, MinterReceiver {
         access(self) var quests: @{UInt64: Quest}
+        access(self) var minters: @{UInt64: QuestReward.Minter}
 
         init() {
             self.quests <- {}
+            self.minters <- {}
         }
 
         access(all) fun getIDs(): [UInt64] {
             return self.quests.keys
         }
 
+        access(all) fun getMinterIDs(): [UInt64] {
+            return self.minters.keys
+        }
+
         access(all) fun createQuest(type: Type) {
             let quest <- create Quest(type: type, questCreator: self.owner!.address)
             let id = quest.id
             self.quests[id] <-! quest
-
-            emit QuestCreated(questID: id, type: type, questCreator: self.owner!.address)
         }
 
         access(all) fun transferQuest(id: UInt64): @Quest {
             let quest <- self.quests.remove(key: id) ?? panic("Quest does not exist")
             return <- quest
         }
+
+        // access(all) fun 
 
         access(all) fun destroyQuest(id: UInt64) {
             let quest <- self.quests.remove(key: id) ?? panic("Quest does not exist")
@@ -292,8 +306,18 @@ access(all) contract Questing {
             return &self.quests[id] as &Questing.Quest?
         }
 
+        access(all) fun depositMinter(minter: @QuestReward.Minter) {
+            self.minters[minter.id] <-! minter
+        }
+
+        access(all) fun withdrawMinter(id: UInt64): @QuestReward.Minter {
+            let minter <- self.minters.remove(key: id) ?? panic("Minter does not exist")
+            return <- minter
+        }
+
         destroy() {
             destroy self.quests
+            destroy self.minters
         }
 
     }

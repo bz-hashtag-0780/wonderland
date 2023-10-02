@@ -22,8 +22,6 @@ access(all) contract QuestReward: NonFungibleToken {
     access(all) let CollectionStoragePath: StoragePath
     access(all) let CollectionPublicPath: PublicPath
     access(all) let CollectionPrivatePath: PrivatePath
-    access(all) let MinterStoragePath: StoragePath
-    access(all) let MinterPublicPath: PublicPath
 
     // -----------------------------------------------------------------------
     // Contract Fields
@@ -185,8 +183,6 @@ access(all) contract QuestReward: NonFungibleToken {
         self.CollectionStoragePath = /storage/QuestRewardCollection
         self.CollectionPublicPath = /public/QuestRewardCollection
         self.CollectionPrivatePath = /private/QuestRewardCollection
-        self.MinterStoragePath = /storage/QuestRewardMinter
-        self.MinterPublicPath = /public/QuestRewardMinter
 
         self.totalSupply = 0
         self.rewardTemplateSupply = 0

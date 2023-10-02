@@ -13,8 +13,8 @@ access(all) contract QuestReward: NonFungibleToken {
     // Contract Events
     // -----------------------------------------------------------------------
     access(all) event Minted(id: UInt64, minterID: UInt64, rewardTemplateID: UInt32, rewardTemplate: RewardTemplate, minterAddress: Address?)
-    access(all) event RewardTemplateAdded(id: UInt32, name: String, description: String, image: String)
-    access(all) event RewardTemplateUpdated(id: UInt32, name: String, description: String, image: String)
+    access(all) event RewardTemplateAdded(minterID: UInt64, minterAddress: Address?, rewardTemplateID: UInt32, name: String, description: String, image: String)
+    access(all) event RewardTemplateUpdated(minterID: UInt64, minterAddress: Address?, rewardTemplateID: UInt32, name: String, description: String, image: String)
 
     // -----------------------------------------------------------------------
     // Named Paths
@@ -152,6 +152,8 @@ access(all) contract QuestReward: NonFungibleToken {
 
             QuestReward.rewardTemplateSupply = QuestReward.rewardTemplateSupply + 1
 
+            emit RewardTemplateAdded(minterID: self.id, minterAddress: self.owner?.address, rewardTemplateID: id, name: name, description: description, image: image)
+
         }
 
         access(all) fun updateRewardTemplate(id: UInt32, name: String, description: String, image: String) {
@@ -159,6 +161,8 @@ access(all) contract QuestReward: NonFungibleToken {
                 self.rewardTemplates[id] != nil: "Reward Template does not exist"
             }
             self.rewardTemplates[id] = RewardTemplate(id: id, name: name, description: description, image: image)
+
+            emit RewardTemplateUpdated(minterID: self.id, minterAddress: self.owner?.address, rewardTemplateID: id, name: name, description: description, image: image)
         }
 
         access(all) fun getRewardTemplate(id: UInt32): RewardTemplate? {

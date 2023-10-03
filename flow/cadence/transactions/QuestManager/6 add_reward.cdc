@@ -2,7 +2,7 @@ import Questing from "../../contracts/Questing.cdc"
 import QuestReward from "../../contracts/QuestReward.cdc"
 import WonderlandRewardAlgorithm from "../../contracts/WonderlandRewardAlgorithm.cdc"
 
-transaction(questID: UInt64, minterID: UInt64, questingResourceID: UInt64, rewardMapping: String) {
+transaction(questID: UInt64, minterID: UInt64, questingResourceID: UInt64) {
 
     let questManagerRef: &Questing.QuestManager
     let questRef: &Questing.Quest

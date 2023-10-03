@@ -24,7 +24,7 @@ transaction(IDs: [UInt64], maxQuantity: Int) {
 
 			signer.capabilities.unpublish(BasicBeastsNFTStaking.CollectionPublicPath)
 
-			let issuedCap = signer.capabilities.storage.issue<&BasicBeastsNFTStaking.Collection>(BasicBeastsNFTStaking.CollectionStoragePath)
+			let issuedCap = signer.capabilities.storage.issue<&BasicBeastsNFTStaking.Collection{BasicBeastsNFTStaking.NFTStakingCollectionPublic}>(BasicBeastsNFTStaking.CollectionStoragePath)
 
 			signer.capabilities.publish(issuedCap, at: BasicBeastsNFTStaking.CollectionPublicPath)
 		}

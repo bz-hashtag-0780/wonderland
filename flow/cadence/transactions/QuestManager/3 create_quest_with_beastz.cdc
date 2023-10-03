@@ -22,10 +22,12 @@ transaction() {
         // borrow Quest Manager reference
         self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
 
-        // get resource type
+        // Get resource type from a random beast
         let nftCollectionRef = signer.borrow<&BasicBeasts.Collection>(from: BasicBeasts.CollectionStoragePath)??panic("Couldn't borrow staking collection")
 
-        let beast <- nftCollectionRef.withdraw(withdrawID: 3)
+        let IDs = nftCollectionRef.getIDs()
+
+        let beast <- nftCollectionRef.withdraw(withdrawID: IDs[0])
 
         self.type = beast.getType()
 

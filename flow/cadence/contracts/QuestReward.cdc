@@ -57,6 +57,7 @@ access(all) contract QuestReward: NonFungibleToken {
         access(all) let id: UInt64
         access(all) let minterID: UInt64
         access(all) let rewardTemplateID: UInt32
+        access(all) let dateMinted: UFix64
         access(self) var metadata: {String: AnyStruct}
         access(self) var resources: @{String: AnyResource}
 
@@ -64,6 +65,7 @@ access(all) contract QuestReward: NonFungibleToken {
             self.id = self.uuid
             self.minterID = minterID
             self.rewardTemplateID = rewardTemplateID
+            self.dateMinted = getCurrentBlock().timestamp
             self.metadata = {}
             self.resources <- {}
 

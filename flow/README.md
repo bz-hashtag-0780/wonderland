@@ -4,7 +4,21 @@
 flow accounts update-contract ./cadence/contracts/BasicBeastsNFTStaking.cdc --network testnet --signer testnet-account
 ```
 
-### Deploy Contracts
+### Deploy Contracts on Emulator
+
+#### Step 1
+
+```
+flow emulator
+```
+
+#### Step 2
+
+```
+flow project deploy --network emulator
+```
+
+### Deploy Contracts on Testnet
 
 ```
 flow project deploy --network testnet

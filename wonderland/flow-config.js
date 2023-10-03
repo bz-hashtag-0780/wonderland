@@ -1,12 +1,14 @@
 import { config } from '@onflow/fcl';
 
 config({
-	'accessNode.api': 'https://rest-testnet.onflow.org',
-	'flow.network': 'testnet',
-	'discovery.wallet': 'https://flow-wallet-testnet.blocto.app/authn',
-	'0xBasicBeasts': '0xfa252d0aa22bf86a',
-	'0xBasicBeastsNFTStaking': '0x4c74cb420f4eaa84',
-	'0xBasicBeastsNFTStakingRewards': '0x4c74cb420f4eaa84',
-	'0xBasicBeastsRaids': '0x4c74cb420f4eaa84',
-	'0xDiscordHandles': '0x4c74cb420f4eaa84',
+	'app.detail.title': process.env.NEXT_PUBLIC_APP_TITLE,
+	// 'app.detail.icon': process.env.NEXT_PUBLIC_APP_ICON,
+	'accessNode.api': process.env.NEXT_PUBLIC_ACCESS_NODE_API,
+	'flow.network': process.env.NEXT_PUBLIC_FLOW_NETWORK,
+	'discovery.wallet': process.env.NEXT_PUBLIC_DISCOVERY_WALLET,
+	'0xBasicBeasts': process.env.NEXT_PUBLIC_BASIC_BEASTS_ADDRESS,
+	'0xBasicBeastsNFTStaking': process.env.NEXT_PUBLIC_MVP_ADDRESS,
+	'0xBasicBeastsNFTStakingRewards': process.env.NEXT_PUBLIC_MVP_ADDRESS,
+	'0xBasicBeastsRaids': process.env.NEXT_PUBLIC_MVP_ADDRESS,
+	'0xDiscordHandles': process.env.NEXT_PUBLIC_MVP_ADDRESS,
 });

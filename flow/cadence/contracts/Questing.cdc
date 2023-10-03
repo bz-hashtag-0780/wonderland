@@ -415,6 +415,14 @@ access(all) contract Questing {
         return questRef
     }
 
+    access(all) fun createQuestManager(): @QuestManager {
+        return <- create QuestManager()
+    }
+
+    access(all) fun createQuester(): @Quester {
+        return <- create Quester()
+    }
+
     init() {
         self.QuestManagerStoragePath = /storage/WonderlandQuestManager_1
         self.QuestManagerPublicPath = /public/WonderlandQuestManager_1

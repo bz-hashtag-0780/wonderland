@@ -41,3 +41,5 @@ flow.json
 api/.env
 flow/flow.json
 wonderland/.env
+wonderland/.env.development
+wonderland/.env.production

@@ -10,7 +10,7 @@ access(all) contract Questing {
     // -----------------------------------------------------------------------
     access(all) event ContractInitialized()
     access(all) event QuestStarted(questID: UInt64, resourceType: Type, questingResourceID: UInt64, quester: Address)
-    access(all) event QuestEnded(questID: UInt64, resourceType: Type, questingResourceID: UInt64)
+    access(all) event QuestEnded(questID: UInt64, resourceType: Type, questingResourceID: UInt64, quester: Address?)
     access(all) event RewardAdded(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
     access(all) event RewardBurned(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
     access(all) event RewardMoved(questID: UInt64, resourceType: Type, fromQuestingResourceID: UInt64, toQuestingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
@@ -29,6 +29,7 @@ access(all) contract Questing {
     access(all) let QuestManagerStoragePath: StoragePath
     access(all) let QuestManagerPublicPath: PublicPath
     access(all) let QuestManagerPrivatePath: PrivatePath
+    access(all) let QuesterStoragePath: StoragePath
 
     // -----------------------------------------------------------------------
     // Contract Fields
@@ -46,8 +47,8 @@ access(all) contract Questing {
         access(all) let type: Type
         access(all) let questCreator: Address
         access(all) var rewardPerSecond: UFix64
-        access(all) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
-        access(all) fun unquest(questingResource: @AnyResource): @AnyResource
+        access(contract) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
+        access(contract) fun unquest(questingResource: @AnyResource, address: Address): @AnyResource
         access(all) fun getQuesters(): [Address]
         access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
         access(all) fun getQuestingStartDate(questingResourceID: UInt64): UFix64?
@@ -94,10 +95,8 @@ access(all) contract Questing {
             emit QuestCreated(questID: self.id, type: type, questCreator: questCreator)
         }
 
-        /*
-            Public functions
-        */
-        access(all) fun quest(questingResource: @AnyResource, address: Address): @AnyResource {
+        // access(contract) to make sure user verifies with their actual address using the quest function from the quester resource
+        access(contract) fun quest(questingResource: @AnyResource, address: Address): @AnyResource {
             pre {
                 questingResource.getType() == self.type: "Cannot quest: questingResource type does not match type required by quest"
             }
@@ -129,7 +128,7 @@ access(all) contract Questing {
             return <- returnResource
         }
 
-        access(all) fun unquest(questingResource: @AnyResource): @AnyResource {
+        access(contract) fun unquest(questingResource: @AnyResource, address: Address): @AnyResource {
 
             var uuid: UInt64? = nil
             var container: @{UInt64: AnyResource} <- {}
@@ -152,11 +151,14 @@ access(all) contract Questing {
 
             destroy container
 
-            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: uuid!)
+            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: uuid!, quester: address)
 
             return <- returnResource
         }
 
+        /*
+            Public functions
+        */
         access(all) fun getQuesters(): [Address] {
             return self.questers
         }
@@ -193,7 +195,7 @@ access(all) contract Questing {
             self.questingStartDates.remove(key: questingResourceID)
             self.adjustedQuestingStartDates.remove(key: questingResourceID)
 
-            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID)
+            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, quester: nil)
         }
 
         access(all) fun addReward(questingResourceID: UInt64, minter: &QuestReward.Minter, rewardAlgo: &AnyResource{RewardAlgorithm.Algorithm}, RewardMapping: {Int: UInt32}) {
@@ -392,7 +394,7 @@ access(all) contract Questing {
 
             assert(questRef != nil, message: "Quest reference should not be nil")
 
-            return <- questRef!.unquest(questingResource: <-questingResource)
+            return <- questRef!.unquest(questingResource: <-questingResource, address: self.owner!.address)
         }
 
     }
@@ -414,9 +416,10 @@ access(all) contract Questing {
     }
 
     init() {
-        self.QuestManagerStoragePath = /storage/QuestManager
-        self.QuestManagerPublicPath = /public/QuestManager
-        self.QuestManagerPrivatePath = /private/QuestManager
+        self.QuestManagerStoragePath = /storage/WonderlandQuestManager_1
+        self.QuestManagerPublicPath = /public/WonderlandQuestManager_1
+        self.QuestManagerPrivatePath = /private/WonderlandQuestManager_1
+        self.QuesterStoragePath = /storage/WonderlandQuester_1
 
         self.totalSupply = 0
 

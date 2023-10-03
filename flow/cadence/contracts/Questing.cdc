@@ -280,6 +280,10 @@ access(all) contract Questing {
         access(all) fun depositMinter(minter: @QuestReward.Minter)
     }
 
+    access(all) resource interface QuestReceiver {
+        access(all) fun depositQuest(quest: @Quest)
+    }
+
     access(all) resource interface QuestManagerPublic {
         access(all) fun getIDs(): [UInt64]
         access(all) fun getMinterIDs(): [UInt64]
@@ -297,7 +301,7 @@ access(all) contract Questing {
         }
     }
 
-    access(all) resource QuestManager: QuestManagerPublic, MinterReceiver {
+    access(all) resource QuestManager: QuestManagerPublic, QuestReceiver, MinterReceiver {
         access(self) var quests: @{UInt64: Quest}
         access(self) var minters: @{UInt64: QuestReward.Minter}
 

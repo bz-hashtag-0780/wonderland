@@ -17,12 +17,11 @@ access(all) contract Questing {
     access(all) event RewardPerSecondChanged(questID: UInt64, resourceType: Type, rewardPerSecond: UFix64)
     access(all) event AdjustedQuestingStartDateUpdated(questID: UInt64, resourceType: Type, questingResourceID: UInt64, newAdjustedQuestingStartDate: UFix64)
     access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
-    //todo emit events
     access(all) event QuestDeposited(questID: UInt64, type: Type, questCreator: Address, questReceiver: Address?)
-    access(all) event QuestWithdrawn(questID: UInt64, type: Type, questCreator: Address)
+    access(all) event QuestWithdrawn(questID: UInt64, type: Type, questCreator: Address, questProvider: Address?)
     access(all) event QuestDestroyed(questID: UInt64, type: Type, questCreator: Address)
-    access(all) event MinterDeposited(minterID: UInt64, type: Type, receiverAddress: Address?)
-    access(all) event MinterWithdrawn(minterID: UInt64, type: Type, providerAddress: Address?)
+    access(all) event MinterDeposited(minterID: UInt64, name: String, receiverAddress: Address?)
+    access(all) event MinterWithdrawn(minterID: UInt64, name: String, providerAddress: Address?)
 
     // -----------------------------------------------------------------------
     // Paths
@@ -322,16 +321,19 @@ access(all) contract Questing {
         }
 
         access(all) fun depositQuest(quest: @Quest) {
+            emit QuestDeposited(questID: quest.id, type: quest.type, questCreator: quest.questCreator, questReceiver: self.owner?.address)
             self.quests[quest.id] <-! quest
         }
 
         access(all) fun withdrawQuest(id: UInt64): @Quest {
             let quest <- self.quests.remove(key: id) ?? panic("Quest does not exist")
+            emit QuestWithdrawn(questID: id, type: quest.type, questCreator: quest.questCreator, questProvider: self.owner?.address)
             return <- quest
         }
 
         access(all) fun destroyQuest(id: UInt64) {
             let quest <- self.quests.remove(key: id) ?? panic("Quest does not exist")
+            emit QuestDestroyed(questID: id, type: quest.type, questCreator: quest.questCreator)
             destroy quest
         }
 
@@ -344,16 +346,22 @@ access(all) contract Questing {
         }
 
         access(all) fun depositMinter(minter: @QuestReward.Minter) {
+            emit MinterDeposited(minterID: minter.id, name: minter.name, receiverAddress: self.owner?.address)
             self.minters[minter.id] <-! minter
         }
 
         access(all) fun withdrawMinter(id: UInt64): @QuestReward.Minter {
             let minter <- self.minters.remove(key: id) ?? panic("Minter does not exist")
+            emit MinterWithdrawn(minterID: id, name: minter.name, providerAddress: self.owner?.address)
             return <- minter
         }
 
         access(all) fun borrowMinter(id: UInt64): &QuestReward.Minter{QuestReward.MinterPublic}? {
             return &self.minters[id] as &QuestReward.Minter{QuestReward.MinterPublic}?
+        }
+
+        access(all) fun borrowEntireMinter(id: UInt64): &QuestReward.Minter? {
+            return &self.minters[id] as &QuestReward.Minter?
         }
 
         destroy() {

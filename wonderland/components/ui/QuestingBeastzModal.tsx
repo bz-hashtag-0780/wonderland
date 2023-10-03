@@ -13,11 +13,7 @@ const QuestingBeastzModal = ({ isOpen, onClose }: any) => {
 	const [activeTab, setActiveTab] = useState('Beasts');
 	const [isModalOpen, setModalOpen] = useState(false);
 
-	const tabItems = [
-		{ name: 'Beasts' },
-		{ name: 'Rewards' },
-		// { name: 'Random' },
-	];
+	const tabItems = [{ name: 'Beasts' }, { name: 'Rewards' }];
 
 	const TabItem = ({ item }: any) => (
 		<button

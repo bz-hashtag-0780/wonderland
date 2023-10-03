@@ -198,14 +198,14 @@ access(all) contract Questing {
             emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, quester: nil)
         }
 
-        access(all) fun addReward(questingResourceID: UInt64, minter: &QuestReward.Minter, rewardAlgo: &AnyResource{RewardAlgorithm.Algorithm}, RewardMapping: {Int: UInt32}) {
+        access(all) fun addReward(questingResourceID: UInt64, minter: &QuestReward.Minter, rewardAlgo: &AnyResource{RewardAlgorithm.Algorithm}, rewardMapping: {Int: UInt32}) {
             //check if resource is questing
             if let adjustedQuestingStartDate = self.adjustedQuestingStartDates[questingResourceID] {
                 let timeQuested = getCurrentBlock().timestamp - adjustedQuestingStartDate 
 
                 //check if resource is eligible for reward
                 if(timeQuested >= self.rewardPerSecond) {
-                    let rewardTemplateID = RewardMapping[rewardAlgo.randomAlgorithm()] ?? panic("RewardMapping does not contain a reward for the random algorithm")
+                    let rewardTemplateID = rewardMapping[rewardAlgo.randomAlgorithm()] ?? panic("RewardMapping does not contain a reward for the random algorithm")
                     
                     var newReward <- minter.mintReward(rewardTemplateID: rewardTemplateID)
 

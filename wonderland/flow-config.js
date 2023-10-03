@@ -11,4 +11,8 @@ config({
 	'0xBasicBeastsNFTStakingRewards': process.env.NEXT_PUBLIC_MVP_ADDRESS,
 	'0xBasicBeastsRaids': process.env.NEXT_PUBLIC_MVP_ADDRESS,
 	'0xDiscordHandles': process.env.NEXT_PUBLIC_MVP_ADDRESS,
+	'0xQuesting': process.env.NEXT_PUBLIC_LIVE_PRODUCT_ADDRESS,
+	'0xQuestReward': process.env.NEXT_PUBLIC_LIVE_PRODUCT_ADDRESS,
+	'0xRewardAlgorithm': process.env.NEXT_PUBLIC_LIVE_PRODUCT_ADDRESS,
+	'0xWonderlandRewardAlgorithm': process.env.NEXT_PUBLIC_LIVE_PRODUCT_ADDRESS,
 });

@@ -37,12 +37,14 @@ access(all) contract QuestReward: NonFungibleToken {
     access(self) var resources: @{String: AnyResource}
 
     access(all) struct RewardTemplate {
+        access(all) let minterID: UInt64
         access(all) let id: UInt32
         access(all) let name: String
         access(all) let description: String
         access(all) let image: String
 
-        init(id: UInt32, name: String, description: String, image: String) {
+        init(minterID: UInt64, id: UInt32, name: String, description: String, image: String) {
+            self.minterID = minterID
             self.id = id
             self.name = name
             self.description = description
@@ -118,18 +120,21 @@ access(all) contract QuestReward: NonFungibleToken {
 
     access(all) resource interface MinterPublic {
         access(all) let id: UInt64
-        access(all) fun getRewardTemplate(id: UInt64): RewardTemplate?
-        access(all) fun getRewardTemplates(): {UInt64: RewardTemplate}
+        access(all) let name: String
+        access(all) fun getRewardTemplate(id: UInt32): RewardTemplate?
+        access(all) fun getRewardTemplates(): {UInt32: RewardTemplate}
     }
 
-    access(all) resource Minter {
+    access(all) resource Minter: MinterPublic {
         access(all) let id: UInt64
+        access(all) let name: String
         access(self) var rewardTemplates: {UInt32: RewardTemplate}
         access(self) var metadata: {String: AnyStruct}
         access(self) var resources: @{String: AnyResource}
 
-        init() {
+        init(name: String) {
             self.id = QuestReward.minterSupply
+            self.name = name
             self.rewardTemplates = {}
             self.metadata = {}
             self.resources <- {}
@@ -148,7 +153,7 @@ access(all) contract QuestReward: NonFungibleToken {
         access(all) fun addRewardTemplate(name: String, description: String, image: String) {
             let id: UInt32 = QuestReward.rewardTemplateSupply
 
-            self.rewardTemplates[id] = RewardTemplate(id: id, name: name, description: description, image: image)
+            self.rewardTemplates[id] = RewardTemplate(minterID: self.id, id: id, name: name, description: description, image: image)
 
             QuestReward.rewardTemplateSupply = QuestReward.rewardTemplateSupply + 1
 
@@ -160,7 +165,7 @@ access(all) contract QuestReward: NonFungibleToken {
             pre {
                 self.rewardTemplates[id] != nil: "Reward Template does not exist"
             }
-            self.rewardTemplates[id] = RewardTemplate(id: id, name: name, description: description, image: image)
+            self.rewardTemplates[id] = RewardTemplate(minterID: self.id, id: id, name: name, description: description, image: image)
 
             emit RewardTemplateUpdated(minterID: self.id, minterAddress: self.owner?.address, rewardTemplateID: id, name: name, description: description, image: image)
         }
@@ -182,8 +187,8 @@ access(all) contract QuestReward: NonFungibleToken {
         return <- create Collection()
     }
 
-    access(all) fun createMinter(): @Minter {
-        return <- create Minter()
+    access(all) fun createMinter(name: String): @Minter {
+        return <- create Minter(name: name)
     }
 
     init() {

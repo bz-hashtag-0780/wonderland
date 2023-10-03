@@ -70,7 +70,7 @@ access(all) contract Questing {
             Questing Rewards
         */
         access(all) var rewardPerSecond: UFix64
-        access(self) var rewards: @{UInt64: QuestReward.Collection} //todo: think more about this, whether a quest reward interface will be needed.
+        access(self) var rewards: @{UInt64: QuestReward.Collection}
 
         /*
             Future extensions
@@ -290,6 +290,12 @@ access(all) contract Questing {
                     "Cannot borrow Quest reference: The ID of the returned reference is incorrect"
             }
         }
+        access(all) fun borrowMinter(id: UInt64): &QuestReward.Minter{QuestReward.MinterPublic}? { 
+            post {
+                (result == nil) || (result?.id == id): 
+                    "Cannot borrow Minter reference: The ID of the returned reference is incorrect"
+            }
+        }
     }
 
     access(all) resource QuestManager: QuestManagerPublic, MinterReceiver {
@@ -344,6 +350,10 @@ access(all) contract Questing {
         access(all) fun withdrawMinter(id: UInt64): @QuestReward.Minter {
             let minter <- self.minters.remove(key: id) ?? panic("Minter does not exist")
             return <- minter
+        }
+
+        access(all) fun borrowMinter(id: UInt64): &QuestReward.Minter{QuestReward.MinterPublic}? {
+            return &self.minters[id] as &QuestReward.Minter{QuestReward.MinterPublic}?
         }
 
         destroy() {

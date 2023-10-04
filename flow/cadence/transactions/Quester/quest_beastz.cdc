@@ -24,8 +24,10 @@ transaction(questManager: Address, questID: UInt64, nftID: UInt64) {
 
         let resource <- self.questerRef.quest(questManager: questManager, questID: questID, questingResource: <-beast)
 
-        let beastBack: @NonFungibleToken.NFT <- resource as! @NonFungibleToken.NFT
+        let nft <- resource as! @NonFungibleToken.NFT
 
-        self.collectionRef.deposit(token: <-beastBack)
+        self.collectionRef.deposit(token: <-nft)
+
     }
+    
 }

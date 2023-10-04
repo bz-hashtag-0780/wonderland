@@ -1,7 +1,7 @@
 import Questing from "../../contracts/Questing.cdc"
 import QuestReward from "../../contracts/QuestReward.cdc"
 
-pub fun main(questManager: Address, questID: UInt64): {UInt64: UFix64} {
+pub fun main(questManager: Address, questID: UInt64): [&QuestReward.Collection{QuestReward.CollectionPublic}] {
     // borrow quest manager reference
     var questManagerRef: &Questing.QuestManager{Questing.QuestManagerPublic}?  = nil
     if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
@@ -19,9 +19,11 @@ pub fun main(questManager: Address, questID: UInt64): {UInt64: UFix64} {
 
     let IDs = questRef!.getQuestingResourceIDs()
 
+    let collections: [&QuestReward.Collection{QuestReward.CollectionPublic}] = []
+
     for id in IDs {
-        questRef!.borrowRewardCollection(questingResourceID: id)
+        collections.append(questRef!.borrowRewardCollection(questingResourceID: id)!)
     }
 
-    return questRef!.getAllQuestingStartDates()
+    return collections
 }

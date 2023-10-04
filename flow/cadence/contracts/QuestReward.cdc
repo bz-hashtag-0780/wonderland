@@ -52,7 +52,14 @@ access(all) contract QuestReward: NonFungibleToken {
         }
     }
 
-    access(all) resource NFT: NonFungibleToken.INFT {
+    access(all) resource interface Public {
+        access(all) let id: UInt64
+        access(all) let minterID: UInt64
+        access(all) let rewardTemplateID: UInt32
+        access(all) let dateMinted: UFix64
+    }
+
+    access(all) resource NFT: Public, NonFungibleToken.INFT {
 
         access(all) let id: UInt64
         access(all) let minterID: UInt64
@@ -79,7 +86,17 @@ access(all) contract QuestReward: NonFungibleToken {
         }
     }
 
-    access(all) resource Collection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic {
+    access(all) resource interface CollectionPublic {
+        access(all) fun getIDs(): [UInt64]
+        access(all) fun borrowQuestReward(id: UInt64): &QuestReward.NFT{Public}? { 
+            post {
+                (result == nil) || (result?.id == id): 
+                    "Cannot borrow QuestReward reference: The ID of the returned reference is incorrect"
+            }
+        }
+    }
+
+    access(all) resource Collection: CollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic {
         
         access(all) var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
 
@@ -113,6 +130,11 @@ access(all) contract QuestReward: NonFungibleToken {
 
         access(all) fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
             return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
+        }
+
+        access(all) fun borrowQuestReward(id: UInt64): &QuestReward.NFT{Public}? {
+            let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
+            return ref as! &QuestReward.NFT?
         }
 
         destroy() {

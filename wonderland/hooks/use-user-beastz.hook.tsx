@@ -4,23 +4,24 @@ import { FETCH_STAKED_BEASTS } from '@/flow/scripts/fetch_staked_beasts';
 import { query } from '@onflow/fcl';
 import { GET_QUESTING_START_DATES } from '@/flow/scripts/questing/get_questing_start_dates.js';
 import { GET_ADJUSTED_QUESTING_DATES } from '@/flow/scripts/questing/get_adjusted_questing_dates.js';
+import questing from 'data/questing';
 
-export default function useUserBeasts(user: any) {
-	const [beasts, setBeasts] = useState([]);
-	const [questedBeasts, setQuestedBeasts] = useState([]);
-	const [unquestedBeasts, setUnquestedBeasts] = useState([]);
+export default function useUserBeastz(user: any) {
+	const [beastz, setBeastz] = useState([]);
+	const [questedBeastz, setQuestedBeastz] = useState([]);
+	const [unquestedBeastz, setUnquestedBeastz] = useState([]);
 	const [questingStartDates, setQuestingStartDates] = useState({});
 	const [adjustedQuestingDates, setAdjustedQuestingDates] = useState({});
 
 	useEffect(() => {
 		if (user?.addr != null) {
-			fetchUserBeasts();
+			fetchUserBeastz();
 		} else {
-			setBeasts([]);
+			setBeastz([]);
 		}
 	}, [user?.addr]);
 
-	const fetchUserBeasts = async () => {
+	const fetchUserBeastz = async () => {
 		try {
 			let beastCollection = await query({
 				cadence: FETCH_BEASTS,
@@ -32,9 +33,9 @@ export default function useUserBeasts(user: any) {
 			});
 			let joinedCollection = stakingCollection.concat(beastCollection);
 
-			setBeasts(joinedCollection);
-			setQuestedBeasts(stakingCollection);
-			setUnquestedBeasts(beastCollection);
+			setBeastz(joinedCollection);
+			setQuestedBeastz(stakingCollection);
+			setUnquestedBeastz(beastCollection);
 			getQuestingDates();
 		} catch (err) {
 			console.log(err);
@@ -50,7 +51,7 @@ export default function useUserBeasts(user: any) {
 						process.env.NEXT_PUBLIC_QUEST_MANAGER_ADDRESS,
 						t.Address
 					),
-					arg(process.env.NEXT_PUBLIC_QUEST_ID_BEASTZ, t.UInt64),
+					arg(questing['beastz'], t.UInt64),
 				],
 			});
 			let questingStartDates = await query({
@@ -64,10 +65,10 @@ export default function useUserBeasts(user: any) {
 	};
 
 	return {
-		beasts,
-		questedBeasts,
-		unquestedBeasts,
-		fetchUserBeasts,
+		beastz,
+		questedBeastz,
+		unquestedBeastz,
+		fetchUserBeastz,
 		questingStartDates,
 		adjustedQuestingDates,
 		getQuestingDates,

@@ -12,6 +12,7 @@ access(all) contract WonderlandRewardAlgorithm: RewardAlgorithm {
     // -----------------------------------------------------------------------
     access(all) let AlgorithmStoragePath: StoragePath
     access(all) let AlgorithmPublicPath: PublicPath
+    
     access(all) resource Algorithm: RewardAlgorithm.Algorithm {
         access(all) fun randomAlgorithm(): Int {
             // Generate a random number between 0 and 100_000_000

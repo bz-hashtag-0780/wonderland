@@ -2,8 +2,8 @@
 
 import React, { use, useState } from 'react';
 import '../../flow-config.js';
-import QuestingBeastzModal from '@/components/ui/QuestingBeastzModal';
-import { useWonder } from 'providers/WonderProvider.jsx';
+import QuestingModal from '@/components/ui/QuestingModal';
+import { useWonder } from 'providers/WonderProvider';
 
 export default function Explore() {
 	const [isModalOpen, setModalOpen] = useState(false);

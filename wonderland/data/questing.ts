@@ -1,5 +1,5 @@
 const questing = {
-	beastz: '2',
+	beastz: '173422121',
 };
 
 export default questing;

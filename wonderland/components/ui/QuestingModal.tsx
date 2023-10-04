@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Beasts from '@/components/dashboardTabs/contents/Beasts';
 import Rewards from '@/components/dashboardTabs/contents/Rewards';
 import '../../flow-config.js';
@@ -8,12 +8,16 @@ import { useAuth } from 'providers/AuthProvider';
 import { useUser } from 'providers/UserProvider';
 
 const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
-	const { beasts, rewards } = useUser();
+	const { rewards } = useUser();
 	const { loggedIn, logIn } = useAuth();
-	const [activeTab, setActiveTab] = useState('Beasts');
+	const [activeTab, setActiveTab] = useState('Beastz');
 	const [isModalOpen, setModalOpen] = useState(false);
 
-	const tabItems = [{ name: 'Beasts' }, { name: 'Rewards' }];
+	useEffect(() => {
+		console.log('rewards', rewards);
+	}, [rewards]);
+
+	const tabItems = [{ name: 'Beastz' }, { name: 'Rewards' }];
 
 	const TabItem = ({ item }: any) => (
 		<button
@@ -35,18 +39,18 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 							: 'flex items-center justify-center border border-white border-opacity-50 ml-1.5 px-2 text-xs font-semibold text-gray-200 text-opacity-50 rounded-lg'
 					}
 				>
-					{item.name === 'Beasts'
-						? beasts.length
+					{item.name === 'Beastz'
+						? questingResources.length
 						: item.name === 'Rewards'
-						? extractRewards(beasts, rewards).length
+						? extractRewards(questingResources, rewards).length
 						: 0}
 				</div>
 			</div>
 		</button>
 	);
 
-	function extractRewards(beasts: any[], rewards: any) {
-		return beasts.flatMap((beast: any) => {
+	function extractRewards(questingResources: any[], rewards: any) {
+		return questingResources.flatMap((beast: any) => {
 			const beastRewards = rewards[beast.id];
 			if (!beastRewards) {
 				return [];
@@ -105,11 +109,11 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 											</button>
 										</div>
 									</div>
-									{activeTab === 'Beasts' && <Beasts />}
+									{activeTab === 'Beastz' && <Beasts />}
 									{activeTab === 'Rewards' && (
 										<Rewards
 											rewards={extractRewards(
-												beasts,
+												questingResources,
 												rewards
 											)}
 										/>

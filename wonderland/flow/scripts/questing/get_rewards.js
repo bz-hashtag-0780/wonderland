@@ -1,5 +1,6 @@
-import Questing from "../../contracts/Questing.cdc"
-import QuestReward from "../../contracts/QuestReward.cdc"
+export const GET_REWARDS = `
+import Questing from 0xQuesting
+import QuestReward from 0xQuestReward
 
 pub fun main(questManager: Address, questID: UInt64): {UInt64: &QuestReward.Collection{QuestReward.CollectionPublic}} {
     // borrow quest manager reference
@@ -27,3 +28,4 @@ pub fun main(questManager: Address, questID: UInt64): {UInt64: &QuestReward.Coll
 
     return collections
 }
+`;

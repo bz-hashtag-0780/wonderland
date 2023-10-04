@@ -55,7 +55,7 @@ access(all) contract Questing {
         access(all) fun getAllAdjustedQuestingStartDates(): {UInt64: UFix64}
         access(all) fun getAdjustedQuestingStartDate(questingResourceID: UInt64): UFix64?
         access(all) fun getQuestingResourceIDs(): [UInt64]
-        access(all) fun borrowRewardCollection(questingResourceID: UInt64): &QuestReward.Collection?
+        access(all) fun borrowRewardCollection(questingResourceID: UInt64): &QuestReward.Collection{QuestReward.CollectionPublic}?
     }
 
     access(all) resource Quest: Public {
@@ -183,8 +183,8 @@ access(all) contract Questing {
             return self.rewards.keys
         }
 
-        access(all) fun borrowRewardCollection(questingResourceID: UInt64): &QuestReward.Collection? {
-            return &self.rewards[questingResourceID] as &QuestReward.Collection?
+        access(all) fun borrowRewardCollection(questingResourceID: UInt64): &QuestReward.Collection{QuestReward.CollectionPublic}? {
+            return &self.rewards[questingResourceID] as &QuestReward.Collection{QuestReward.CollectionPublic}?
         }
 
         /*

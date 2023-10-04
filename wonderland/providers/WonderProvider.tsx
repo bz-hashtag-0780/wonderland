@@ -12,6 +12,7 @@ interface State {
 	questingStartDates: any;
 	adjustedQuestingDates: any;
 	getQuestingDates: any;
+	rewards: any;
 }
 
 const WonderContext = createContext<State | undefined>(undefined);
@@ -31,6 +32,7 @@ const WonderProvider: React.FC<ProviderProps> = ({ children }) => {
 		questingStartDates,
 		adjustedQuestingDates,
 		getQuestingDates,
+		rewards,
 	} = useUserBeastz(user);
 
 	return (
@@ -43,6 +45,7 @@ const WonderProvider: React.FC<ProviderProps> = ({ children }) => {
 				questingStartDates,
 				adjustedQuestingDates,
 				getQuestingDates,
+				rewards,
 			}}
 		>
 			{children}

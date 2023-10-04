@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import '../../flow-config.js';
 import QuestingBeastzModal from '@/components/ui/QuestingBeastzModal';
+import { useWonder } from 'providers/WonderProvider.jsx';
 
 export default function Explore() {
 	const [isModalOpen, setModalOpen] = useState(false);
+
+	const { beastz } = useWonder();
 
 	return (
 		<>
@@ -17,7 +20,8 @@ export default function Explore() {
 					test
 				</button>
 			</div>
-			<QuestingBeastzModal
+			<QuestingModal
+				questingResources={beastz}
 				isOpen={isModalOpen}
 				onClose={() => setModalOpen(false)}
 			/>

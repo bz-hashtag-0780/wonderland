@@ -7,7 +7,7 @@ import '../../flow-config.js';
 import { useAuth } from 'providers/AuthProvider';
 import { useUser } from 'providers/UserProvider';
 
-const QuestingBeastzModal = ({ isOpen, onClose }: any) => {
+const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 	const { beasts, rewards } = useUser();
 	const { loggedIn, logIn } = useAuth();
 	const [activeTab, setActiveTab] = useState('Beasts');
@@ -127,4 +127,4 @@ const QuestingBeastzModal = ({ isOpen, onClose }: any) => {
 	);
 };
 
-export default QuestingBeastzModal;
+export default QuestingModal;

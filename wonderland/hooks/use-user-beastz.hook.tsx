@@ -56,6 +56,13 @@ export default function useUserBeastz(user: any) {
 			});
 			let questingStartDates = await query({
 				cadence: GET_QUESTING_START_DATES,
+				args: (arg: any, t: any) => [
+					arg(
+						process.env.NEXT_PUBLIC_QUEST_MANAGER_ADDRESS,
+						t.Address
+					),
+					arg(questing['beastz'], t.UInt64),
+				],
 			});
 			setAdjustedQuestingDates(adjustedQuestingDates);
 			setQuestingStartDates(questingStartDates);

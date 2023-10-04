@@ -2,8 +2,17 @@
 
 import { createContext, useContext, ReactNode } from 'react';
 import useCurrentUser from '@/hooks/use-current-user.hook';
+import useUserBeastz from '@/hooks/use-user-beastz.hook';
 
-interface State {}
+interface State {
+	beastz: any;
+	questedBeastz: any;
+	unquestedBeastz: any;
+	fetchUserBeastz: any;
+	questingStartDates: any;
+	adjustedQuestingDates: any;
+	getQuestingDates: any;
+}
 
 const WonderContext = createContext<State | undefined>(undefined);
 
@@ -14,8 +23,30 @@ interface ProviderProps {
 const WonderProvider: React.FC<ProviderProps> = ({ children }) => {
 	const [user] = useCurrentUser();
 
+	const {
+		beastz,
+		questedBeastz,
+		unquestedBeastz,
+		fetchUserBeastz,
+		questingStartDates,
+		adjustedQuestingDates,
+		getQuestingDates,
+	} = useUserBeastz(user);
+
 	return (
-		<WonderContext.Provider value={{}}>{children}</WonderContext.Provider>
+		<WonderContext.Provider
+			value={{
+				beastz,
+				questedBeastz,
+				unquestedBeastz,
+				fetchUserBeastz,
+				questingStartDates,
+				adjustedQuestingDates,
+				getQuestingDates,
+			}}
+		>
+			{children}
+		</WonderContext.Provider>
 	);
 };
 

@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Beasts from '@/components/dashboardTabs/contents/Beasts';
+import QuestResources from '@/components/exploreTabs/contents/QuestResources';
 import Rewards from '@/components/dashboardTabs/contents/Rewards';
 import '../../flow-config.js';
 import { useAuth } from 'providers/AuthProvider';
 import { useUser } from 'providers/UserProvider';
+import questing from 'data/questing';
 
 const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 	const { rewards } = useUser();
@@ -109,7 +110,11 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 											</button>
 										</div>
 									</div>
-									{activeTab === 'Beastz' && <Beasts />}
+									{activeTab === 'Beastz' && (
+										<QuestResources
+											questID={questing['beastz']}
+										/>
+									)}
 									{activeTab === 'Rewards' && (
 										<Rewards
 											rewards={extractRewards(

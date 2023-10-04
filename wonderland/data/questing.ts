@@ -1,3 +1,5 @@
+// resource : quest id
+
 const questing = {
 	beastz: '173422121',
 };

@@ -15,4 +15,6 @@ config({
 	'0xQuestReward': process.env.NEXT_PUBLIC_LIVE_PRODUCT_ADDRESS,
 	'0xRewardAlgorithm': process.env.NEXT_PUBLIC_LIVE_PRODUCT_ADDRESS,
 	'0xWonderlandRewardAlgorithm': process.env.NEXT_PUBLIC_LIVE_PRODUCT_ADDRESS,
+	'0xNonFungibleToken': process.env.NEXT_PUBLIC_NON_FUNGIBLE_TOKEN_ADDRESS,
+	'0xMetadataViews': process.env.NEXT_PUBLIC_METADATA_VIEWS_ADDRESS,
 });

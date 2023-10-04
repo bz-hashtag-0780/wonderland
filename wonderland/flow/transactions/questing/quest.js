@@ -1,6 +1,7 @@
-import NonFungibleToken from "../../contracts/utility/NonFungibleToken.cdc"
-import BasicBeasts from "../../contracts/utility/BasicBeasts.cdc"
-import Questing from "../../contracts/Questing.cdc"
+export const QUEST = `
+import NonFungibleToken from 0xNonFungibleToken
+import BasicBeasts from 0xBasicBeasts
+import Questing from 0xQuesting
 
 transaction(questManager: Address, questID: UInt64, nftID: UInt64) {
     
@@ -29,3 +30,4 @@ transaction(questManager: Address, questID: UInt64, nftID: UInt64) {
         self.collectionRef.deposit(token: <-beastBack)
     }
 }
+`;

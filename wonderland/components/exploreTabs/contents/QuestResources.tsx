@@ -37,6 +37,7 @@ const QuestResources = ({ questID }: any) => {
 		adjustedQuestingDates,
 		getQuestingDates,
 		rewards,
+		rewardPerSecond,
 	} = useWonder();
 
 	const {
@@ -46,7 +47,6 @@ const QuestResources = ({ questID }: any) => {
 		fetchUserBeasts,
 		stakingStartDates,
 		adjustedStakingDates,
-		rewardPerSecond,
 	} = useUser();
 
 	useEffect(() => {
@@ -303,74 +303,10 @@ const QuestResources = ({ questID }: any) => {
 		}
 	};
 
-	const transfer = async () => {
-		const id = toast.loading('Initializing...');
-
-		try {
-			const res = await send([
-				transaction(`
-import BasicBeasts from 0xBasicBeasts
-
-transaction(id: UInt64, receiver: Address) {
-    var receiverRef: &BasicBeasts.Collection{BasicBeasts.BeastCollectionPublic}?
-
-    prepare(signer: AuthAccount) {
-        let collectionRef = signer.borrow<&BasicBeasts.Collection>(from: BasicBeasts.CollectionStoragePath) ?? panic("Could not borrow a reference to the NFT Collection")
-        let nft <- collectionRef.withdraw(withdrawID: id)
-
-        self.receiverRef = nil
-
-        if let cap = getAccount(receiver).capabilities.get<&BasicBeasts.Collection{BasicBeasts.BeastCollectionPublic}>(BasicBeasts.CollectionPublicPath) {
-                self.receiverRef = cap.borrow()
-        }
-
-        self.receiverRef!.deposit(token: <-nft)
-    }
-}
-				`),
-				args([
-					arg('125368043', t.UInt64),
-					arg(
-						process.env.NEXT_PUBLIC_QUEST_MANAGER_ADDRESS,
-						t.Address
-					),
-				]),
-				payer(authz),
-				proposer(authz),
-				authorizations([authz]),
-				limit(9999),
-			]).then(decode);
-			tx(res).subscribe((res: any) => {
-				toastStatus(id, res.status);
-				console.log(res);
-			});
-			await tx(res)
-				.onceSealed()
-				.then(() => {
-					toast.update(id, {
-						render: 'Transaction Sealed',
-						type: 'success',
-						isLoading: false,
-						autoClose: 5000,
-					});
-				});
-			fetchUserBeasts();
-		} catch (err) {
-			toast.update(id, {
-				render: () => <div>Error, try again later...</div>,
-				type: 'error',
-				isLoading: false,
-				autoClose: 5000,
-			});
-			console.log(err);
-		}
-	};
-
 	return (
 		<>
 			<ActionHeader buttonText="Quest All" action={questAll} />
 
-			{/* <button onClick={() => transfer()}>transfer</button> */}
 			<div className="pt-6 h-[645px] overflow-y-auto">
 				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
 					{beastz != null && (

@@ -17,9 +17,7 @@ import {
 } from '@onflow/fcl';
 import * as t from '@onflow/types';
 import { QUEST } from '@/flow/transactions/questing/quest';
-
-import { UNSTAKE } from '@/flow/transactions/unstake';
-import { UNSTAKE_MULTIPLE } from '@/flow/transactions/unstake_multiple';
+import { UNQUEST } from '@/flow/transactions/questing/unquest';
 import { STAKE_MULTIPLE } from '@/flow/transactions/stake_multiple';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/utils/toastStatus';
@@ -33,7 +31,12 @@ const QuestResources = ({ questID }: any) => {
 	const [currentBeast, setCurrentBeast] = useState(null);
 	const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
-	const { beastz, questingStartDates, adjustedQuestingDates } = useWonder();
+	const {
+		beastz,
+		questingStartDates,
+		adjustedQuestingDates,
+		getQuestingDates,
+	} = useWonder();
 
 	const {
 		beasts,
@@ -47,8 +50,8 @@ const QuestResources = ({ questID }: any) => {
 	} = useUser();
 
 	useEffect(() => {
-		console.log(questingStartDates[120683918]);
-	}, [questingStartDates]);
+		console.log(adjustedQuestingDates);
+	}, [adjustedQuestingDates]);
 
 	const NFT = ({ item }: any) => (
 		<InView>
@@ -84,9 +87,8 @@ const QuestResources = ({ questID }: any) => {
 							/>
 						</div>
 						<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-							{unstakedBeasts.some(
-								(unstakedBeast: any) =>
-									unstakedBeast.id === item.uuid
+							{!Object.keys(questingStartDates).includes(
+								item.uuid.toString()
 							) ? (
 								<button
 									onClick={() => quest(item.uuid)}
@@ -111,22 +113,16 @@ const QuestResources = ({ questID }: any) => {
 							<span className="flex items-center gap-1 font-bold text-white-2 min-w-0 min-h-[28px]">
 								{item.nickname} #{item.serialNumber}
 							</span>
-							{adjustedQuestingDates[item.uuid] != null &&
-								!unstakedBeasts.some(
-									(unstakedBeast: any) =>
-										unstakedBeast.id === item.uuid
-								) && (
-									<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
-										{calculateDaysElapsed(
-											adjustedQuestingDates[item.uuid]
-										)}
-										/
-										{Math.floor(
-											rewardPerSecond / 60 / 60 / 24
-										)}
-										d
-									</span>
-								)}
+							{adjustedQuestingDates[item.uuid] != null && (
+								<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
+									{calculateDaysElapsed(
+										adjustedQuestingDates[item.uuid]
+									)}
+									/
+									{Math.floor(rewardPerSecond / 60 / 60 / 24)}
+									d
+								</span>
+							)}
 						</div>
 					</div>
 
@@ -201,7 +197,7 @@ const QuestResources = ({ questID }: any) => {
 						autoClose: 5000,
 					});
 				});
-			fetchUserBeasts();
+			getQuestingDates();
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -215,7 +211,7 @@ const QuestResources = ({ questID }: any) => {
 
 	const questAll = async () => {
 		const id = toast.loading('Initializing...');
-		const maxQuantity = 150; //tested
+		const maxQuantity = 150; //todo: test
 
 		const toStake = unstakedBeasts
 			.slice(0, maxQuantity)
@@ -261,13 +257,21 @@ const QuestResources = ({ questID }: any) => {
 		}
 	};
 
-	const quitQuest = async (nftID: number) => {
+	const quitQuest = async (nftID: String) => {
 		const id = toast.loading('Initializing...');
 
 		try {
 			const res = await send([
-				transaction(UNSTAKE),
-				args([arg(nftID, t.UInt64)]),
+				transaction(UNQUEST),
+				,
+				args([
+					arg(
+						process.env.NEXT_PUBLIC_QUEST_MANAGER_ADDRESS,
+						t.Address
+					),
+					arg(questID, t.UInt64),
+					arg(nftID, t.UInt64),
+				]),
 				payer(authz),
 				proposer(authz),
 				authorizations([authz]),
@@ -287,47 +291,7 @@ const QuestResources = ({ questID }: any) => {
 						autoClose: 5000,
 					});
 				});
-			fetchUserBeasts();
-		} catch (err) {
-			toast.update(id, {
-				render: () => <div>Error, try again later...</div>,
-				type: 'error',
-				isLoading: false,
-				autoClose: 5000,
-			});
-			console.log(err);
-		}
-	};
-
-	const unstakeMultiple = async () => {
-		const id = toast.loading('Initializing...');
-
-		const IDs = stakedBeasts.map((beast: any) => beast.id).slice(-10);
-
-		try {
-			const res = await send([
-				transaction(UNSTAKE_MULTIPLE),
-				args([arg(IDs, t.Array(t.UInt64))]),
-				payer(authz),
-				proposer(authz),
-				authorizations([authz]),
-				limit(9999),
-			]).then(decode);
-			tx(res).subscribe((res: any) => {
-				toastStatus(id, res.status);
-				console.log(res);
-			});
-			await tx(res)
-				.onceSealed()
-				.then(() => {
-					toast.update(id, {
-						render: 'Transaction Sealed',
-						type: 'success',
-						isLoading: false,
-						autoClose: 5000,
-					});
-				});
-			fetchUserBeasts();
+			getQuestingDates();
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -407,7 +371,6 @@ transaction(id: UInt64, receiver: Address) {
 			<ActionHeader buttonText="Quest All" action={questAll} />
 
 			{/* <button onClick={() => transfer()}>transfer</button> */}
-			{/* <ActionHeader buttonText="Cancel 10" action={unstakeMultiple} /> */}
 			<div className="pt-6 h-[645px] overflow-y-auto">
 				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
 					{beastz != null && (

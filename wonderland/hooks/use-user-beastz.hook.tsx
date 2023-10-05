@@ -18,6 +18,7 @@ export default function useUserBeastz(user: any) {
 	useEffect(() => {
 		if (user?.addr != null) {
 			fetchUserBeastz();
+			getQuestingDates();
 			getRewards();
 		} else {
 			setBeastz([]);
@@ -32,7 +33,6 @@ export default function useUserBeastz(user: any) {
 			});
 
 			setBeastz(beastCollection);
-			getQuestingDates();
 		} catch (err) {
 			console.log(err);
 		}

@@ -106,15 +106,20 @@ access(all) contract Questing {
 
             if (container[0]?.isInstance(Type<@NonFungibleToken.NFT>()) == true) {
                 let ref = &container[0] as auth &AnyResource?
-                let resource = ref as! &NonFungibleToken.NFT
+                let resource = (ref as! &NonFungibleToken.NFT?)!
                 uuid = resource.uuid
             }
 
             // ensure we always have a UUID by this point
             assert(uuid != nil, message: "UUID should not be nil")
 
+            // check if already questing
+            assert(!self.questingStartDates.keys.contains(uuid!), message: "Cannot quest: questingResource is already questing")
+
             // add quester to the list of questers
-            self.questers.append(address)
+            if(!self.questers.contains(address)) {
+                self.questers.append(address)
+            }
 
             // add timers
             self.questingStartDates[uuid!] = getCurrentBlock().timestamp
@@ -136,13 +141,14 @@ access(all) contract Questing {
 
             if (container[0]?.isInstance(Type<@NonFungibleToken.NFT>()) == true) {
                 let ref = &container[0] as auth &AnyResource?
-                let resource = ref as! &NonFungibleToken.NFT
+                let resource = (ref as! &NonFungibleToken.NFT?)!
                 uuid = resource.uuid
             }
 
             // ensure we always have a UUID by this point
             assert(uuid != nil, message: "UUID should not be nil")
 
+            // check if questingResource is questing
             assert(self.questingStartDates.keys.contains(uuid!), message: "Cannot unquest: questingResource is not currently questing")
             
             self.unquestResource(questingResourceID: uuid!)

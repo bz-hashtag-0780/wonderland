@@ -1,5 +1,5 @@
 export const GET_ADJUSTED_QUESTING_DATES = `
-import Questing from "../../contracts/Questing.cdc"
+import Questing from 0xQuesting
 
 pub fun main(questManager: Address, questID: UInt64): {UInt64: UFix64} {
     // borrow quest manager reference

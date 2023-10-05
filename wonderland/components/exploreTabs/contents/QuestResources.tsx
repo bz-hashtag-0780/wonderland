@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
 	send,
@@ -27,10 +27,13 @@ import DetailsModal from '../../ui/DetailsModal';
 import ActionHeader from '../ActionHeader';
 import { useUser } from 'providers/UserProvider';
 import { InView } from 'react-intersection-observer';
+import { useWonder } from 'providers/WonderProvider';
 
 const QuestResources = ({ questID }: any) => {
 	const [currentBeast, setCurrentBeast] = useState(null);
 	const [openDetailsModal, setOpenDetailsModal] = useState(false);
+
+	const { beastz, questingStartDates, adjustedQuestingDates } = useWonder();
 
 	const {
 		beasts,
@@ -43,32 +46,30 @@ const QuestResources = ({ questID }: any) => {
 		rewardPerSecond,
 	} = useUser();
 
+	useEffect(() => {
+		console.log(questingStartDates[120683918]);
+	}, [questingStartDates]);
+
 	const NFT = ({ item }: any) => (
 		<InView>
 			<div
-				onClick={() => console.log(item.id)}
+				onClick={() => console.log(item.uuid)}
 				className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden"
 			>
 				<div className="flex-auto flex flex-col w-full group relative">
 					<div className="rounded-xl overflow-hidden flex items-center relative">
-						{stakingStartDates[item.id] != null &&
-							!unstakedBeasts.some(
-								(unstakedBeast: any) =>
-									unstakedBeast.id === item.id
-							) && (
-								<div className="flex w-full absolute z-10 top-2">
-									<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
-										<span style={{ fontSize: '10px' }}>
-											⏳
-										</span>
-										&nbsp;
-										{calculateDaysElapsed(
-											stakingStartDates[item.id]
-										)}
-										d
-									</div>
+						{questingStartDates[item.uuid] != null && (
+							<div className="flex w-full absolute z-10 top-2">
+								<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
+									<span style={{ fontSize: '10px' }}>⏳</span>
+									&nbsp;
+									{calculateDaysElapsed(
+										questingStartDates[item.uuid]
+									)}
+									d
 								</div>
-							)}
+							</div>
+						)}
 
 						<div>
 							<Image
@@ -85,17 +86,17 @@ const QuestResources = ({ questID }: any) => {
 						<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 							{unstakedBeasts.some(
 								(unstakedBeast: any) =>
-									unstakedBeast.id === item.id
+									unstakedBeast.id === item.uuid
 							) ? (
 								<button
-									onClick={() => quest(item.id)}
+									onClick={() => quest(item.uuid)}
 									className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 								>
 									Quest
 								</button>
 							) : (
 								<button
-									onClick={() => quitQuest(item.id)}
+									onClick={() => quitQuest(item.uuid)}
 									className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 								>
 									Quit quest
@@ -110,14 +111,14 @@ const QuestResources = ({ questID }: any) => {
 							<span className="flex items-center gap-1 font-bold text-white-2 min-w-0 min-h-[28px]">
 								{item.nickname} #{item.serialNumber}
 							</span>
-							{adjustedStakingDates[item.id] != null &&
+							{adjustedQuestingDates[item.uuid] != null &&
 								!unstakedBeasts.some(
 									(unstakedBeast: any) =>
-										unstakedBeast.id === item.id
+										unstakedBeast.id === item.uuid
 								) && (
 									<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
 										{calculateDaysElapsed(
-											adjustedStakingDates[item.id]
+											adjustedQuestingDates[item.uuid]
 										)}
 										/
 										{Math.floor(
@@ -135,11 +136,11 @@ const QuestResources = ({ questID }: any) => {
 						<div className="flex items-center justify-between gap-x-2 flex-wrap h-7 overflow-hidden">
 							<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
 								Rewards:{' '}
-								{rewards[item.id] != null
-									? Object.keys(rewards[item.id]).length
+								{rewards[item.uuid] != null
+									? Object.keys(rewards[item.uuid]).length
 									: 0}
 							</span>
-							{rewards[item.id] != null && (
+							{rewards[item.uuid] != null && (
 								<button
 									onClick={() => {
 										setCurrentBeast(item);
@@ -218,7 +219,7 @@ const QuestResources = ({ questID }: any) => {
 
 		const toStake = unstakedBeasts
 			.slice(0, maxQuantity)
-			.map((item: any) => item.id);
+			.map((item: any) => item.uuid);
 
 		console.log(toStake);
 
@@ -409,9 +410,9 @@ transaction(id: UInt64, receiver: Address) {
 			{/* <ActionHeader buttonText="Cancel 10" action={unstakeMultiple} /> */}
 			<div className="pt-6 h-[645px] overflow-y-auto">
 				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
-					{beasts != null && (
+					{beastz != null && (
 						<>
-							{beasts.map((item: any) => (
+							{beastz.map((item: any) => (
 								<NFT key={item.uuid} item={item} />
 							))}
 						</>

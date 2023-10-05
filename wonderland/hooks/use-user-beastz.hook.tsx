@@ -30,15 +30,8 @@ export default function useUserBeastz(user: any) {
 				cadence: FETCH_BEASTS,
 				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
 			});
-			let stakingCollection = await query({
-				cadence: FETCH_STAKED_BEASTS,
-				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
-			});
-			let joinedCollection = stakingCollection.concat(beastCollection);
 
-			setBeastz(joinedCollection);
-			setQuestedBeastz(stakingCollection);
-			setUnquestedBeastz(beastCollection);
+			setBeastz(beastCollection);
 			getQuestingDates();
 		} catch (err) {
 			console.log(err);

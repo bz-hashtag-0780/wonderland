@@ -134,7 +134,9 @@ access(all) contract Questing {
         }
 
         access(contract) fun unquest(questingResource: @AnyResource, address: Address): @AnyResource {
-
+            pre {
+                questingResource.getType() == self.type: "Cannot unquest: questingResource type does not match type required by quest"
+            }
             var uuid: UInt64? = nil
             var container: @{UInt64: AnyResource} <- {}
             container[0] <-! questingResource

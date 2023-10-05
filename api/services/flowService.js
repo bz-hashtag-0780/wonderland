@@ -264,69 +264,69 @@ transaction(IDs: [UInt64]) {
 		}
 	}
 
-	static async changeRewardPerSecond(rewardPerSecond) {
-		let transaction = `
-import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+	// 	static async changeRewardPerSecond(rewardPerSecond) {
+	// 		let transaction = `
+	// import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
 
-transaction(rewardPerSecond: UFix64) {
-    let adminRef: &BasicBeastsNFTStakingRewards.Admin
+	// transaction(rewardPerSecond: UFix64) {
+	//     let adminRef: &BasicBeastsNFTStakingRewards.Admin
 
-    prepare(signer: AuthAccount) {
-        // get admin resource
-        self.adminRef = signer.borrow<&BasicBeastsNFTStakingRewards.Admin>(from: BasicBeastsNFTStakingRewards.AdminStoragePath)
-            ?? panic("No admin resource in storage")
+	//     prepare(signer: AuthAccount) {
+	//         // get admin resource
+	//         self.adminRef = signer.borrow<&BasicBeastsNFTStakingRewards.Admin>(from: BasicBeastsNFTStakingRewards.AdminStoragePath)
+	//             ?? panic("No admin resource in storage")
 
-    }
+	//     }
 
-    execute {
-        self.adminRef.changeRewardPerSecond(seconds: rewardPerSecond)
-    }
-}
-        `;
-		let keyIndex = null;
-		for (const [key, value] of Object.entries(this.AdminKeys)) {
-			if (value == false) {
-				keyIndex = parseInt(key);
-				break;
-			}
-		}
-		if (keyIndex == null) {
-			return;
-		}
+	//     execute {
+	//         self.adminRef.changeRewardPerSecond(seconds: rewardPerSecond)
+	//     }
+	// }
+	//         `;
+	// 		let keyIndex = null;
+	// 		for (const [key, value] of Object.entries(this.AdminKeys)) {
+	// 			if (value == false) {
+	// 				keyIndex = parseInt(key);
+	// 				break;
+	// 			}
+	// 		}
+	// 		if (keyIndex == null) {
+	// 			return;
+	// 		}
 
-		this.AdminKeys[keyIndex] = true;
-		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
-		try {
-			const txid = await signer.sendTransaction(transaction, (arg, t) => [
-				arg(rewardPerSecond, t.UFix64),
-			]);
+	// 		this.AdminKeys[keyIndex] = true;
+	// 		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+	// 		try {
+	// 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+	// 				arg(rewardPerSecond, t.UFix64),
+	// 			]);
 
-			if (txid) {
-				await fcl.tx(txid).onceSealed();
-				this.AdminKeys[keyIndex] = false;
-			}
-		} catch (e) {
-			this.AdminKeys[keyIndex] = false;
-			console.log(e);
-			return;
-		}
-	}
+	// 			if (txid) {
+	// 				await fcl.tx(txid).onceSealed();
+	// 				this.AdminKeys[keyIndex] = false;
+	// 			}
+	// 		} catch (e) {
+	// 			this.AdminKeys[keyIndex] = false;
+	// 			console.log(e);
+	// 			return;
+	// 		}
+	// 	}
 
-	static async getRewardPerSecond() {
-		let script = `
-import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+	// 	static async getRewardPerSecond() {
+	// 		let script = `
+	// import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
 
-pub fun main(): UFix64 {
-    return BasicBeastsNFTStakingRewards.rewardPerSecond
-}
-        `;
+	// pub fun main(): UFix64 {
+	//     return BasicBeastsNFTStakingRewards.rewardPerSecond
+	// }
+	//         `;
 
-		const rewardPerSecond = await fcl.query({
-			cadence: script,
-		});
+	// 		const rewardPerSecond = await fcl.query({
+	// 			cadence: script,
+	// 		});
 
-		return rewardPerSecond;
-	}
+	// 		return rewardPerSecond;
+	// 	}
 
 	static async addKeys(numOfKeys) {
 		let transaction = `
@@ -976,6 +976,152 @@ transaction(idsToDiscordHandles: {String: String}) {
 			console.log(e);
 			return;
 		}
+	}
+
+	static async getRewardEligibleQuestingNFTs() {
+		let script = `
+		import Questing from 0xQuesting
+
+		access(all) fun main(questManager: Address, questID: UInt64): [UInt64] {
+			// borrow quest manager reference
+			var questManagerRef: &Questing.QuestManager{Questing.QuestManagerPublic}?  = nil
+			if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
+				questManagerRef = cap.borrow()
+			}
+		
+			// borrow quest reference
+			var questRef: &Questing.Quest{Questing.Public}? = nil
+			if(questManagerRef != nil) {
+				questRef = questManagerRef!.borrowQuest(id: questID)
+			}
+			assert(questRef != nil, message: "Quest does not exist")
+		
+			var IDs: [UInt64] = []
+			var adjustedQuestingDates = questRef!.getAllAdjustedQuestingStartDates()
+			var currentBlockTimestamp = getCurrentBlock().timestamp
+		
+			for id in adjustedQuestingDates.keys {
+				let timeQuested = currentBlockTimestamp - adjustedQuestingDates[id]!
+		
+				if timeQuested >= questRef!.rewardPerSecond {
+					IDs.append(id)
+				}
+			}
+			
+			return IDs
+		}
+        `;
+
+		const eligibleNFTs = await fcl.query({
+			cadence: script,
+			args: (arg, t) => [
+				arg(process.env.QUEST_MANAGER_ADDRESS, t.Address),
+				arg(process.env.QUEST_ID_BEASTZ, t.UInt64),
+			],
+		});
+
+		return eligibleNFTs;
+	}
+
+	static async changeRewardPerSecond(rewardPerSecond) {
+		let transaction = `
+		import Questing from 0xQuesting
+
+		transaction(questID: UInt64, seconds: UFix64) {
+		
+			let questManagerRef: &Questing.QuestManager
+			let questRef: &Questing.Quest
+		
+			prepare(signer: AuthAccount) {
+		
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+				
+				self.questRef = self.questManagerRef.borrowEntireQuest(id: questID)??panic("Could not borrow quest reference")
+		
+			}
+		
+			execute {
+				self.questRef.changeRewardPerSecond(seconds: seconds)
+			}
+		
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(process.env.QUEST_ID_BEASTZ, t.UInt64),
+				arg(rewardPerSecond, t.UFix64),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'RewardPerSecondChanged'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('reward per second has not been changed');
+					return;
+				}
+				console.log('Reward Per Second Changed');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async getRewardPerSecond() {
+		let script = `
+		import Questing from 0xQuesting
+
+		access(all) fun main(questManager: Address, questID: UInt64): UFix64 {
+			// borrow quest manager reference
+			var questManagerRef: &Questing.QuestManager{Questing.QuestManagerPublic}?  = nil
+			if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
+				questManagerRef = cap.borrow()
+			}
+		
+			// borrow quest reference
+			var questRef: &Questing.Quest{Questing.Public}? = nil
+			if(questManagerRef != nil) {
+				questRef = questManagerRef!.borrowQuest(id: questID)
+			}
+			assert(questRef != nil, message: "Quest does not exist")
+			
+			return questRef!.rewardPerSecond
+		}
+        `;
+
+		const rewardPerSecond = await fcl.query({
+			cadence: script,
+			args: (arg, t) => [
+				arg(process.env.QUEST_MANAGER_ADDRESS, t.Address),
+				arg(process.env.QUEST_ID_BEASTZ, t.UInt64),
+			],
+		});
+
+		return rewardPerSecond;
 	}
 }
 

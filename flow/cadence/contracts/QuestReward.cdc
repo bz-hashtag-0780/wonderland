@@ -57,6 +57,7 @@ access(all) contract QuestReward: NonFungibleToken {
         access(all) let minterID: UInt64
         access(all) let rewardTemplateID: UInt32
         access(all) let dateMinted: UFix64
+        access(all) var revealed: Bool
     }
 
     access(all) resource NFT: Public, NonFungibleToken.INFT {
@@ -65,6 +66,7 @@ access(all) contract QuestReward: NonFungibleToken {
         access(all) let minterID: UInt64
         access(all) let rewardTemplateID: UInt32
         access(all) let dateMinted: UFix64
+        access(all) var revealed: Bool
         access(self) var metadata: {String: AnyStruct}
         access(self) var resources: @{String: AnyResource}
 
@@ -73,12 +75,17 @@ access(all) contract QuestReward: NonFungibleToken {
             self.minterID = minterID
             self.rewardTemplateID = rewardTemplateID
             self.dateMinted = getCurrentBlock().timestamp
+            self.revealed = false
             self.metadata = {}
             self.resources <- {}
 
             QuestReward.totalSupply = QuestReward.totalSupply + 1
 
             emit Minted(id: self.id, minterID: self.minterID, rewardTemplateID: self.rewardTemplateID, rewardTemplate: rewardTemplate, minterAddress: minterAddress)
+        }
+
+        access(all) fun reveal() {
+            self.revealed = true
         }
 
         destroy() {
@@ -134,7 +141,12 @@ access(all) contract QuestReward: NonFungibleToken {
 
         access(all) fun borrowQuestReward(id: UInt64): &QuestReward.NFT{Public}? {
             let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
-            return ref as! &QuestReward.NFT?
+            return (ref as! &QuestReward.NFT{Public}?)!
+        }
+
+        access(all) fun borrowEntireQuestReward(id: UInt64): &QuestReward.NFT {
+            let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
+            return (ref as! &QuestReward.NFT?)!
         }
 
         destroy() {

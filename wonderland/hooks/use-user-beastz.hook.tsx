@@ -82,7 +82,12 @@ export default function useUserBeastz(user: any) {
 					arg(questing['beastz'], t.UInt64),
 				],
 			});
-			setRewards(rewards);
+			var restructuredRewards: any = {};
+			for (let key in rewards) {
+				restructuredRewards[key] = rewards[key].ownedNFTs;
+			}
+			setRewards(restructuredRewards);
+			console.log(restructuredRewards);
 		} catch (err) {
 			console.log(err);
 		}

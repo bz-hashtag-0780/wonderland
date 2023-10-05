@@ -177,12 +177,12 @@ access(all) contract Deedz: NonFungibleToken {
 
         access(all) fun borrowDeedz(id: UInt64): &Deedz.NFT{Public}? {
             let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
-            return ref as! &Deedz.NFT?
+            return (ref as! &Deedz.NFT{Public}?)!
         }
 
         access(all) fun borrowEntireDeedz(id: UInt64): &Deedz.NFT? {
             let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
-            return ref as! &Deedz.NFT?
+            return (ref as! &Deedz.NFT?)!
         }
 
         access(all) fun borrowViewResolver(id: UInt64): &AnyResource{MetadataViews.Resolver} {

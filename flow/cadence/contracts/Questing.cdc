@@ -405,6 +405,11 @@ access(all) contract Questing {
             return <- questRef!.unquest(questingResource: <-questingResource, address: self.owner!.address)
         }
 
+        access(all) fun revealReward(questManager: Address, questID: UInt64, questingResource: @AnyResource, questRewardID: UInt64): @AnyResource {
+            
+            return <- questingResource
+        }
+
     }
 
     access(all) fun getQuest(questManager: Address, id: UInt64): &Quest{Public}? {

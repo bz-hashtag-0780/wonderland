@@ -7,9 +7,10 @@ import '../../flow-config.js';
 import { useAuth } from 'providers/AuthProvider';
 import { useUser } from 'providers/UserProvider';
 import questing from 'data/questing';
+import { useWonder } from 'providers/WonderProvider';
 
 const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
-	const { rewards } = useUser();
+	const { rewards } = useWonder();
 	const { loggedIn, logIn } = useAuth();
 	const [activeTab, setActiveTab] = useState('Beastz');
 	const [isModalOpen, setModalOpen] = useState(false);
@@ -60,7 +61,7 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 			return Object.values(beastRewards).map((reward: any) => ({
 				id: parseInt(reward.id, 10),
 				nftID: beast.id,
-				rewardItemTemplateID: parseInt(reward.rewardItemTemplateID, 10),
+				rewardTemplateID: parseInt(reward.rewardTemplateID, 10),
 				revealed: reward.revealed,
 				type: 'BasicBeasts',
 			}));

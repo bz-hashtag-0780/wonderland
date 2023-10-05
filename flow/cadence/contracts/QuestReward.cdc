@@ -29,6 +29,7 @@ access(all) contract QuestReward: NonFungibleToken {
     access(all) var totalSupply: UInt64
     access(all) var rewardTemplateSupply: UInt32
     access(all) var minterSupply: UInt64
+    access(self) var numberMintedPerRewardTemplate: {UInt32: UInt64}
 
     // -----------------------------------------------------------------------
     // Future Contract Extensions
@@ -80,6 +81,8 @@ access(all) contract QuestReward: NonFungibleToken {
             self.resources <- {}
 
             QuestReward.totalSupply = QuestReward.totalSupply + 1
+
+            QuestReward.numberMintedPerRewardTemplate[rewardTemplateID] = QuestReward.numberMintedPerRewardTemplate[rewardTemplateID]! + 1
 
             emit Minted(id: self.id, minterID: self.minterID, rewardTemplateID: self.rewardTemplateID, rewardTemplate: rewardTemplate, minterAddress: minterAddress)
         }
@@ -144,7 +147,7 @@ access(all) contract QuestReward: NonFungibleToken {
             return (ref as! &QuestReward.NFT{Public}?)!
         }
 
-        access(all) fun borrowEntireQuestReward(id: UInt64): &QuestReward.NFT {
+        access(all) fun borrowEntireQuestReward(id: UInt64): &QuestReward.NFT? {
             let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
             return (ref as! &QuestReward.NFT?)!
         }
@@ -193,6 +196,8 @@ access(all) contract QuestReward: NonFungibleToken {
 
             QuestReward.rewardTemplateSupply = QuestReward.rewardTemplateSupply + 1
 
+            QuestReward.numberMintedPerRewardTemplate[id] = 0
+
             emit RewardTemplateAdded(minterID: self.id, minterAddress: self.owner?.address, rewardTemplateID: id, name: name, description: description, image: image)
 
         }
@@ -227,6 +232,18 @@ access(all) contract QuestReward: NonFungibleToken {
         return <- create Minter(name: name)
     }
 
+    access(all) fun getNumberMintedPerRewardTemplateKeys(): [UInt32] {
+        return self.numberMintedPerRewardTemplate.keys
+    }
+
+    access(all) fun getNumberMintedPerRewardTemplate(id: UInt32): UInt64? {
+        return self.numberMintedPerRewardTemplate[id]
+    }
+
+    access(all) fun getNumberMintedPerRewardTemplates(): {UInt32: UInt64} {
+        return self.numberMintedPerRewardTemplate
+    }
+
     init() {
         self.CollectionStoragePath = /storage/QuestRewardCollection
         self.CollectionPublicPath = /public/QuestRewardCollection
@@ -235,6 +252,7 @@ access(all) contract QuestReward: NonFungibleToken {
         self.totalSupply = 0
         self.rewardTemplateSupply = 0
         self.minterSupply = 0
+        self.numberMintedPerRewardTemplate = {}
 
         self.metadata = {}
         self.resources <- {}

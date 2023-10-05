@@ -15,6 +15,7 @@ access(all) contract Questing {
     access(all) event RewardBurned(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
     access(all) event RewardMoved(questID: UInt64, resourceType: Type, fromQuestingResourceID: UInt64, toQuestingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
     access(all) event RewardPerSecondChanged(questID: UInt64, resourceType: Type, rewardPerSecond: UFix64)
+    access(all) event RewardRevealed(questID: UInt64, typeIdentifier: String, questingResourceID: UInt64, questRewardID: UInt64, rewardTemplateID: UInt32)
     access(all) event AdjustedQuestingStartDateUpdated(questID: UInt64, resourceType: Type, questingResourceID: UInt64, newAdjustedQuestingStartDate: UFix64)
     access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
     access(all) event QuestDeposited(questID: UInt64, type: Type, questCreator: Address, questReceiver: Address?)
@@ -49,6 +50,7 @@ access(all) contract Questing {
         access(all) var rewardPerSecond: UFix64
         access(contract) fun quest(questingResource: @AnyResource, address: Address): @AnyResource
         access(contract) fun unquest(questingResource: @AnyResource, address: Address): @AnyResource
+        access(contract) fun revealQuestReward(questingResource: @AnyResource, questRewardID: UInt64): @AnyResource
         access(all) fun getQuesters(): [Address]
         access(all) fun getAllQuestingStartDates(): {UInt64: UFix64}
         access(all) fun getQuestingStartDate(questingResourceID: UInt64): UFix64?
@@ -159,7 +161,29 @@ access(all) contract Questing {
 
             destroy container
 
-            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: uuid!, quester: address)
+            return <- returnResource
+        }
+
+        access(contract) fun revealQuestReward(questingResource: @AnyResource, questRewardID: UInt64): @AnyResource {
+
+            var uuid: UInt64? = nil
+            var container: @{UInt64: AnyResource} <- {}
+            container[0] <-! questingResource
+
+            if (container[0]?.isInstance(Type<@NonFungibleToken.NFT>()) == true) {
+                let ref = &container[0] as auth &AnyResource?
+                let resource = (ref as! &NonFungibleToken.NFT?)!
+                uuid = resource.uuid
+            }
+
+            // ensure we always have a UUID by this point
+            assert(uuid != nil, message: "UUID should not be nil")
+
+            self.revealReward(questingResourceID: uuid!, questRewardID: questRewardID)
+
+            let returnResource <- container.remove(key: 0)!
+
+            destroy container
 
             return <- returnResource
         }
@@ -269,6 +293,17 @@ access(all) contract Questing {
         access(all) fun changeRewardPerSecond(seconds: UFix64) {
             self.rewardPerSecond = seconds
             emit RewardPerSecondChanged(questID: self.id, resourceType: self.type, rewardPerSecond: seconds)
+        }
+
+        access(all) fun revealReward(questingResourceID: UInt64, questRewardID: UInt64) {
+            let collectionRef = &self.rewards[questingResourceID] as &QuestReward.Collection?
+            assert(collectionRef != nil, message: "Cannot reveal reward: questingResource does not have any rewards")
+
+            let rewardRef = collectionRef!.borrowEntireQuestReward(id: questRewardID)!
+
+            rewardRef.reveal()
+
+            emit RewardRevealed(questID: self.id, typeIdentifier: self.type.identifier, questingResourceID: questingResourceID, questRewardID: questRewardID, rewardTemplateID: rewardRef.rewardTemplateID)
         }
 
         access(contract) fun updateAdjustedQuestingStartDate(questingResourceID: UInt64, rewardPerSecond: UFix64) {
@@ -407,7 +442,11 @@ access(all) contract Questing {
 
         access(all) fun revealReward(questManager: Address, questID: UInt64, questingResource: @AnyResource, questRewardID: UInt64): @AnyResource {
             
-            return <- questingResource
+            let questRef = Questing.getQuest(questManager: questManager, id: questID)
+
+            assert(questRef != nil, message: "Quest reference should not be nil")
+
+            return <- questRef!.revealQuestReward(questingResource: <-questingResource, questRewardID: questRewardID)
         }
 
     }

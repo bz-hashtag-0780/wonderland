@@ -36,6 +36,7 @@ const QuestResources = ({ questID }: any) => {
 		questingStartDates,
 		adjustedQuestingDates,
 		getQuestingDates,
+		rewards,
 	} = useWonder();
 
 	const {
@@ -45,13 +46,12 @@ const QuestResources = ({ questID }: any) => {
 		fetchUserBeasts,
 		stakingStartDates,
 		adjustedStakingDates,
-		rewards,
 		rewardPerSecond,
 	} = useUser();
 
 	useEffect(() => {
-		console.log(adjustedQuestingDates);
-	}, [adjustedQuestingDates]);
+		console.log(rewards);
+	}, [rewards]);
 
 	const NFT = ({ item }: any) => (
 		<InView>

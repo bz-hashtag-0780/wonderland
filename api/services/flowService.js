@@ -1209,6 +1209,77 @@ transaction(idsToDiscordHandles: {String: String}) {
 			return;
 		}
 	}
+
+	static async unquestResource(questingResourceID) {
+		let transaction = `
+		import Questing from 0xQuesting
+
+		transaction(questID: UInt64, questingResourceID: UInt64) {
+		
+			let questManagerRef: &Questing.QuestManager
+			let questRef: &Questing.Quest
+		
+			prepare(signer: AuthAccount) {
+		
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+				
+				// borrow Quest reference
+				self.questRef = self.questManagerRef.borrowEntireQuest(id: questID)??panic("Could not borrow quest reference")
+		
+			}
+		
+			execute {
+		
+				self.questRef.unquestResource(questingResourceID: questingResourceID)
+		
+			}
+		
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(process.env.QUEST_ID_BEASTZ, t.UInt64),
+				arg(questingResourceID, t.UInt64),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'QuestEnded'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('quest has not ended');
+					return;
+				}
+				console.log('Quest Ended');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
 }
 
 module.exports = flowService;

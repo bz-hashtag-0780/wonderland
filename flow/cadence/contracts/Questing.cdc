@@ -130,6 +130,7 @@ access(all) contract Questing {
             emit QuestStarted(questID: self.id, resourceType: self.type, questingResourceID: uuid!, quester: address)
 
             let returnResource <- container.remove(key: 0)!
+            
             destroy container
 
             return <- returnResource

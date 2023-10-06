@@ -12,7 +12,9 @@ heroku logs --tail --app wonderland-api
 
 ## How to Setup Questing For An NFT Project
 
-Copy and uncomment one function and run one at a time
+### Copy the code to your server.js
+
+Uncomment & run one function at a time
 
 ```
     /**

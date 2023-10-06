@@ -18,12 +18,10 @@ import {
 import * as t from '@onflow/types';
 import { QUEST } from '@/flow/transactions/questing/quest';
 import { UNQUEST } from '@/flow/transactions/questing/unquest';
-import { STAKE_MULTIPLE } from '@/flow/transactions/stake_multiple';
+import { QUEST_MULTIPLE } from '@/flow/transactions/questing/quest_multiple';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/utils/toastStatus';
-import DetailsModal from '../../ui/DetailsModal';
 import ActionHeader from '../ActionHeader';
-import { useUser } from 'providers/UserProvider';
 import { InView } from 'react-intersection-observer';
 import { useWonder } from 'providers/WonderProvider';
 import QuestingResourceDetailsModal from '@/components/ui/QuestingResourceDetailsModal';
@@ -40,19 +38,6 @@ const QuestResources = ({ questID }: any) => {
 		rewards,
 		rewardPerSecond,
 	} = useWonder();
-
-	const {
-		beasts,
-		stakedBeasts,
-		unstakedBeasts,
-		fetchUserBeasts,
-		stakingStartDates,
-		adjustedStakingDates,
-	} = useUser();
-
-	useEffect(() => {
-		console.log(rewards);
-	}, [rewards]);
 
 	const NFT = ({ item }: any) => (
 		<InView>
@@ -212,18 +197,28 @@ const QuestResources = ({ questID }: any) => {
 
 	const questAll = async () => {
 		const id = toast.loading('Initializing...');
-		const maxQuantity = 150; //todo: test
+		const maxQuantity = 150; //tested with 150
 
-		const toStake = unstakedBeasts
+		const nonQuestingResources = beastz?.filter(
+			(questingResource: any) =>
+				!Object.keys(questingStartDates).includes(questingResource.uuid)
+		);
+
+		const toStake = nonQuestingResources
 			.slice(0, maxQuantity)
 			.map((item: any) => item.uuid);
 
-		console.log(toStake);
+		console.log('toStake', toStake);
 
 		try {
 			const res = await send([
-				transaction(STAKE_MULTIPLE),
+				transaction(QUEST_MULTIPLE),
 				args([
+					arg(
+						process.env.NEXT_PUBLIC_QUEST_MANAGER_ADDRESS,
+						t.Address
+					),
+					arg(questID, t.UInt64),
 					arg(toStake, t.Array(t.UInt64)),
 					arg(String(maxQuantity), t.Int),
 				]),
@@ -246,7 +241,7 @@ const QuestResources = ({ questID }: any) => {
 						autoClose: 5000,
 					});
 				});
-			fetchUserBeasts();
+			getQuestingDates();
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -304,15 +299,37 @@ const QuestResources = ({ questID }: any) => {
 		}
 	};
 
+	const sortedQuestingResources =
+		beastz && questingStartDates
+			? beastz?.sort((a: any, b: any) => {
+					// If 'a' is in questingResourceIDs and 'b' isn't, return -1 (to sort 'a' before 'b')
+					if (
+						Object.keys(questingStartDates).includes(a.id) &&
+						!Object.keys(questingStartDates).includes(b.id)
+					) {
+						return -1;
+					}
+					// If 'b' is in questingResourceIDs and 'a' isn't, return 1 (to sort 'b' before 'a')
+					if (
+						Object.keys(questingStartDates).includes(b.id) &&
+						!Object.keys(questingStartDates).includes(a.id)
+					) {
+						return 1;
+					}
+					// If both 'a' and 'b' are in questingResourceIDs or neither are, keep their relative order unchanged
+					return 0;
+			  })
+			: null;
+
 	return (
 		<>
 			<ActionHeader buttonText="Quest All" action={questAll} />
 
 			<div className="pt-6 h-[645px] overflow-y-auto">
 				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
-					{beastz != null && (
+					{sortedQuestingResources != null && (
 						<>
-							{beastz.map((item: any) => (
+							{sortedQuestingResources.map((item: any) => (
 								<NFT key={item.uuid} item={item} />
 							))}
 						</>

@@ -121,5 +121,6 @@ export default function useUserBeastz(user: any) {
 		getQuestingDates,
 		rewards,
 		rewardPerSecond,
+		getRewards,
 	};
 }

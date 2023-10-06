@@ -1,7 +1,7 @@
 // resource : quest id
 
 const questing = {
-	beastz: '173422121',
+	beastz: '173564010',
 };
 
 export default questing;

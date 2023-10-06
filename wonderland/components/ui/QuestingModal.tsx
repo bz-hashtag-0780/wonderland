@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import QuestResources from '@/components/exploreTabs/contents/QuestResources';
-import Rewards from '@/components/dashboardTabs/contents/Rewards';
+import QuestRewards from '@/components/exploreTabs/contents/QuestRewards';
 import '../../flow-config.js';
 import { useAuth } from 'providers/AuthProvider';
 import { useUser } from 'providers/UserProvider';
@@ -117,11 +117,12 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 										/>
 									)}
 									{activeTab === 'Rewards' && (
-										<Rewards
+										<QuestRewards
 											rewards={extractRewards(
 												questingResources,
 												rewards
 											)}
+											questID={questing['beastz']}
 										/>
 									)}
 									{/* {activeTab === 'Random' && (

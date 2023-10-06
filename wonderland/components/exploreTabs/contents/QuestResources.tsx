@@ -26,6 +26,7 @@ import ActionHeader from '../ActionHeader';
 import { useUser } from 'providers/UserProvider';
 import { InView } from 'react-intersection-observer';
 import { useWonder } from 'providers/WonderProvider';
+import QuestingResourceDetailsModal from '@/components/ui/QuestingResourceDetailsModal';
 
 const QuestResources = ({ questID }: any) => {
 	const [currentBeast, setCurrentBeast] = useState(null);
@@ -319,7 +320,7 @@ const QuestResources = ({ questID }: any) => {
 				</div>
 			</div>
 			{openDetailsModal && (
-				<DetailsModal
+				<QuestingResourceDetailsModal
 					beast={currentBeast}
 					onClose={() => {
 						setOpenDetailsModal(false);

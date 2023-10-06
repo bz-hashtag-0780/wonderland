@@ -8,6 +8,7 @@ import { useAuth } from 'providers/AuthProvider';
 import { useUser } from 'providers/UserProvider';
 import questing from 'data/questing';
 import { useWonder } from 'providers/WonderProvider';
+import RewardTableModal from './RewardTableModal';
 
 const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 	const { rewards } = useWonder();
@@ -52,16 +53,16 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 	);
 
 	function extractRewards(questingResources: any[], rewards: any) {
-		return questingResources.flatMap((beast: any) => {
-			const beastRewards = rewards[beast.id];
-			if (!beastRewards) {
+		return questingResources.flatMap((questingResource: any) => {
+			const questRewards = rewards[questingResource.id];
+			if (!questRewards) {
 				return [];
 			}
 
-			return Object.values(beastRewards).map((reward: any) => ({
+			return Object.values(questRewards).map((reward: any) => ({
 				id: parseInt(reward.id, 10),
-				nftID: beast.id,
-				rewardTemplateID: parseInt(reward.rewardTemplateID, 10),
+				nftID: questingResource.id,
+				rewardItemTemplateID: parseInt(reward.rewardTemplateID, 10),
 				revealed: reward.revealed,
 				type: 'BasicBeasts',
 			}));
@@ -133,6 +134,10 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 						</div>
 					</div>
 				</div>
+				<RewardTableModal
+					isOpen={isModalOpen}
+					onClose={() => setModalOpen(false)}
+				/>
 			</div>
 		)
 	);

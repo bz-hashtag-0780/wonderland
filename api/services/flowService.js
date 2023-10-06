@@ -381,64 +381,64 @@ transaction(IDs: [UInt64]) {
 		}
 	}
 
-	static async burnReward(nftID, rewardItemID) {
-		let transaction = `
-import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
+	// 	static async burnReward(nftID, rewardItemID) {
+	// 		let transaction = `
+	// import BasicBeastsNFTStakingRewards from 0xBasicBeastsNFTStakingRewards
 
-transaction(nftID: UInt64, rewardItemID: UInt32) {
-    let adminRef: &BasicBeastsNFTStakingRewards.Admin
+	// transaction(nftID: UInt64, rewardItemID: UInt32) {
+	//     let adminRef: &BasicBeastsNFTStakingRewards.Admin
 
-    prepare(signer: AuthAccount) {
-        // get admin resource
-        self.adminRef = signer.borrow<&BasicBeastsNFTStakingRewards.Admin>(from: BasicBeastsNFTStakingRewards.AdminStoragePath)
-            ?? panic("No admin resource in storage")
+	//     prepare(signer: AuthAccount) {
+	//         // get admin resource
+	//         self.adminRef = signer.borrow<&BasicBeastsNFTStakingRewards.Admin>(from: BasicBeastsNFTStakingRewards.AdminStoragePath)
+	//             ?? panic("No admin resource in storage")
 
-    }
+	//     }
 
-    execute {
-        self.adminRef.burnReward(nftID: nftID, rewardItemID: rewardItemID)
-    }
-}
-        `;
-		let keyIndex = null;
-		for (const [key, value] of Object.entries(this.AdminKeys)) {
-			if (value == false) {
-				keyIndex = parseInt(key);
-				break;
-			}
-		}
-		if (keyIndex == null) {
-			return;
-		}
+	//     execute {
+	//         self.adminRef.burnReward(nftID: nftID, rewardItemID: rewardItemID)
+	//     }
+	// }
+	//         `;
+	// 		let keyIndex = null;
+	// 		for (const [key, value] of Object.entries(this.AdminKeys)) {
+	// 			if (value == false) {
+	// 				keyIndex = parseInt(key);
+	// 				break;
+	// 			}
+	// 		}
+	// 		if (keyIndex == null) {
+	// 			return;
+	// 		}
 
-		this.AdminKeys[keyIndex] = true;
-		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
-		try {
-			const txid = await signer.sendTransaction(transaction, (arg, t) => [
-				arg(nftID, t.UInt64),
-				arg(rewardItemID, t.UInt32),
-			]);
+	// 		this.AdminKeys[keyIndex] = true;
+	// 		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+	// 		try {
+	// 			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+	// 				arg(nftID, t.UInt64),
+	// 				arg(rewardItemID, t.UInt32),
+	// 			]);
 
-			if (txid) {
-				let tx = await fcl.tx(txid).onceSealed();
-				this.AdminKeys[keyIndex] = false;
-				let event = tx.events.find(
-					(e) =>
-						e.type ==
-						'A.4c74cb420f4eaa84.BasicBeastsNFTStakingRewards.RewardItemRemoved'
-				);
-				if (!event) {
-					console.log('No reward burned');
-					return;
-				}
-				console.log('Reward burned');
-			}
-		} catch (e) {
-			this.AdminKeys[keyIndex] = false;
-			console.log(e);
-			return;
-		}
-	}
+	// 			if (txid) {
+	// 				let tx = await fcl.tx(txid).onceSealed();
+	// 				this.AdminKeys[keyIndex] = false;
+	// 				let event = tx.events.find(
+	// 					(e) =>
+	// 						e.type ==
+	// 						'A.4c74cb420f4eaa84.BasicBeastsNFTStakingRewards.RewardItemRemoved'
+	// 				);
+	// 				if (!event) {
+	// 					console.log('No reward burned');
+	// 					return;
+	// 				}
+	// 				console.log('Reward burned');
+	// 			}
+	// 		} catch (e) {
+	// 			this.AdminKeys[keyIndex] = false;
+	// 			console.log(e);
+	// 			return;
+	// 		}
+	// 	}
 
 	static async transferReward(fromID, toID, rewardItemID) {
 		let transaction = `
@@ -1273,6 +1273,151 @@ transaction(idsToDiscordHandles: {String: String}) {
 					return;
 				}
 				console.log('Quest Ended');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async burnReward(questingResourceID, rewardID) {
+		let transaction = `
+		import Questing from 0xQuesting
+
+		transaction(questID: UInt64, questingResourceID: UInt64, rewardID: UInt64) {
+		
+			let questManagerRef: &Questing.QuestManager
+			let questRef: &Questing.Quest
+		
+			prepare(signer: AuthAccount) {
+		
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+				
+				// borrow Quest reference
+				self.questRef = self.questManagerRef.borrowEntireQuest(id: questID)??panic("Could not borrow quest reference")
+		
+			}
+		
+			execute {
+		
+				self.questRef.burnReward(questingResourceID: questingResourceID, rewardID: rewardID)
+		
+			}
+		
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(process.env.QUEST_ID_BEASTZ, t.UInt64),
+				arg(questingResourceID, t.UInt64),
+				arg(rewardID, t.UInt64),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'RewardBurned'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('reward has not been burned');
+					return;
+				}
+				console.log('Reward Burned');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async moveReward(fromID, toID, rewardID) {
+		let transaction = `
+		import Questing from 0xQuesting
+
+		transaction(questID: UInt64, fromID: UInt64, toID: UInt64, rewardID: UInt64) {
+		
+			let questManagerRef: &Questing.QuestManager
+			let questRef: &Questing.Quest
+		
+			prepare(signer: AuthAccount) {
+		
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+				
+				// borrow Quest reference
+				self.questRef = self.questManagerRef.borrowEntireQuest(id: questID)??panic("Could not borrow quest reference")
+		
+			}
+		
+			execute {
+		
+				self.questRef.moveReward(fromID: fromID, toID: toID, rewardID: rewardID)
+		
+			}
+		
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(process.env.QUEST_ID_BEASTZ, t.UInt64),
+				arg(fromID, t.UInt64),
+				arg(toID, t.UInt64),
+				arg(rewardID, t.UInt64),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'RewardMoved'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('reward has not been moved');
+					return;
+				}
+				console.log('Reward Moved');
 			}
 		} catch (e) {
 			this.QuestManagerKeys[keyIndex] = false;

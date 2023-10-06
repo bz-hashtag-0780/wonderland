@@ -115,7 +115,7 @@ access(all) contract QuestReward: NonFungibleToken {
         }
 
         access(all) fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
-            let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("missing NFT")
+            let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("Cannot withdraw QuestReward from Collection: Missing NFT")
 
             emit Withdraw(id: withdrawID, from: self.owner?.address)
 

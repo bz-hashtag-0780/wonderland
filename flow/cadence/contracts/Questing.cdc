@@ -477,10 +477,10 @@ access(all) contract Questing {
     }
 
     init() {
-        self.QuestManagerStoragePath = /storage/WonderlandQuestManager_1
-        self.QuestManagerPublicPath = /public/WonderlandQuestManager_1
-        self.QuestManagerPrivatePath = /private/WonderlandQuestManager_1
-        self.QuesterStoragePath = /storage/WonderlandQuester_1
+        self.QuestManagerStoragePath = /storage/WonderlandQuestManager_2
+        self.QuestManagerPublicPath = /public/WonderlandQuestManager_2
+        self.QuestManagerPrivatePath = /private/WonderlandQuestManager_2
+        self.QuesterStoragePath = /storage/WonderlandQuester_2
 
         self.totalSupply = 0
 

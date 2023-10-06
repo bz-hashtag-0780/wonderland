@@ -245,9 +245,9 @@ access(all) contract QuestReward: NonFungibleToken {
     }
 
     init() {
-        self.CollectionStoragePath = /storage/QuestRewardCollection
-        self.CollectionPublicPath = /public/QuestRewardCollection
-        self.CollectionPrivatePath = /private/QuestRewardCollection
+        self.CollectionStoragePath = /storage/WonderlandQuestRewardCollection_2
+        self.CollectionPublicPath = /public/WonderlandQuestRewardCollection_2
+        self.CollectionPrivatePath = /private/WonderlandQuestRewardCollection_2
 
         self.totalSupply = 0
         self.rewardTemplateSupply = 0

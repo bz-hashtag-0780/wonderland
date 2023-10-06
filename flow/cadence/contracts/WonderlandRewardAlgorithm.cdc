@@ -42,8 +42,8 @@ access(all) contract WonderlandRewardAlgorithm: RewardAlgorithm {
     }
 
     init() {
-        self.AlgorithmStoragePath = /storage/WonderlandRewardAlgorithm_1
-        self.AlgorithmPublicPath = /public/WonderlandRewardAlgorithm_1
+        self.AlgorithmStoragePath = /storage/WonderlandRewardAlgorithm_2
+        self.AlgorithmPublicPath = /public/WonderlandRewardAlgorithm_2
 
         self.account.save(<-self.createAlgorithm(), to: self.AlgorithmStoragePath)
 

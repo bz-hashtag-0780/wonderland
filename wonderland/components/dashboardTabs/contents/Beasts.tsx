@@ -356,7 +356,7 @@ transaction(id: UInt64, receiver: Address) {
 }
 				`),
 				args([
-					arg('125368043', t.UInt64),
+					arg('120683918', t.UInt64),
 					arg(
 						process.env.NEXT_PUBLIC_QUEST_MANAGER_ADDRESS,
 						t.Address

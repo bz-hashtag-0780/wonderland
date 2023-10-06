@@ -144,11 +144,11 @@ const QuestRewards = ({ rewards, questID }: any) => {
 
 	const reveal = async (nftID: number, questRewardID: number) => {
 		const id = toast.loading('Initializing...');
-		console.log('nftID: ', nftID);
-		console.log('rewardItemID: ', questRewardID);
-		console.log(
-			rewards.filter((reward: any) => reward.id == questRewardID)
-		);
+		// console.log('nftID: ', nftID);
+		// console.log('rewardItemID: ', questRewardID);
+		// console.log(
+		// 	rewards.filter((reward: any) => reward.id == questRewardID)
+		// );
 
 		try {
 			const res = await send([
@@ -277,7 +277,7 @@ const QuestRewards = ({ rewards, questID }: any) => {
 								{
 									rewards.filter(
 										(reward: any) =>
-											reward.rewardItemTemplateID === 1 &&
+											reward.rewardItemTemplateID === 0 &&
 											reward.revealed
 									).length
 								}
@@ -289,7 +289,7 @@ const QuestRewards = ({ rewards, questID }: any) => {
 								{
 									rewards.filter(
 										(reward: any) =>
-											reward.rewardItemTemplateID === 2 &&
+											reward.rewardItemTemplateID === 1 &&
 											reward.revealed
 									).length
 								}
@@ -301,7 +301,7 @@ const QuestRewards = ({ rewards, questID }: any) => {
 								{
 									rewards.filter(
 										(reward: any) =>
-											reward.rewardItemTemplateID === 3 &&
+											reward.rewardItemTemplateID === 2 &&
 											reward.revealed
 									).length
 								}
@@ -313,7 +313,7 @@ const QuestRewards = ({ rewards, questID }: any) => {
 								{
 									rewards.filter(
 										(reward: any) =>
-											reward.rewardItemTemplateID === 4 &&
+											reward.rewardItemTemplateID === 3 &&
 											reward.revealed
 									).length
 								}
@@ -325,7 +325,7 @@ const QuestRewards = ({ rewards, questID }: any) => {
 								{
 									rewards.filter(
 										(reward: any) =>
-											reward.rewardItemTemplateID === 5 &&
+											reward.rewardItemTemplateID === 4 &&
 											reward.revealed
 									).length
 								}

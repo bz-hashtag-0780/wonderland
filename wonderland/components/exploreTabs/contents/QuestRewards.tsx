@@ -18,14 +18,12 @@ import {
 import * as t from '@onflow/types';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/utils/toastStatus';
-import { REVEAL } from '@/flow/transactions/reveal';
-import { REVEAL_MULTIPLE } from '@/flow/transactions/reveal_multiple';
 import ActionHeader from '../ActionHeader';
 import RevealedModal from '@/components/ui/RevealedModal';
 import { filterAndGroupRewards } from '@/utils/filterAndGroupRewards';
-import { useUser } from 'providers/UserProvider';
 import { InView } from 'react-intersection-observer';
 import { REVEAL_QUEST_REWARD } from '@/flow/transactions/questing/reveal_quest_reward';
+import { REVEAL_MULTIPLE_QUEST_REWARDS } from '@/flow/transactions/questing/reveal_multiple_quest_rewards';
 import { useWonder } from 'providers/WonderProvider';
 
 const QuestRewards = ({ rewards, questID }: any) => {
@@ -199,7 +197,7 @@ const QuestRewards = ({ rewards, questID }: any) => {
 
 	const revealAll = async () => {
 		const id = toast.loading('Initializing...');
-		const maxQuantity = 1000; //tested
+		const maxQuantity = 500; //tested
 		const unrevealedRewards = rewards.filter(
 			(reward: any) => !reward.revealed
 		);
@@ -215,8 +213,13 @@ const QuestRewards = ({ rewards, questID }: any) => {
 
 		try {
 			const res = await send([
-				transaction(REVEAL_MULTIPLE),
+				transaction(REVEAL_MULTIPLE_QUEST_REWARDS),
 				args([
+					arg(
+						String(process.env.NEXT_PUBLIC_QUEST_MANAGER_ADDRESS),
+						t.Address
+					),
+					arg(questID, t.UInt64),
 					arg(mappedRewards, t.Array(t.Array(t.UInt64))),
 					arg(String(maxQuantity), t.Int),
 				]),

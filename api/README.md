@@ -51,5 +51,6 @@ Uncomment & run one function at a time
      * 6. Now anyone with the NFTs can quest and receive rewards
      * if you set up a server where your quest manager account
      * checks for NFTs who are eligible and add rewards to them
+     * remember! to add correct reward mapping in addRewards transaction
      */
 ```

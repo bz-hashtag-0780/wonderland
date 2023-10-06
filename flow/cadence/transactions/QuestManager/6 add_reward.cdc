@@ -20,11 +20,11 @@ transaction(questID: UInt64, minterID: UInt64, questingResourceID: UInt64) {
 
     execute {
         let rewardMapping: {Int: UInt32} = {
-            1: 1,
-            2: 2,
-            3: 3,
-            4: 4,
-            5: 5
+            1: 0,
+            2: 1,
+            3: 2,
+            4: 3,
+            5: 4
         }
 
         self.questRef.addReward(questingResourceID: questingResourceID, 

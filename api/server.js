@@ -47,7 +47,7 @@ async function processEligibleQuestingResources() {
 		const chunks = splitIntoChunks(eligibleResources, max);
 		var i = 0;
 		while (i < keysLimit && i < chunks.length) {
-			flowService.addRewards(chunks[i], i);
+			flowService.addRewards(chunks[i]);
 			i = i + 1;
 		}
 	}
@@ -124,5 +124,5 @@ app.listen(PORT, async () => {
 	// let rewardPerSecond = await flowService.getRewardPerSecond();
 	// console.log(rewardPerSecond);
 
-	await processEligibleQuestingResources();
+	// await processEligibleQuestingResources();
 });

@@ -328,58 +328,58 @@ transaction(IDs: [UInt64]) {
 	// 		return rewardPerSecond;
 	// 	}
 
-	static async addKeys(numOfKeys) {
-		let transaction = `
-		transaction(publicKeyHex: String, numOfKeys: Int) {
-			prepare(signer: AuthAccount) {
-				let publicKey = publicKeyHex.decodeHex()
-		
-				let key = PublicKey(
-					publicKey: publicKey,
-					signatureAlgorithm: SignatureAlgorithm.ECDSA_P256
-				)
-		
-				var i = 0
-				while i < numOfKeys {
-					signer.keys.add(
-						publicKey: key,
-						hashAlgorithm: HashAlgorithm.SHA3_256,
-						weight: 1000.0
-					)
-					i = i + 1
-				}
-			}
-		}
-        `;
-		let keyIndex = null;
-		for (const [key, value] of Object.entries(this.AdminKeys)) {
-			if (value == false) {
-				keyIndex = parseInt(key);
-				break;
-			}
-		}
-		if (keyIndex == null) {
-			return;
-		}
+	// static async addKeys(numOfKeys) {
+	// 	let transaction = `
+	// 	transaction(publicKeyHex: String, numOfKeys: Int) {
+	// 		prepare(signer: AuthAccount) {
+	// 			let publicKey = publicKeyHex.decodeHex()
 
-		this.AdminKeys[keyIndex] = true;
-		const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
-		try {
-			const txid = await signer.sendTransaction(transaction, (arg, t) => [
-				arg(process.env.ADMIN_PUBLIC_KEY, t.String),
-				arg(numOfKeys, t.Int),
-			]);
+	// 			let key = PublicKey(
+	// 				publicKey: publicKey,
+	// 				signatureAlgorithm: SignatureAlgorithm.ECDSA_P256
+	// 			)
 
-			if (txid) {
-				await fcl.tx(txid).onceSealed();
-				this.AdminKeys[keyIndex] = false;
-			}
-		} catch (e) {
-			this.AdminKeys[keyIndex] = false;
-			console.log(e);
-			return;
-		}
-	}
+	// 			var i = 0
+	// 			while i < numOfKeys {
+	// 				signer.keys.add(
+	// 					publicKey: key,
+	// 					hashAlgorithm: HashAlgorithm.SHA3_256,
+	// 					weight: 1000.0
+	// 				)
+	// 				i = i + 1
+	// 			}
+	// 		}
+	// 	}
+	//     `;
+	// 	let keyIndex = null;
+	// 	for (const [key, value] of Object.entries(this.AdminKeys)) {
+	// 		if (value == false) {
+	// 			keyIndex = parseInt(key);
+	// 			break;
+	// 		}
+	// 	}
+	// 	if (keyIndex == null) {
+	// 		return;
+	// 	}
+
+	// 	this.AdminKeys[keyIndex] = true;
+	// 	const signer = await this.getAdminAccountWithKeyIndex(keyIndex);
+	// 	try {
+	// 		const txid = await signer.sendTransaction(transaction, (arg, t) => [
+	// 			arg(process.env.ADMIN_PUBLIC_KEY, t.String),
+	// 			arg(numOfKeys, t.Int),
+	// 		]);
+
+	// 		if (txid) {
+	// 			await fcl.tx(txid).onceSealed();
+	// 			this.AdminKeys[keyIndex] = false;
+	// 		}
+	// 	} catch (e) {
+	// 		this.AdminKeys[keyIndex] = false;
+	// 		console.log(e);
+	// 		return;
+	// 	}
+	// }
 
 	// 	static async burnReward(nftID, rewardItemID) {
 	// 		let transaction = `
@@ -686,6 +686,106 @@ transaction(idsToDiscordHandles: {String: String}) {
 
 	static QuestManagerKeys = {
 		0: false,
+		1: false,
+		2: false,
+		3: false,
+		4: false,
+		5: false,
+		6: false,
+		7: false,
+		8: false,
+		9: false,
+		10: false,
+		11: false,
+		12: false,
+		13: false,
+		14: false,
+		15: false,
+		16: false,
+		17: false,
+		18: false,
+		19: false,
+		20: false,
+		21: false,
+		22: false,
+		23: false,
+		24: false,
+		25: false,
+		26: false,
+		27: false,
+		28: false,
+		29: false,
+		30: false,
+		31: false,
+		32: false,
+		33: false,
+		34: false,
+		35: false,
+		36: false,
+		37: false,
+		38: false,
+		39: false,
+		40: false,
+		41: false,
+		42: false,
+		43: false,
+		44: false,
+		45: false,
+		46: false,
+		47: false,
+		48: false,
+		49: false,
+		50: false,
+		51: false,
+		52: false,
+		53: false,
+		54: false,
+		55: false,
+		56: false,
+		57: false,
+		58: false,
+		59: false,
+		60: false,
+		61: false,
+		62: false,
+		63: false,
+		64: false,
+		65: false,
+		66: false,
+		67: false,
+		68: false,
+		69: false,
+		70: false,
+		71: false,
+		72: false,
+		73: false,
+		74: false,
+		75: false,
+		76: false,
+		77: false,
+		78: false,
+		79: false,
+		80: false,
+		81: false,
+		82: false,
+		83: false,
+		84: false,
+		85: false,
+		86: false,
+		87: false,
+		88: false,
+		89: false,
+		90: false,
+		91: false,
+		92: false,
+		93: false,
+		94: false,
+		95: false,
+		96: false,
+		97: false,
+		98: false,
+		99: false,
+		100: false,
 	};
 
 	static async setup_beastz_collection() {
@@ -1148,11 +1248,11 @@ transaction(idsToDiscordHandles: {String: String}) {
 		
 			execute {
 				let rewardMapping: {Int: UInt32} = {
-					1: 1,
-					2: 2,
-					3: 3,
-					4: 4,
-					5: 5
+					1: 0,
+					2: 1,
+					3: 2,
+					4: 3,
+					5: 4
 				}
 		
 				for id in IDs {
@@ -1418,6 +1518,59 @@ transaction(idsToDiscordHandles: {String: String}) {
 					return;
 				}
 				console.log('Reward Moved');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async addKeys(numOfKeys) {
+		let transaction = `
+		transaction(publicKeyHex: String, numOfKeys: Int) {
+			prepare(signer: AuthAccount) {
+				let publicKey = publicKeyHex.decodeHex()
+		
+				let key = PublicKey(
+					publicKey: publicKey,
+					signatureAlgorithm: SignatureAlgorithm.ECDSA_P256
+				)
+		
+				var i = 0
+				while i < numOfKeys {
+					signer.keys.add(
+						publicKey: key,
+						hashAlgorithm: HashAlgorithm.SHA3_256,
+						weight: 1000.0
+					)
+					i = i + 1
+				}
+			}
+		}
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(process.env.QUEST_MANAGER_PUBLIC_KEY, t.String),
+				arg(numOfKeys, t.Int),
+			]);
+
+			if (txid) {
+				await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
 			}
 		} catch (e) {
 			this.QuestManagerKeys[keyIndex] = false;

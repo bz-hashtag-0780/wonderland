@@ -20,11 +20,11 @@ transaction(questID: UInt64, minterID: UInt64, IDs: [UInt64]) {
 
     execute {
         let rewardMapping: {Int: UInt32} = {
-            1: 1,
-            2: 2,
-            3: 3,
-            4: 4,
-            5: 5
+            1: 0,
+            2: 1,
+            3: 2,
+            4: 3,
+            5: 4
         }
 
         for id in IDs {

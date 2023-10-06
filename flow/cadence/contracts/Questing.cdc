@@ -9,14 +9,14 @@ access(all) contract Questing {
     // Events
     // -----------------------------------------------------------------------
     access(all) event ContractInitialized()
-    access(all) event QuestStarted(questID: UInt64, resourceType: Type, questingResourceID: UInt64, quester: Address)
-    access(all) event QuestEnded(questID: UInt64, resourceType: Type, questingResourceID: UInt64, quester: Address?)
-    access(all) event RewardAdded(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
-    access(all) event RewardBurned(questID: UInt64, resourceType: Type, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
-    access(all) event RewardMoved(questID: UInt64, resourceType: Type, fromQuestingResourceID: UInt64, toQuestingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
-    access(all) event RewardPerSecondChanged(questID: UInt64, resourceType: Type, rewardPerSecond: UFix64)
+    access(all) event QuestStarted(questID: UInt64, typeIdentifier: String, questingResourceID: UInt64, quester: Address)
+    access(all) event QuestEnded(questID: UInt64, typeIdentifier: String, questingResourceID: UInt64, quester: Address?)
+    access(all) event RewardAdded(questID: UInt64, typeIdentifier: String, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, rewardTemplate: QuestReward.RewardTemplate)
+    access(all) event RewardBurned(questID: UInt64, typeIdentifier: String, questingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
+    access(all) event RewardMoved(questID: UInt64, typeIdentifier: String, fromQuestingResourceID: UInt64, toQuestingResourceID: UInt64, rewardID: UInt64, rewardTemplateID: UInt32, minterID: UInt64)
+    access(all) event RewardPerSecondChanged(questID: UInt64, typeIdentifier: String, rewardPerSecond: UFix64)
     access(all) event RewardRevealed(questID: UInt64, typeIdentifier: String, questingResourceID: UInt64, questRewardID: UInt64, rewardTemplateID: UInt32)
-    access(all) event AdjustedQuestingStartDateUpdated(questID: UInt64, resourceType: Type, questingResourceID: UInt64, newAdjustedQuestingStartDate: UFix64)
+    access(all) event AdjustedQuestingStartDateUpdated(questID: UInt64, typeIdentifier: String, questingResourceID: UInt64, newAdjustedQuestingStartDate: UFix64)
     access(all) event QuestCreated(questID: UInt64, type: Type, questCreator: Address)
     access(all) event QuestDeposited(questID: UInt64, type: Type, questCreator: Address, questReceiver: Address?)
     access(all) event QuestWithdrawn(questID: UInt64, type: Type, questCreator: Address, questProvider: Address?)
@@ -127,7 +127,7 @@ access(all) contract Questing {
             self.questingStartDates[uuid!] = getCurrentBlock().timestamp
             self.adjustedQuestingStartDates[uuid!] = getCurrentBlock().timestamp
 
-            emit QuestStarted(questID: self.id, resourceType: self.type, questingResourceID: uuid!, quester: address)
+            emit QuestStarted(questID: self.id, typeIdentifier: self.type.identifier, questingResourceID: uuid!, quester: address)
 
             let returnResource <- container.remove(key: 0)!
             
@@ -228,7 +228,7 @@ access(all) contract Questing {
             self.questingStartDates.remove(key: questingResourceID)
             self.adjustedQuestingStartDates.remove(key: questingResourceID)
 
-            emit QuestEnded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, quester: nil)
+            emit QuestEnded(questID: self.id, typeIdentifier: self.type.identifier, questingResourceID: questingResourceID, quester: nil)
         }
 
         access(all) fun addReward(questingResourceID: UInt64, minter: &QuestReward.Minter, rewardAlgo: &AnyResource{RewardAlgorithm.Algorithm}, rewardMapping: {Int: UInt32}) {
@@ -256,7 +256,7 @@ access(all) contract Questing {
 
                     self.updateAdjustedQuestingStartDate(questingResourceID: questingResourceID, rewardPerSecond: self.rewardPerSecond)
 
-                    emit RewardAdded(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, rewardID: rewardID, rewardTemplateID: rewardTemplateID, rewardTemplate: minter.getRewardTemplate(id: rewardTemplateID)!)
+                    emit RewardAdded(questID: self.id, typeIdentifier: self.type.identifier, questingResourceID: questingResourceID, rewardID: rewardID, rewardTemplateID: rewardTemplateID, rewardTemplate: minter.getRewardTemplate(id: rewardTemplateID)!)
 
                 }
                 
@@ -271,7 +271,7 @@ access(all) contract Questing {
 
             let reward <- collectionRef!.withdraw(withdrawID: rewardID) as! @QuestReward.NFT
 
-            emit RewardBurned(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, rewardID: rewardID, rewardTemplateID: reward.rewardTemplateID, minterID: reward.minterID)
+            emit RewardBurned(questID: self.id, typeIdentifier: self.type.identifier, questingResourceID: questingResourceID, rewardID: rewardID, rewardTemplateID: reward.rewardTemplateID, minterID: reward.minterID)
 
             destroy reward
             
@@ -286,14 +286,14 @@ access(all) contract Questing {
 
             let reward <- fromRef!.withdraw(withdrawID: rewardID) as! @QuestReward.NFT
 
-            emit RewardMoved(questID: self.id, resourceType: self.type, fromQuestingResourceID: fromID, toQuestingResourceID: toID, rewardID: rewardID, rewardTemplateID: reward.rewardTemplateID, minterID: reward.minterID)
+            emit RewardMoved(questID: self.id, typeIdentifier: self.type.identifier, fromQuestingResourceID: fromID, toQuestingResourceID: toID, rewardID: rewardID, rewardTemplateID: reward.rewardTemplateID, minterID: reward.minterID)
 
             toRef!.deposit(token: <-reward)
         }
 
         access(all) fun changeRewardPerSecond(seconds: UFix64) {
             self.rewardPerSecond = seconds
-            emit RewardPerSecondChanged(questID: self.id, resourceType: self.type, rewardPerSecond: seconds)
+            emit RewardPerSecondChanged(questID: self.id, typeIdentifier: self.type.identifier, rewardPerSecond: seconds)
         }
 
         access(all) fun revealReward(questingResourceID: UInt64, questRewardID: UInt64) {
@@ -311,7 +311,7 @@ access(all) contract Questing {
             if(self.adjustedQuestingStartDates[questingResourceID] != nil) {
                 self.adjustedQuestingStartDates[questingResourceID] = self.adjustedQuestingStartDates[questingResourceID]! + rewardPerSecond
 
-                emit AdjustedQuestingStartDateUpdated(questID: self.id, resourceType: self.type, questingResourceID: questingResourceID, newAdjustedQuestingStartDate: self.adjustedQuestingStartDates[questingResourceID]!)
+                emit AdjustedQuestingStartDateUpdated(questID: self.id, typeIdentifier: self.type.identifier, questingResourceID: questingResourceID, newAdjustedQuestingStartDate: self.adjustedQuestingStartDates[questingResourceID]!)
             }
         }
 

@@ -17,7 +17,7 @@ export default function Explore() {
 					className="text-white"
 					onClick={() => setModalOpen(true)}
 				>
-					tes
+					test
 				</button>
 			</div>
 			<QuestingModal

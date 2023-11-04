@@ -1,3 +1,5 @@
+Wonderland is like Super Smash Bros, but for Web3 NFTs.
+
 ### Read whitepaper
 
 https://whitepaper.bbwonderland.com/

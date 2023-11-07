@@ -6,36 +6,57 @@ import { Draggable } from 'gsap/Draggable';
 
 gsap.registerPlugin(Draggable);
 
-const MapWithMarkers = () => {
+const MapWithMarkers = ({ setModalOpen }: any) => {
 	const mapRef = useRef(null);
 
 	useEffect(() => {
-		const draggable: any = Draggable.create(mapRef.current, {
+		const draggable = Draggable.create(mapRef.current, {
 			type: 'x,y',
 			bounds: '#container',
 			onDrag: function () {
-				// Custom logic to check bounds and adjust position
-				// If the image is reaching one edge, adjust its position to the other edge
+				// Custom logic for dragging
 			},
 		});
 
 		return () => {
-			// Clean up on component unmount
-			// draggable.kill();
+			if (draggable[0]) {
+				draggable[0].kill();
+			}
 		};
 	}, []);
+
+	const handlePinClick = () => {
+		console.log('Pin clicked!');
+		// Additional logic for pin click
+		setModalOpen(true);
+	};
 
 	return (
 		<div
 			id="container"
 			className="relative w-screen h-screen overflow-hidden"
 		>
-			<img
-				ref={mapRef}
-				src="/images/placeholders/placeholder-theme-map.png"
-				alt="Custom Map"
-				className="w-full scale-150 transform"
-			/>
+			<div ref={mapRef} className="w-full scale-150 transform">
+				<img
+					src="/images/wonderland/wonderland-map.png"
+					alt="Custom Map"
+					className="w-full h-auto"
+				/>
+				<div
+					onClick={handlePinClick}
+					style={{
+						position: 'absolute',
+						top: '650px', // Adjust to position the pin
+						left: '480px', // Adjust to position the pin
+						transform: 'translate(-50%, -100%)',
+						cursor: 'pointer',
+						// Add more styles for your pin here
+					}}
+				>
+					{/* Pin Icon/Text */}
+					Pin
+				</div>
+			</div>
 		</div>
 	);
 };

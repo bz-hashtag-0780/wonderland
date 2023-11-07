@@ -76,9 +76,9 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 					className="absolute inset-0 bg-black opacity-50"
 					onClick={onClose}
 				></div>
-				<div className="bg-black p-6 rounded-lg shadow-xl overflow-scroll z-10">
+				<div className="bg-black bg-opacity-80 rounded-lg shadow-xl overflow-scroll z-10">
 					<div
-						className="w-full max-w-5xl bg-custom-orange bg-opacity-10 p-5 rounded-lg mx-2 text-white border border-custom-orange"
+						className="w-full max-w-5xl bg-custom-orange bg-opacity-10 p-5 rounded-lg text-white border border-custom-orange"
 						// style={{ filter: 'blur(25px)' }}
 					>
 						<div>

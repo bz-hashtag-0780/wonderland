@@ -21,7 +21,7 @@ const MapWithMarkers = () => {
 
 		return () => {
 			// Clean up on component unmount
-			draggable.kill();
+			// draggable.kill();
 		};
 	}, []);
 
@@ -34,7 +34,7 @@ const MapWithMarkers = () => {
 				ref={mapRef}
 				src="/images/placeholders/placeholder-theme-map.png"
 				alt="Custom Map"
-				className="w-full h-full scale-150 transform"
+				className="w-full scale-150 transform"
 			/>
 		</div>
 	);

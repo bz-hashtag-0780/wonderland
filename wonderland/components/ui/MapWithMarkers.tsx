@@ -8,24 +8,25 @@ gsap.registerPlugin(Draggable);
 
 const MapWithMarkers = ({ setModalOpen }: any) => {
 	const mapRef = useRef<any>(null);
-	const [pinPosition, setPinPosition] = useState({ x: 0, y: 0 });
+	const [pinPositions, setPinPositions] = useState([
+		{ x: 0, y: 0 }, // Initial positions for pin 1
+		{ x: 0, y: 0 }, // Initial positions for pin 2
+		{ x: 0, y: 0 }, // Initial positions for pin 3
+	]);
 
 	useEffect(() => {
-		const updatePinPosition = () => {
+		const updatePinPositions = () => {
 			const mapBounds = mapRef.current.getBoundingClientRect();
-			// Adjust these percentages to set the pin's position relative to the map image
-			const pinXPercent = 0.16; // Example: 40% of the image width
-			const pinYPercent = 0.36; // Example: 50% of the image height
-
-			setPinPosition({
-				x: mapBounds.width * pinXPercent,
-				y: mapBounds.height * pinYPercent,
-			});
+			// Adjust these percentages for each pin's position relative to the map image
+			setPinPositions([
+				{ x: mapBounds.width * 0.16, y: mapBounds.height * 0.36 }, // Pin 1 position
+				{ x: mapBounds.width * 0.48, y: mapBounds.height * 0.35 }, // Pin 2 position
+				{ x: mapBounds.width * 0.32, y: mapBounds.height * 0.15 }, // Pin 3 position
+			]);
 		};
 
-		updatePinPosition();
-		// Update pin position on window resize
-		window.addEventListener('resize', updatePinPosition);
+		updatePinPositions();
+		window.addEventListener('resize', updatePinPositions);
 
 		const draggable = Draggable.create(mapRef.current, {
 			type: 'x,y',
@@ -39,13 +40,14 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 			if (draggable[0]) {
 				draggable[0].kill();
 			}
-			window.removeEventListener('resize', updatePinPosition);
+			window.removeEventListener('resize', updatePinPositions);
 		};
 	}, []);
 
-	const handlePinClick = () => {
-		console.log('Pin clicked!');
+	const handlePinClick = (pinIndex: any) => {
+		console.log(`Pin ${pinIndex} clicked!`);
 		setModalOpen(true);
+		// You can add different logic for each pin based on the pinIndex
 	};
 
 	return (
@@ -59,23 +61,26 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 					alt="Custom Map"
 					className="w-full h-auto"
 				/>
-				<div
-					onClick={handlePinClick}
-					style={{
-						position: 'absolute',
-						top: pinPosition.y,
-						left: pinPosition.x,
-						transform: 'translate(-50%, -100%)',
-						cursor: 'pointer',
-					}}
-					className="pin"
-				>
-					<img
-						src="/images/basicBeasts/bb_thumbnail.png"
-						alt="Noodles"
-						className="pinImage"
-					/>
-				</div>
+				{pinPositions.map((position, index) => (
+					<div
+						key={index}
+						onClick={() => handlePinClick(index)}
+						style={{
+							position: 'absolute',
+							top: position.y,
+							left: position.x,
+							transform: 'translate(-50%, -100%)',
+							cursor: 'pointer',
+						}}
+						className="pin"
+					>
+						<img
+							src="/images/basicBeasts/bb_thumbnail.png"
+							alt={`Pin ${index}`}
+							className="pinImage"
+						/>
+					</div>
+				))}
 			</div>
 		</div>
 	);

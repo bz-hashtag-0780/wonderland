@@ -1,15 +1,32 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { Draggable } from 'gsap/Draggable';
 
 gsap.registerPlugin(Draggable);
 
 const MapWithMarkers = ({ setModalOpen }: any) => {
-	const mapRef = useRef(null);
+	const mapRef = useRef<any>(null);
+	const [pinPosition, setPinPosition] = useState({ x: 0, y: 0 });
 
 	useEffect(() => {
+		const updatePinPosition = () => {
+			const mapBounds = mapRef.current.getBoundingClientRect();
+			// Adjust these percentages to set the pin's position relative to the map image
+			const pinXPercent = 0.16; // Example: 40% of the image width
+			const pinYPercent = 0.36; // Example: 50% of the image height
+
+			setPinPosition({
+				x: mapBounds.width * pinXPercent,
+				y: mapBounds.height * pinYPercent,
+			});
+		};
+
+		updatePinPosition();
+		// Update pin position on window resize
+		window.addEventListener('resize', updatePinPosition);
+
 		const draggable = Draggable.create(mapRef.current, {
 			type: 'x,y',
 			bounds: '#container',
@@ -22,12 +39,12 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 			if (draggable[0]) {
 				draggable[0].kill();
 			}
+			window.removeEventListener('resize', updatePinPosition);
 		};
 	}, []);
 
 	const handlePinClick = () => {
 		console.log('Pin clicked!');
-		// Additional logic for pin click
 		setModalOpen(true);
 	};
 
@@ -46,15 +63,18 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 					onClick={handlePinClick}
 					style={{
 						position: 'absolute',
-						top: '650px', // Adjust to position the pin
-						left: '480px', // Adjust to position the pin
+						top: pinPosition.y,
+						left: pinPosition.x,
 						transform: 'translate(-50%, -100%)',
 						cursor: 'pointer',
-						// Add more styles for your pin here
 					}}
+					className="pin"
 				>
-					{/* Pin Icon/Text */}
-					Pin
+					<img
+						src="/images/basicBeasts/bb_thumbnail.png"
+						alt="Noodles"
+						className="pinImage"
+					/>
 				</div>
 			</div>
 		</div>

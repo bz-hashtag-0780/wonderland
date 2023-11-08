@@ -36,3 +36,34 @@ body {
 .blurred {
 	filter: blur(25px);
 }
+
+.pin {
+	width: 80px;
+	height: 80px;
+	background-color: #fff;
+	border-radius: 50%;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2px;
+	box-sizing: border-box; /* Ensure padding doesn't affect size */
+}
+
+.pinImage {
+	width: 76px; /* Adjust to slightly less than container size */
+	height: 76px; /* Adjust to slightly less than container size */
+	filter: grayscale(100%);
+	transition: transform 0.3s ease;
+	border-radius: 50%;
+	object-fit: cover; /* This ensures the image covers the area without stretching */
+}
+
+.pin:hover .pinImage {
+	filter: grayscale(0); /* Full color on hover */
+}
+
+.pinImage:hover {
+	transform: scale(1.2);
+	transition: transform 0.3s ease;
+}

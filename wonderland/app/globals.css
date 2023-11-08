@@ -51,8 +51,8 @@ body {
 }
 
 .pinImage {
-	width: 76px; /* Adjust to slightly less than container size */
-	height: 76px; /* Adjust to slightly less than container size */
+	width: 72px; /* Adjust to slightly less than container size */
+	height: 72px; /* Adjust to slightly less than container size */
 	filter: grayscale(100%);
 	transition: transform 0.3s ease;
 	border-radius: 50%;

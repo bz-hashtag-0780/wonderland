@@ -5,6 +5,7 @@ import QuestingModal from '@/components/ui/QuestingModal';
 import React, { useState } from 'react';
 import { useWonder } from 'providers/WonderProvider';
 import MusicToggle from '@/components/ui/MusicToggle';
+import ProjectNavigation from '@/components/ui/ProjectNavigation';
 
 export default function New() {
 	const [isModalOpen, setModalOpen] = useState(false);
@@ -16,6 +17,7 @@ export default function New() {
 			<div className="min-h-screen flex items-center justify-center bg-center bg-no-repeat bg-cover">
 				<MapWithMarkers setModalOpen={setModalOpen} />
 			</div>
+			<ProjectNavigation />
 			<QuestingModal
 				questingResources={beastz}
 				isOpen={isModalOpen}

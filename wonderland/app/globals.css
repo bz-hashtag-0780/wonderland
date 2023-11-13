@@ -67,3 +67,26 @@ body {
 	transform: scale(1.2);
 	transition: transform 0.3s ease;
 }
+
+#icon-button:hover #icon-container {
+	transform: scale(1.1);
+	margin-bottom: 1rem;
+	transition: all 0.3s ease;
+}
+
+#icon-container {
+	transition: all 0.3s ease;
+}
+
+#project-svg,
+#project-name {
+	fill: #fff;
+	transition: all 0.3s ease;
+}
+
+#icon-button:hover #project-svg,
+#icon-button:hover #project-name {
+	fill: #000;
+	transition: all 0.3s ease;
+	color: #000;
+}

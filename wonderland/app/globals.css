@@ -82,6 +82,7 @@ body {
 #project-name {
 	fill: #fff;
 	transition: all 0.3s ease;
+	opacity: 0.8;
 }
 
 #icon-button:hover #project-svg,

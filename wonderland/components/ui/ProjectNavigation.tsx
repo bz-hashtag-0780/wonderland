@@ -1,10 +1,11 @@
 import React from 'react';
 
-const Project: React.FC<any> = ({ projectName }) => {
+const Project: React.FC<any> = ({ projectName, setModalOpen }) => {
 	return (
 		<button
 			id="icon-button"
-			className="flex-auto justify-center items-center flex flex-col align-stretch px-3 py-3 border-0 bg-transparent text-white"
+			className="flex-auto justify-center items-center flex flex-col align-stretch px-3 py-3 border-0 bg-transparent text-white min-w-[100px]"
+			onClick={() => setModalOpen(true)}
 		>
 			<span id="icon-container" className="block h-10 w-10 mb-2">
 				<span id="project-icon" className="top-0 left-0">
@@ -20,12 +21,20 @@ const Project: React.FC<any> = ({ projectName }) => {
 	);
 };
 
-const ProjectNavigation = () => {
+const ProjectNavigation = ({ setModalOpen }: any) => {
 	return (
 		<nav className="absolute bottom-0 right-0 m-4">
-			<div className="flex relative">
-				<div id="list">
-					<Project projectName="BEASTZ" />
+			<div className="flex relative  min-h-[100px]">
+				<div id="list" className="flex relative gap-2 min-h-[100px]">
+					<Project projectName="BEASTZ" setModalOpen={setModalOpen} />
+					<Project
+						projectName="FLOVATAR"
+						setModalOpen={setModalOpen}
+					/>
+					<Project
+						projectName="INCEPTION"
+						setModalOpen={setModalOpen}
+					/>
 				</div>
 			</div>
 		</nav>

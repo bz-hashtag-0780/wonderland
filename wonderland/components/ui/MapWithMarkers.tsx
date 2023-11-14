@@ -55,7 +55,20 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 			id="container"
 			className="relative w-screen h-screen overflow-hidden"
 		>
+			{' '}
 			<div ref={mapRef} className="w-full scale-150 transform">
+				<img
+					src="/images/wonderland/cloud.png"
+					alt="Moving Cloud 1"
+					className="absolute cloud-animation" // Use the same class for animation
+					style={{ top: '10%', left: '-200%' }} // Start off-screen (left)
+				/>
+				<img
+					src="/images/wonderland/cloud.png"
+					alt="Moving Cloud 2"
+					className="absolute cloud-animation"
+					style={{ top: '10%', left: '0' }} // Start on-screen
+				/>
 				<img
 					src="/images/wonderland/wonderland-map.png"
 					alt="Custom Map"

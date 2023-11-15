@@ -3,7 +3,7 @@ import { useAuth } from 'providers/AuthProvider';
 import UserLoggedInDropdown from './UserLoggedInDropdown';
 
 const navItems = [
-	{ name: 'Dashboard', href: '/dashboard' },
+	{ name: 'New Dashboard', href: '/new' },
 	{ name: 'Raids', href: '/raids' },
 ];
 

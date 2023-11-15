@@ -10,7 +10,7 @@ const RevealedModal = ({ isOpen, onClose, revealedRewards }: any) => {
 					className="absolute inset-0 bg-black opacity-50"
 					onClick={onClose}
 				></div>
-				<div className="bg-black p-6 rounded-lg shadow-xl w-1/3 max-w-3xl overflow-scroll z-10">
+				<div className="bg-black p-6 rounded-lg shadow-xl w-1/3 max-w-3xl z-10">
 					<div className="flex w-full justify-center items-center">
 						<h2 className="text-2xl font-bold uppercase tracking-wide">
 							Revealed

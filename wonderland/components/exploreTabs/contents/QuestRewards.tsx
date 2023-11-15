@@ -338,11 +338,6 @@ const QuestRewards = ({ rewards, questID }: any) => {
 				</div>
 				<div className="h-[540px] overflow-y-auto">
 					<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
-						{rewards
-							.filter((item: any) => !item.revealed)
-							.map((item: any) => (
-								<Reward key={item.id} item={item} />
-							))}
 						{filterAndGroupRewards(
 							rewards.filter((item: any) => item.revealed)
 						).map((item: any) => (
@@ -352,6 +347,11 @@ const QuestRewards = ({ rewards, questID }: any) => {
 								count={item.count}
 							/>
 						))}
+						{rewards
+							.filter((item: any) => !item.revealed)
+							.map((item: any) => (
+								<Reward key={item.id} item={item} />
+							))}
 					</div>
 				</div>
 			</div>

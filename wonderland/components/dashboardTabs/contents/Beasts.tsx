@@ -398,7 +398,7 @@ transaction(id: UInt64, receiver: Address) {
 			<ActionHeader buttonText="Quest All" action={questAll} />
 
 			{/* <button onClick={() => transfer()}>transfer</button> */}
-			<ActionHeader buttonText="Cancel 10" action={unstakeMultiple} />
+			{/* <ActionHeader buttonText="Cancel 10" action={unstakeMultiple} /> */}
 			<div className="pt-6 h-[645px] overflow-y-auto">
 				<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-2">
 					{beasts != null && (

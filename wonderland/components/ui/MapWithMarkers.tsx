@@ -9,9 +9,9 @@ gsap.registerPlugin(Draggable);
 const MapWithMarkers = ({ setModalOpen }: any) => {
 	const mapRef = useRef<any>(null);
 	const [pinPositions, setPinPositions] = useState([
-		{ x: 0, y: 0 }, // Initial positions for pin 1
-		{ x: 0, y: 0 }, // Initial positions for pin 2
-		{ x: 0, y: 0 }, // Initial positions for pin 3
+		{ x: 0, y: 0, image: '' }, // Initial positions for pin 1
+		{ x: 0, y: 0, image: '' }, // Initial positions for pin 2
+		{ x: 0, y: 0, image: '' }, // Initial positions for pin 3
 	]);
 
 	useEffect(() => {
@@ -19,9 +19,21 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 			const mapBounds = mapRef.current.getBoundingClientRect();
 			// Adjust these percentages for each pin's position relative to the map image
 			setPinPositions([
-				{ x: mapBounds.width * 0.16, y: mapBounds.height * 0.36 }, // Pin 1 position
-				{ x: mapBounds.width * 0.48, y: mapBounds.height * 0.35 }, // Pin 2 position
-				{ x: mapBounds.width * 0.32, y: mapBounds.height * 0.15 }, // Pin 3 position
+				{
+					x: mapBounds.width * 0.16,
+					y: mapBounds.height * 0.36,
+					image: '/images/basicBeasts/bb_thumbnail.png',
+				}, // Pin 1 position
+				{
+					x: mapBounds.width * 0.48,
+					y: mapBounds.height * 0.35,
+					image: '/images/inception_animals/ia_thumbnail.jpeg',
+				}, // Pin 2 position
+				{
+					x: mapBounds.width * 0.32,
+					y: mapBounds.height * 0.15,
+					image: '/images/flovatar/flovatar_thumbnail.png',
+				}, // Pin 3 position
 			]);
 		};
 
@@ -88,7 +100,7 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 						className="pin"
 					>
 						<img
-							src="/images/basicBeasts/bb_thumbnail.png"
+							src={position.image}
 							alt={`Pin ${index}`}
 							className="pinImage"
 						/>

@@ -20,8 +20,8 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 			// Adjust these percentages for each pin's position relative to the map image
 			setPinPositions([
 				{
-					x: mapBounds.width * 0.16,
-					y: mapBounds.height * 0.36,
+					x: mapBounds.width * 0.15,
+					y: mapBounds.height * 0.33,
 					image: '/images/basicBeasts/bb_thumbnail.png',
 				}, // Pin 1 position
 				{

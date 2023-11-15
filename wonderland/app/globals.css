@@ -108,3 +108,16 @@ body {
 #container img:first-child {
 	animation-delay: -20s;
 }
+
+@keyframes zoomIn {
+	from {
+		transform: scale(0);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+
+.pin {
+	animation: zoomIn 2s ease-out forwards;
+}

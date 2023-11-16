@@ -9,7 +9,7 @@ import ProjectNavigation from '@/components/ui/ProjectNavigation';
 
 export default function New() {
 	const [isModalOpen, setModalOpen] = useState(false);
-
+	//todo add flovatar
 	const { beastz } = useWonder();
 	return (
 		<>

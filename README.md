@@ -2,6 +2,8 @@
 
 Wonderland is like Super Smash Bros, but for Web3 NFTs.
 
+Build a home for your NFTs to live in.
+
 ### Read whitepaper
 
 https://whitepaper.bbwonderland.com/

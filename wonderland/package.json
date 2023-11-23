@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@blocto/fcl": "^1.6.1",
     "@headlessui/react": "^1.7.16",
     "@onflow/fcl": "^1.5.0",
     "@onflow/types": "^1.1.0",

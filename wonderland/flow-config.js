@@ -1,4 +1,4 @@
-import { config } from '@onflow/fcl';
+import { config } from '@blocto/fcl';
 
 config({
 	'app.detail.title': process.env.NEXT_PUBLIC_APP_TITLE,

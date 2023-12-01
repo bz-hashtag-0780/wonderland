@@ -788,6 +788,56 @@ transaction(idsToDiscordHandles: {String: String}) {
 		100: false,
 	};
 
+	// testnet version
+	// static async setup_beastz_collection() {
+	// 	let transaction = `
+	// 	import BasicBeasts from 0xBasicBeasts
+	// 	import NonFungibleToken from 0xNonFungibleToken
+	// 	import MetadataViews from 0xMetadataViews
+
+	// 	transaction() {
+	// 		prepare(signer: AuthAccount) {
+	// 			if signer.borrow<&BasicBeasts.Collection>(from: BasicBeasts.CollectionStoragePath) == nil {
+	// 				signer.save(<-BasicBeasts.createEmptyCollection(), to: BasicBeasts.CollectionStoragePath)
+
+	// 				signer.capabilities.unpublish(BasicBeasts.CollectionPublicPath)
+
+	// 				let issuedCap = signer.capabilities.storage.issue<&BasicBeasts.Collection{BasicBeasts.BeastCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>(BasicBeasts.CollectionStoragePath)
+
+	// 				signer.capabilities.publish(issuedCap, at: BasicBeasts.CollectionPublicPath)
+	// 			}
+
+	// 		}
+	// 	}
+	//     `;
+	// 	let keyIndex = null;
+	// 	for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+	// 		if (value == false) {
+	// 			keyIndex = parseInt(key);
+	// 			break;
+	// 		}
+	// 	}
+	// 	if (keyIndex == null) {
+	// 		return;
+	// 	}
+
+	// 	this.QuestManagerKeys[keyIndex] = true;
+	// 	const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+	// 	try {
+	// 		const txid = await signer.sendTransaction(transaction);
+
+	// 		if (txid) {
+	// 			let tx = await fcl.tx(txid).onceSealed();
+	// 			this.QuestManagerKeys[keyIndex] = false;
+	// 			console.log('Beast Collection Created');
+	// 		}
+	// 	} catch (e) {
+	// 		this.QuestManagerKeys[keyIndex] = false;
+	// 		console.log(e);
+	// 		return;
+	// 	}
+	// }
+
 	static async setup_beastz_collection() {
 		let transaction = `
 		import BasicBeasts from 0xBasicBeasts
@@ -799,11 +849,10 @@ transaction(idsToDiscordHandles: {String: String}) {
 				if signer.borrow<&BasicBeasts.Collection>(from: BasicBeasts.CollectionStoragePath) == nil {
 					signer.save(<-BasicBeasts.createEmptyCollection(), to: BasicBeasts.CollectionStoragePath)
 		
-					signer.capabilities.unpublish(BasicBeasts.CollectionPublicPath)
+					signer.unlink(BasicBeasts.CollectionPublicPath)
+
+					signer.link<&BasicBeasts.Collection{BasicBeasts.BeastCollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection}>(BasicBeasts.CollectionPublicPath, target: BasicBeasts.CollectionStoragePath)
 		
-					let issuedCap = signer.capabilities.storage.issue<&BasicBeasts.Collection{BasicBeasts.BeastCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>(BasicBeasts.CollectionStoragePath)
-		
-					signer.capabilities.publish(issuedCap, at: BasicBeasts.CollectionPublicPath)
 				}
 		
 			}
@@ -844,6 +893,92 @@ transaction(idsToDiscordHandles: {String: String}) {
 		return 'A.' + address + '.' + contractName + '.' + eventName;
 	}
 
+	//testnet version
+	// static async createQuest() {
+	// 	let transaction = `
+	// 	import Questing from 0xQuesting
+	// 	import BasicBeasts from 0xBasicBeasts
+
+	// 	transaction() {
+
+	// 		let questManagerRef: &Questing.QuestManager
+	// 		let type: Type
+
+	// 		prepare(signer: AuthAccount) {
+
+	// 			// create Quest Manager
+	// 			if signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath) == nil {
+	// 				signer.save(<-Questing.createQuestManager(), to: Questing.QuestManagerStoragePath)
+
+	// 				signer.capabilities.unpublish(Questing.QuestManagerPublicPath)
+
+	// 				let issuedCap = signer.capabilities.storage.issue<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerStoragePath)
+
+	// 				signer.capabilities.publish(issuedCap, at: Questing.QuestManagerPublicPath)
+	// 			}
+
+	// 			// borrow Quest Manager reference
+	// 			self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+
+	// 			// Get resource type from a random beast
+	// 			let nftCollectionRef = signer.borrow<&BasicBeasts.Collection>(from: BasicBeasts.CollectionStoragePath)??panic("Couldn't borrow staking collection")
+
+	// 			let IDs = nftCollectionRef.getIDs()
+
+	// 			let beast <- nftCollectionRef.withdraw(withdrawID: IDs[0])
+
+	// 			self.type = beast.getType()
+
+	// 			nftCollectionRef.deposit(token: <-beast)
+
+	// 		}
+
+	// 		execute {
+	// 			self.questManagerRef.createQuest(type: self.type)
+	// 		}
+	// 	}
+
+	//     `;
+	// 	let keyIndex = null;
+	// 	for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+	// 		if (value == false) {
+	// 			keyIndex = parseInt(key);
+	// 			break;
+	// 		}
+	// 	}
+	// 	if (keyIndex == null) {
+	// 		return;
+	// 	}
+
+	// 	this.QuestManagerKeys[keyIndex] = true;
+	// 	const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+	// 	try {
+	// 		const txid = await signer.sendTransaction(transaction);
+
+	// 		if (txid) {
+	// 			let tx = await fcl.tx(txid).onceSealed();
+	// 			this.QuestManagerKeys[keyIndex] = false;
+
+	// 			let eventName = this.generateEvent(
+	// 				process.env.WONDERLAND_CONTRACT_ADDRESS,
+	// 				'Questing',
+	// 				'QuestCreated'
+	// 			);
+
+	// 			let event = tx.events.find((e) => e.type == eventName);
+	// 			if (!event) {
+	// 				console.log('no quest created');
+	// 				return;
+	// 			}
+	// 			console.log('Quest Created');
+	// 		}
+	// 	} catch (e) {
+	// 		this.QuestManagerKeys[keyIndex] = false;
+	// 		console.log(e);
+	// 		return;
+	// 	}
+	// }
+
 	static async createQuest() {
 		let transaction = `
 		import Questing from 0xQuesting
@@ -860,11 +995,10 @@ transaction(idsToDiscordHandles: {String: String}) {
 				if signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath) == nil {
 					signer.save(<-Questing.createQuestManager(), to: Questing.QuestManagerStoragePath)
 		
-					signer.capabilities.unpublish(Questing.QuestManagerPublicPath)
+					signer.unlink(Questing.QuestManagerPublicPath)
+
+					signer.link<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath, target: Questing.QuestManagerStoragePath)
 		
-					let issuedCap = signer.capabilities.storage.issue<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerStoragePath)
-		
-					signer.capabilities.publish(issuedCap, at: Questing.QuestManagerPublicPath)
 				}
 		
 				// borrow Quest Manager reference
@@ -929,6 +1063,84 @@ transaction(idsToDiscordHandles: {String: String}) {
 		}
 	}
 
+	//testnet version
+	// static async createMinter(minterName) {
+	// 	let transaction = `
+	// 	import Questing from 0xQuesting
+	// 	import QuestReward from 0xQuestReward
+
+	// 	transaction(minterName: String) {
+
+	// 		let questManagerRef: &Questing.QuestManager
+
+	// 		prepare(signer: AuthAccount) {
+
+	// 			// create Quest Manager
+	// 			if signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath) == nil {
+	// 				signer.save(<-Questing.createQuestManager(), to: Questing.QuestManagerStoragePath)
+
+	// 				signer.capabilities.unpublish(Questing.QuestManagerPublicPath)
+
+	// 				let issuedCap = signer.capabilities.storage.issue<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerStoragePath)
+
+	// 				signer.capabilities.publish(issuedCap, at: Questing.QuestManagerPublicPath)
+	// 			}
+
+	// 			// borrow Quest Manager reference
+	// 			self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+
+	// 		}
+
+	// 		execute {
+	// 			// create and deposit minter
+	// 			self.questManagerRef.depositMinter(minter: <-QuestReward.createMinter(name: minterName))
+	// 		}
+
+	// 	}
+
+	//     `;
+	// 	let keyIndex = null;
+	// 	for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+	// 		if (value == false) {
+	// 			keyIndex = parseInt(key);
+	// 			break;
+	// 		}
+	// 	}
+	// 	if (keyIndex == null) {
+	// 		return;
+	// 	}
+
+	// 	this.QuestManagerKeys[keyIndex] = true;
+	// 	const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+	// 	try {
+	// 		const txid = await signer.sendTransaction(transaction, (arg, t) => [
+	// 			arg(minterName, t.String),
+	// 		]);
+
+	// 		if (txid) {
+	// 			let tx = await fcl.tx(txid).onceSealed();
+	// 			this.QuestManagerKeys[keyIndex] = false;
+
+	// 			let eventName = this.generateEvent(
+	// 				process.env.WONDERLAND_CONTRACT_ADDRESS,
+	// 				'Questing',
+	// 				'MinterDeposited'
+	// 			);
+
+	// 			let event = tx.events.find((e) => e.type == eventName);
+	// 			if (!event) {
+	// 				console.log('no minter created');
+	// 				return;
+	// 			}
+	// 			console.log('Minter Created');
+	// 		}
+	// 	} catch (e) {
+	// 		this.QuestManagerKeys[keyIndex] = false;
+	// 		console.log(e);
+	// 		return;
+	// 	}
+	// }
+
 	static async createMinter(minterName) {
 		let transaction = `
 		import Questing from 0xQuesting
@@ -944,11 +1156,10 @@ transaction(idsToDiscordHandles: {String: String}) {
 				if signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath) == nil {
 					signer.save(<-Questing.createQuestManager(), to: Questing.QuestManagerStoragePath)
 		
-					signer.capabilities.unpublish(Questing.QuestManagerPublicPath)
-		
-					let issuedCap = signer.capabilities.storage.issue<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerStoragePath)
-		
-					signer.capabilities.publish(issuedCap, at: Questing.QuestManagerPublicPath)
+					signer.unlink(Questing.QuestManagerPublicPath)
+
+					signer.link<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath, target: Questing.QuestManagerStoragePath)
+	
 				}
 		
 				// borrow Quest Manager reference

@@ -453,11 +453,19 @@ access(all) contract Questing {
     }
 
     access(all) fun getQuest(questManager: Address, id: UInt64): &Quest{Public}? {
-        if let questManagerRef = getAccount(questManager).getCapability<&QuestManager{QuestManagerPublic}>(Questing.QuestManagerPublicPath).borrow() {
-            return questManagerRef.borrowQuest(id: id)
-        } else {
-            return nil
+        var questManagerRef: &QuestManager{QuestManagerPublic}?  = nil
+
+        if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
+            questManagerRef = cap.borrow()
         }
+
+        var questRef: &Quest{Public}? = nil
+
+        if(questManagerRef != nil) {
+            questRef = questManagerRef!.borrowQuest(id: id)
+        }
+
+        return questRef
     }
 
     access(all) fun createQuestManager(): @QuestManager {

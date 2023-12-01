@@ -1,3 +1,5 @@
+//TODO fix to mainnet
+
 export const GET_REWARD_PER_SECOND = `
 import Questing from 0xQuesting
 

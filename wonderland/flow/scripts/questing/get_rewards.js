@@ -1,3 +1,5 @@
+//TODO fix to mainnet
+
 export const GET_REWARDS = `
 import Questing from 0xQuesting
 import QuestReward from 0xQuestReward

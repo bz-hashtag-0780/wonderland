@@ -1,3 +1,5 @@
+//TODO fix to mainnet
+
 export const GET_ADJUSTED_QUESTING_DATES = `
 import Questing from 0xQuesting
 

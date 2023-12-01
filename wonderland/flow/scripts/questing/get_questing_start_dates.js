@@ -1,3 +1,5 @@
+//TODO fix to mainnet
+
 export const GET_QUESTING_START_DATES = `
 import Questing from 0xQuesting
 

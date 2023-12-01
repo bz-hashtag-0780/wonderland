@@ -37,7 +37,8 @@ access(all) contract WonderlandRewardAlgorithm: RewardAlgorithm {
     }
 
     access(all) fun borrowAlgorithm(): &Algorithm{RewardAlgorithm.Algorithm} {
-        return self.account.getCapability<&WonderlandRewardAlgorithm.Algorithm{RewardAlgorithm.Algorithm}>(self.AlgorithmPublicPath).borrow()!
+        let cap: Capability<&WonderlandRewardAlgorithm.Algorithm{RewardAlgorithm.Algorithm}> = self.account.capabilities.get<&WonderlandRewardAlgorithm.Algorithm{RewardAlgorithm.Algorithm}>(self.AlgorithmPublicPath)!
+        return cap.borrow()!
     }
 
     init() {
@@ -46,9 +47,11 @@ access(all) contract WonderlandRewardAlgorithm: RewardAlgorithm {
 
         self.account.save(<-self.createAlgorithm(), to: self.AlgorithmStoragePath)
 
-        self.account.unlink(self.AlgorithmPublicPath)
+        self.account.capabilities.unpublish(self.AlgorithmPublicPath)
 
-		self.account.link<&WonderlandRewardAlgorithm.Algorithm{RewardAlgorithm.Algorithm}>(self.AlgorithmPublicPath, target: self.AlgorithmStoragePath)
+        let issuedCap = self.account.capabilities.storage.issue<&WonderlandRewardAlgorithm.Algorithm{RewardAlgorithm.Algorithm}>(self.AlgorithmStoragePath)
+
+        self.account.capabilities.publish(issuedCap, at: self.AlgorithmPublicPath)
 
         emit ContractInitialized()
     }

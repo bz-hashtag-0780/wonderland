@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useLayoutEffect, useState } from 'react';
 import gsap from 'gsap';
 import { Draggable } from 'gsap/Draggable';
 
@@ -9,15 +9,16 @@ gsap.registerPlugin(Draggable);
 const MapWithMarkers = ({ setModalOpen }: any) => {
 	const mapRef = useRef<any>(null);
 	const [pinPositions, setPinPositions] = useState([
-		{ x: 0, y: 0, image: '' }, // Initial positions for pin 1
-		{ x: 0, y: 0, image: '' }, // Initial positions for pin 2
-		{ x: 0, y: 0, image: '' }, // Initial positions for pin 3
+		{ x: 0, y: 0, image: '/images/basicBeasts/bb_thumbnail.png' }, // Initial positions for pin 1
+		{ x: 0, y: 0, image: '/images/inception_animals/ia_thumbnail.jpeg' }, // Initial positions for pin 2
+		{ x: 0, y: 0, image: '/images/flovatar/flovatar_thumbnail.png' }, // Initial positions for pin 3
 	]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		const updatePinPositions = () => {
 			const mapBounds = mapRef.current.getBoundingClientRect();
 			// Adjust these percentages for each pin's position relative to the map image
+			console.log('width & height', mapBounds.width, mapBounds.height);
 			setPinPositions([
 				{
 					x: mapBounds.width * 0.15,
@@ -37,7 +38,7 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 			]);
 		};
 
-		updatePinPositions();
+		setTimeout(updatePinPositions, 100);
 		window.addEventListener('resize', updatePinPositions);
 
 		const draggable = Draggable.create(mapRef.current, {

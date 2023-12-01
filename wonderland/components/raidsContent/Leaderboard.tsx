@@ -176,8 +176,10 @@ const calculateStats = (selectedSeason: any, allRecords: any) => {
 };
 
 const Leaderboard = ({}: any) => {
-	const { allRecords, idsToDiscordHandles, addressToDiscordIds } = useUser();
-
+	// const { allRecords, idsToDiscordHandles, addressToDiscordIds } = useUser();
+	const allRecords = null;
+	const idsToDiscordHandles = null;
+	const addressToDiscordIds = null;
 	return (
 		<div className="w-full max-w-5xl bg-custom-orange bg-opacity-10 p-8 rounded-lg mx-2 text-white border border-custom-orange mt-10">
 			<div className="flex uppercase font-bold text-3xl justify-center mb-4">

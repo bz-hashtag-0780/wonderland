@@ -19,16 +19,16 @@ interface State {
 	getStakingDates: any;
 	getRewards: any;
 	getRewardPerSecond: any;
-	getTotalSupply: any;
-	raidBeast: any;
-	getRaidBeast: any;
-	userOptIn: any;
-	exp: any;
-	getExp: any;
-	points: any;
-	getPoints: any;
-	currentSeason: any;
-	allRecords: any;
+	// getTotalSupply: any;
+	// raidBeast: any;
+	// getRaidBeast: any;
+	// userOptIn: any;
+	// exp: any;
+	// getExp: any;
+	// points: any;
+	// getPoints: any;
+	// currentSeason: any;
+	// allRecords: any;
 	idsToDiscordHandles: any;
 	addressToDiscordIds: any;
 }
@@ -60,17 +60,17 @@ const UserProvider: React.FC<ProviderProps> = ({ children }) => {
 		getTotalSupply,
 	} = useRewards(user);
 
-	const {
-		raidBeast,
-		exp,
-		getExp,
-		getRaidBeast,
-		userOptIn,
-		points,
-		getPoints,
-		currentSeason,
-		allRecords,
-	} = useRaids(user);
+	// const {
+	// 	raidBeast,
+	// 	exp,
+	// 	getExp,
+	// 	getRaidBeast,
+	// 	userOptIn,
+	// 	points,
+	// 	getPoints,
+	// 	currentSeason,
+	// 	allRecords,
+	// } = useRaids(user);
 
 	const { idsToDiscordHandles, addressToDiscordIds } = useDiscordHandles();
 
@@ -88,16 +88,16 @@ const UserProvider: React.FC<ProviderProps> = ({ children }) => {
 				getStakingDates,
 				getRewards,
 				getRewardPerSecond,
-				getTotalSupply,
-				raidBeast,
-				exp,
-				getExp,
-				getRaidBeast,
-				userOptIn,
-				points,
-				getPoints,
-				currentSeason,
-				allRecords,
+				// getTotalSupply,
+				// raidBeast,
+				// exp,
+				// getExp,
+				// getRaidBeast,
+				// userOptIn,
+				// points,
+				// getPoints,
+				// currentSeason,
+				// allRecords,
 				idsToDiscordHandles,
 				addressToDiscordIds,
 			}}

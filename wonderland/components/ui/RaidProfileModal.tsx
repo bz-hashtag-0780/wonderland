@@ -3,7 +3,11 @@ import { useUser } from 'providers/UserProvider';
 
 const RaidProfileModal = ({ isOpen, onClose, setOpenChooseBeast }: any) => {
 	const { data: session } = useSession();
-	const { beasts, raidBeast } = useUser();
+	const {
+		beasts,
+		// raidBeast
+	} = useUser();
+	const raidBeast = null;
 	return (
 		isOpen && (
 			<div className="fixed inset-0 flex justify-center items-center z-50 text-white">

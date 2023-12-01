@@ -10,18 +10,20 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 		fetchUserBeasts,
 		rewards,
 		getRewards,
-		userOptIn,
-		raidBeast,
+		// userOptIn,
+		// raidBeast,
 	} = useUser();
+	const userOptIn = null;
+	const raidBeast = null;
 	const { user } = useAuth();
 	const { data: session }: any = useSession();
 
-	useEffect(() => {
-		if (user?.addr != null) {
-			fetchUserBeasts();
-		}
-		getRewards();
-	}, [user?.addr]);
+	// useEffect(() => {
+	// 	if (user?.addr != null) {
+	// 		fetchUserBeasts();
+	// 	}
+	// 	getRewards();
+	// }, [user?.addr]);
 
 	const Reward = ({ value, label }: any) => (
 		<div
@@ -64,7 +66,7 @@ const ChooseBeastModal = ({ isOpen, onClose }: any) => {
 							<button
 								disabled={!session}
 								onClick={() => {
-									userOptIn(beast.id, session.user.discordId);
+									// userOptIn(beast.id, session.user.discordId);
 								}}
 								className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-md drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 							>

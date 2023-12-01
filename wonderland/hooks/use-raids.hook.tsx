@@ -30,18 +30,18 @@ export default function useRaids(user: any) {
 	const [currentSeason, setCurrentSeason] = useState<any>(0);
 	const [allRecords, setRecords] = useState<any>([]);
 
-	useEffect(() => {
-		if (user?.addr != null) {
-			getRaidBeast();
-		}
-	}, [user?.addr]);
+	// useEffect(() => {
+	// 	if (user?.addr != null) {
+	// 		getRaidBeast();
+	// 	}
+	// }, [user?.addr]);
 
-	useEffect(() => {
-		getExp();
-		getPoints();
-		getCurrentSeason();
-		getAllRaidRecords();
-	}, []);
+	// useEffect(() => {
+	// 	getExp();
+	// 	getPoints();
+	// 	getCurrentSeason();
+	// 	getAllRaidRecords();
+	// }, []);
 
 	const getRaidBeast = async () => {
 		try {

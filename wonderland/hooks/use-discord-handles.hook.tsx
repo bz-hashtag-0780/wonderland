@@ -7,10 +7,10 @@ export default function useDiscordHandles() {
 	const [idsToDiscordHandles, setIdsToDiscordHandles] = useState<any>({});
 	const [addressToDiscordIds, setAddressToDiscordIds] = useState<any>({});
 
-	useEffect(() => {
-		getIdsToDiscordHandles();
-		getAddressToIds();
-	}, []);
+	// useEffect(() => {
+	// 	getIdsToDiscordHandles();
+	// 	getAddressToIds();
+	// }, []);
 
 	const getIdsToDiscordHandles = async () => {
 		try {

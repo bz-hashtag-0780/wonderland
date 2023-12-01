@@ -12,13 +12,13 @@ export default function useUserBeasts(user: any) {
 	const [stakingStartDates, setStakingStartDates] = useState({});
 	const [adjustedStakingDates, setAdjustedStakingDates] = useState({});
 
-	useEffect(() => {
-		if (user?.addr != null) {
-			fetchUserBeasts();
-		} else {
-			setBeasts([]);
-		}
-	}, [user?.addr]);
+	// useEffect(() => {
+	// 	if (user?.addr != null) {
+	// 		fetchUserBeasts();
+	// 	} else {
+	// 		setBeasts([]);
+	// 	}
+	// }, [user?.addr]);
 
 	const fetchUserBeasts = async () => {
 		try {

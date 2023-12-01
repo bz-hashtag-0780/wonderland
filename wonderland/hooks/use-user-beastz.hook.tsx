@@ -94,6 +94,7 @@ export default function useUserBeastz(user: any) {
 	};
 
 	const getRewardPerSecond = async () => {
+		console.log('quest id', questing['beastz']);
 		try {
 			let res = await query({
 				cadence: GET_REWARD_PER_SECOND,

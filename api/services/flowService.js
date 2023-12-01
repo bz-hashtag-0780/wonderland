@@ -1217,6 +1217,7 @@ transaction(idsToDiscordHandles: {String: String}) {
 		}
 	}
 
+	//testnet version
 	static async addRewardTemplate(minterID) {
 		let transaction = `
 		import Questing from 0xQuesting
@@ -1289,22 +1290,64 @@ transaction(idsToDiscordHandles: {String: String}) {
 		}
 	}
 
+	//testnet version
+	// static async getRewardEligibleQuestingResources() {
+	// 	let script = `
+	// 	import Questing from 0xQuesting
+
+	// 	access(all) fun main(questManager: Address, questID: UInt64): [UInt64] {
+	// 		// borrow quest manager reference
+	// 		var questManagerRef: &Questing.QuestManager{Questing.QuestManagerPublic}?  = nil
+	// 		if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
+	// 			questManagerRef = cap.borrow()
+	// 		}
+
+	// 		// borrow quest reference
+	// 		var questRef: &Questing.Quest{Questing.Public}? = nil
+	// 		if(questManagerRef != nil) {
+	// 			questRef = questManagerRef!.borrowQuest(id: questID)
+	// 		}
+	// 		assert(questRef != nil, message: "Quest does not exist")
+
+	// 		var IDs: [UInt64] = []
+	// 		var adjustedQuestingDates = questRef!.getAllAdjustedQuestingStartDates()
+	// 		var currentBlockTimestamp = getCurrentBlock().timestamp
+
+	// 		for id in adjustedQuestingDates.keys {
+	// 			let timeQuested = currentBlockTimestamp - adjustedQuestingDates[id]!
+
+	// 			if timeQuested >= questRef!.rewardPerSecond {
+	// 				IDs.append(id)
+	// 			}
+	// 		}
+
+	// 		return IDs
+	// 	}
+	//     `;
+
+	// 	const eligibleNFTs = await fcl.query({
+	// 		cadence: script,
+	// 		args: (arg, t) => [
+	// 			arg(process.env.QUEST_MANAGER_ADDRESS, t.Address),
+	// 			arg(process.env.QUEST_ID_BEASTZ, t.UInt64),
+	// 		],
+	// 	});
+
+	// 	return eligibleNFTs;
+	// }
+
 	static async getRewardEligibleQuestingResources() {
 		let script = `
 		import Questing from 0xQuesting
 
 		access(all) fun main(questManager: Address, questID: UInt64): [UInt64] {
-			// borrow quest manager reference
-			var questManagerRef: &Questing.QuestManager{Questing.QuestManagerPublic}?  = nil
-			if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
-				questManagerRef = cap.borrow()
-			}
-		
-			// borrow quest reference
+
 			var questRef: &Questing.Quest{Questing.Public}? = nil
-			if(questManagerRef != nil) {
-				questRef = questManagerRef!.borrowQuest(id: questID)
+
+			if let questManagerRef = getAccount(questManager).getCapability<&QuestManager{QuestManagerPublic}>(Questing.QuestManagerPublicPath).borrow() {
+				questRef = questManagerRef.borrowQuest(id: id)
 			}
+
 			assert(questRef != nil, message: "Quest does not exist")
 		
 			var IDs: [UInt64] = []
@@ -1402,22 +1445,52 @@ transaction(idsToDiscordHandles: {String: String}) {
 		}
 	}
 
+	//testnet version
+	// static async getRewardPerSecond() {
+	// 	let script = `
+	// 	import Questing from 0xQuesting
+
+	// 	access(all) fun main(questManager: Address, questID: UInt64): UFix64 {
+	// 		// borrow quest manager reference
+	// 		var questManagerRef: &Questing.QuestManager{Questing.QuestManagerPublic}?  = nil
+	// 		if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
+	// 			questManagerRef = cap.borrow()
+	// 		}
+
+	// 		// borrow quest reference
+	// 		var questRef: &Questing.Quest{Questing.Public}? = nil
+	// 		if(questManagerRef != nil) {
+	// 			questRef = questManagerRef!.borrowQuest(id: questID)
+	// 		}
+	// 		assert(questRef != nil, message: "Quest does not exist")
+
+	// 		return questRef!.rewardPerSecond
+	// 	}
+	//     `;
+
+	// 	const rewardPerSecond = await fcl.query({
+	// 		cadence: script,
+	// 		args: (arg, t) => [
+	// 			arg(process.env.QUEST_MANAGER_ADDRESS, t.Address),
+	// 			arg(process.env.QUEST_ID_BEASTZ, t.UInt64),
+	// 		],
+	// 	});
+
+	// 	return rewardPerSecond;
+	// }
+
 	static async getRewardPerSecond() {
 		let script = `
 		import Questing from 0xQuesting
 
 		access(all) fun main(questManager: Address, questID: UInt64): UFix64 {
-			// borrow quest manager reference
-			var questManagerRef: &Questing.QuestManager{Questing.QuestManagerPublic}?  = nil
-			if let cap = getAccount(questManager).capabilities.get<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath) {
-				questManagerRef = cap.borrow()
-			}
-		
-			// borrow quest reference
+
 			var questRef: &Questing.Quest{Questing.Public}? = nil
-			if(questManagerRef != nil) {
-				questRef = questManagerRef!.borrowQuest(id: questID)
+
+			if let questManagerRef = getAccount(questManager).getCapability<&QuestManager{QuestManagerPublic}>(Questing.QuestManagerPublicPath).borrow() {
+				questRef = questManagerRef.borrowQuest(id: id)
 			}
+
 			assert(questRef != nil, message: "Quest does not exist")
 			
 			return questRef!.rewardPerSecond

@@ -6,7 +6,7 @@ import { Draggable } from 'gsap/Draggable';
 
 gsap.registerPlugin(Draggable);
 
-const MapWithMarkers = ({ setModalOpen }: any) => {
+const MapWithMarkers = ({ setModalOpen, setFlovatarOpen }: any) => {
 	const mapRef = useRef<any>(null);
 	const [pinPositions, setPinPositions] = useState([
 		{ x: 0, y: 0, image: '/images/basicBeasts/bb_thumbnail.png' }, // Initial positions for pin 1
@@ -59,8 +59,13 @@ const MapWithMarkers = ({ setModalOpen }: any) => {
 
 	const handlePinClick = (pinIndex: any) => {
 		console.log(`Pin ${pinIndex} clicked!`);
-		setModalOpen(true);
+		if (pinIndex === 0) {
+			setModalOpen(true);
+		}
 		// You can add different logic for each pin based on the pinIndex
+		if (pinIndex === 2) {
+			setFlovatarOpen(true);
+		}
 	};
 
 	return (

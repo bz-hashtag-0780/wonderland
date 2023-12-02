@@ -1862,6 +1862,282 @@ transaction(idsToDiscordHandles: {String: String}) {
 			return;
 		}
 	}
+
+	static async setup_flovatar_collection() {
+		let transaction = `
+		import Flovatar from 0x921ea449dffec68a
+		import NonFungibleToken from 0xNonFungibleToken
+		import MetadataViews from 0xMetadataViews
+		
+		transaction() {
+			prepare(signer: AuthAccount) {
+				if signer.borrow<&Flovatar.Collection>(from: Flovatar.CollectionStoragePath) == nil {
+					signer.save(<-Flovatar.createEmptyCollection(), to: Flovatar.CollectionStoragePath)
+		
+					signer.unlink(Flovatar.CollectionPublicPath)
+
+					signer.link<&Flovatar.Collection{Flovatar.CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection}>(Flovatar.CollectionPublicPath, target: Flovatar.CollectionStoragePath)
+		
+				}
+		
+			}
+		}
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+				console.log('Flovatar Collection Created');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async createFlovatarQuest() {
+		let transaction = `
+		import Questing from 0xQuesting
+		import Flovatar from 0x921ea449dffec68a
+		
+		transaction() {
+		
+			let questManagerRef: &Questing.QuestManager
+			let type: Type
+		
+			prepare(signer: AuthAccount) {
+		
+				// create Quest Manager
+				if signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath) == nil {
+					signer.save(<-Questing.createQuestManager(), to: Questing.QuestManagerStoragePath)
+		
+					signer.unlink(Questing.QuestManagerPublicPath)
+
+					signer.link<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath, target: Questing.QuestManagerStoragePath)
+		
+				}
+		
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+		
+				// Get resource type from a random nft
+				let nftCollectionRef = signer.borrow<&Flovatar.Collection>(from: Flovatar.CollectionStoragePath)??panic("Couldn't borrow staking collection")
+		
+				let IDs = nftCollectionRef.getIDs()
+		
+				let nft <- nftCollectionRef.withdraw(withdrawID: IDs[0])
+		
+				self.type = nft.getType()
+		
+				nftCollectionRef.deposit(token: <-nft)
+		
+			}
+		
+			execute {
+				self.questManagerRef.createQuest(type: self.type)
+			}
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'QuestCreated'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('no quest created');
+					return;
+				}
+				console.log('Quest Created');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async addFlovatarRewardTemplate(minterID) {
+		let transaction = `
+		import Questing from 0xQuesting
+		import QuestReward from 0xQuestReward
+
+		transaction(minterID: UInt64) {
+
+			let questManagerRef: &Questing.QuestManager
+			let minterRef: &QuestReward.Minter
+
+			prepare(signer: AuthAccount) {
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+
+				// borrow Minter reference
+				self.minterRef = self.questManagerRef.borrowEntireMinter(id: minterID)??panic("Could not borrow Minter reference")
+			}
+
+			execute {
+				// add reward templates
+				self.minterRef.addRewardTemplate(name: "Traveler", description: "This modest vial, known as the Traveler, is a common find in the realms of adventure. Filled with a gently shimmering liquid, it embodies the spirit of every journeyman embarking on their quest. While its effects are basic, it provides a reliable boost to those starting their path to greatness.", image: "https://i.imgur.com/p3VciOG.png")
+				self.minterRef.addRewardTemplate(name: "Super", description: "The Super Vial, radiant and more refined, is a prized possession among seasoned adventurers. Its contents sparkle with a vivid intensity, offering enhanced abilities to those who partake. Ideal for those who have surpassed the novice stage, it grants a substantial edge in the face of growing challenges.", image: "https://i.imgur.com/eK37Kl1.png")
+				self.minterRef.addRewardTemplate(name: "Unearthly", description: "Rare and mysterious, the Unearthly Vial contains an ethereal essence that defies common understanding. Its swirling, otherworldly liquid is a sight to behold, offering powers that verge on the arcane. Coveted by the elite, it provides extraordinary benefits, elevating one's abilities into the realm of legends.", image: "https://i.imgur.com/WzOqfKO.png")
+				self.minterRef.addRewardTemplate(name: "Divine", description: "The Divine Vial is the epitome of rarity and power, revered across all lands. Encased in a vessel that glows with an inner light, the liquid inside seems to pulse with divine energy. Reserved for the chosen few, its consumption bestows unparalleled might, placing its wielder among the pantheon of heroes.", image: "https://i.imgur.com/5WZjO3T.png")
+			}
+
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(minterID, t.UInt64),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'QuestReward',
+					'RewardTemplateAdded'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('no reward template added');
+					return;
+				}
+				console.log('Reward Template Added');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async transferFlovatar() {
+		let transaction = `
+		
+import Flovatar from 0x921ea449dffec68a
+import NonFungibleToken from 0x1d7e57aa55817448
+
+transaction() {
+
+    let transferToken: @NonFungibleToken.NFT
+
+    prepare(acct: AuthAccount) {
+
+        let collectionRef = acct.borrow<&Flovatar.Collection>(from: Flovatar.CollectionStoragePath)
+            ?? panic("Could not borrow a reference to the stored Flovatar collection")
+
+        self.transferToken <- collectionRef.withdraw(withdrawID: 465)
+
+    }
+
+    execute {
+
+        let recipient = getAccount(0xe12aacf4ffc07399)
+
+        let receiverRef = recipient.getCapability(Flovatar.CollectionPublicPath)
+        .borrow<&{Flovatar.CollectionPublic}>()
+        ?? panic("Could not get recipient's public flovatar collection reference")
+
+        receiverRef.deposit(token: <-self.transferToken)
+
+    }
+}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'QuestCreated'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('no quest created');
+					return;
+				}
+				console.log('Quest Created');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
 }
 
 module.exports = flowService;

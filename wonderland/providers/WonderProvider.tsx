@@ -3,6 +3,7 @@
 import { createContext, useContext, ReactNode } from 'react';
 import useCurrentUser from '@/hooks/use-current-user.hook';
 import useUserBeastz from '@/hooks/use-user-beastz.hook';
+import useUserFlovatar from '@/hooks/use-user-flovatar.hook';
 
 interface State {
 	beastz: any;
@@ -15,6 +16,7 @@ interface State {
 	rewards: any;
 	rewardPerSecond: any;
 	getRewards: any;
+	flovatar: any;
 }
 
 const WonderContext = createContext<State | undefined>(undefined);
@@ -39,6 +41,8 @@ const WonderProvider: React.FC<ProviderProps> = ({ children }) => {
 		getRewards,
 	} = useUserBeastz(user);
 
+	const { flovatar } = useUserFlovatar(user);
+
 	return (
 		<WonderContext.Provider
 			value={{
@@ -52,6 +56,7 @@ const WonderProvider: React.FC<ProviderProps> = ({ children }) => {
 				rewards,
 				rewardPerSecond,
 				getRewards,
+				flovatar,
 			}}
 		>
 			{children}

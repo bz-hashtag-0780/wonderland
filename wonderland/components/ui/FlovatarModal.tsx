@@ -1,25 +1,26 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import QuestResources from '@/components/exploreTabs/contents/QuestResources';
-import QuestRewards from '@/components/exploreTabs/contents/QuestRewards';
+import QuestResources from '../exploreTabs/contents/QuestResources';
+import QuestRewards from '../exploreTabs/contents/QuestRewards';
 import '../../flow-config.js';
-import { useAuth } from 'providers/AuthProvider';
-import questing from 'data/questing';
-import { useWonder } from 'providers/WonderProvider';
+import { useAuth } from '../../providers/AuthProvider';
+import questing from '../../data/questing';
+import { useWonder } from '../../providers/WonderProvider';
 import RewardTableModal from './RewardTableModal';
+import Flovatar from '../exploreTabs/contents/Flovatar';
 
-const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
+const FlovatarModal = ({ questingResources, isOpen, onClose }: any) => {
 	const { rewards } = useWonder();
 	const { loggedIn, logIn } = useAuth();
-	const [activeTab, setActiveTab] = useState('Beastz');
+	const [activeTab, setActiveTab] = useState('Flovatar');
 	const [isModalOpen, setModalOpen] = useState(false);
 
 	useEffect(() => {
 		console.log('rewards', rewards);
 	}, [rewards]);
 
-	const tabItems = [{ name: 'Beastz' }, { name: 'Rewards' }];
+	const tabItems = [{ name: 'Flovatar' }, { name: 'Rewards' }];
 
 	const TabItem = ({ item }: any) => (
 		<button
@@ -41,7 +42,7 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 							: 'flex items-center justify-center border border-white border-opacity-50 ml-1.5 px-2 text-xs font-semibold text-gray-200 text-opacity-50 rounded-lg'
 					}
 				>
-					{item.name === 'Beastz'
+					{item.name === 'Flovatar'
 						? questingResources.length
 						: item.name === 'Rewards'
 						? extractRewards(questingResources, rewards).length
@@ -111,9 +112,9 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 											</button>
 										</div>
 									</div>
-									{activeTab === 'Beastz' && (
-										<QuestResources
-											questID={questing['beastz']}
+									{activeTab === 'Flovatar' && (
+										<Flovatar
+											questID={questing['flovatar']}
 										/>
 									)}
 									{activeTab === 'Rewards' && (
@@ -122,7 +123,7 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 												questingResources,
 												rewards
 											)}
-											questID={questing['beastz']}
+											questID={questing['flovatar']}
 										/>
 									)}
 									{/* {activeTab === 'Random' && (
@@ -142,4 +143,4 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 	);
 };
 
-export default QuestingModal;
+export default FlovatarModal;

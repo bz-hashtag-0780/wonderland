@@ -18,6 +18,12 @@ module.exports = {
 				pathname:
 					'/_next/static/image/public/fungible_tokens/fungible_tokens_thumbnails/**',
 			},
+			{
+				protocol: 'https',
+				hostname: 'images.flovatar.com',
+				port: '',
+				pathname: '/flovatar/png/**',
+			},
 		],
 	},
 };

@@ -17,4 +17,6 @@ config({
 	'0xWonderlandRewardAlgorithm': process.env.NEXT_PUBLIC_LIVE_PRODUCT_ADDRESS,
 	'0xNonFungibleToken': process.env.NEXT_PUBLIC_NON_FUNGIBLE_TOKEN_ADDRESS,
 	'0xMetadataViews': process.env.NEXT_PUBLIC_METADATA_VIEWS_ADDRESS,
+	'0xFlovatar': '0x921ea449dffec68a',
+	'0xInceptionAvatar': '0x83ed64a1d4f3833f',
 });

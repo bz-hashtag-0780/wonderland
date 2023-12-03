@@ -43,12 +43,33 @@ async function processEligibleQuestingResources() {
 	const rewardPerSecond = await flowService.getRewardPerSecond();
 	console.log('Reward Per Second', rewardPerSecond);
 
+	const delay = 2000;
+
 	if (eligibleResources.length > 0) {
 		const chunks = splitIntoChunks(eligibleResources, max);
-		var i = 0;
-		while (i < keysLimit && i < chunks.length) {
+		for (let i = 0; i < Math.min(keysLimit, chunks.length); i++) {
+			await new Promise((resolve) => setTimeout(resolve, delay));
 			flowService.addRewards(chunks[i]);
-			i = i + 1;
+		}
+	}
+}
+
+async function processFlovatarEligible() {
+	const eligibleResources = await flowService.getFlovatarRewardEligible();
+	console.log('Eligible Flovatars: ', eligibleResources.length);
+
+	const max = 20;
+	const keysLimit = 201;
+	const rewardPerSecond = await flowService.getFlovatarRewardPerSecond();
+	console.log('Reward Per Second', rewardPerSecond);
+
+	const delay = 2000;
+
+	if (eligibleResources.length > 0) {
+		const chunks = splitIntoChunks(eligibleResources, max);
+		for (let i = 0; i < Math.min(keysLimit, chunks.length); i++) {
+			await new Promise((resolve) => setTimeout(resolve, delay));
+			flowService.addFlovatarRewards(chunks[i]);
 		}
 	}
 }
@@ -114,15 +135,22 @@ const getDiscordUserInfo = async (discordUserId) => {
 app.listen(PORT, async () => {
 	console.log(`Server is running on http://localhost:${PORT}`);
 	// Call the functions once the server starts
-	// await processEligibleNFTs();
+	await processEligibleQuestingResources();
+	await processFlovatarEligible();
 	// await processDiscordHandles();
 	// // Then run the functions every hour
-	// setInterval(processEligibleNFTs, 1 * 60 * 60 * 1000); // hour in milliseconds
+	setInterval(processEligibleQuestingResources, 1 * 60 * 60 * 1000); // hour in milliseconds
+	setInterval(processFlovatarEligible, 1 * 60 * 60 * 1000); // hour in milliseconds
 	// setInterval(processDiscordHandles, 1 * 60 * 60 * 1000); // hour in milliseconds
 
-	// await flowService.changeRewardPerSecond('1.0');
+	// await flowService.changeRewardPerSecond('604800.0');
 	// let rewardPerSecond = await flowService.getRewardPerSecond();
 	// console.log(rewardPerSecond);
 
 	// await processEligibleQuestingResources();
+
+	// await flowService.changeFlovatarRewardPerSecond('604800.0');
+	// let rewardPerSecond = await flowService.getRewardPerSecond();
+	// console.log(rewardPerSecond);
+	// await processFlovatarEligible();
 });

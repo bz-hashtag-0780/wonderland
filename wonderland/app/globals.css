@@ -74,7 +74,14 @@ body {
 	transition: all 0.3s ease;
 }
 
-#icon-container {
+#icon-button:hover #beastz-container {
+	transform: scale(1.1);
+	margin-bottom: 0.5rem;
+	transition: all 0.3s ease;
+}
+
+#icon-container,
+#beastz-container {
 	transition: all 0.3s ease;
 }
 

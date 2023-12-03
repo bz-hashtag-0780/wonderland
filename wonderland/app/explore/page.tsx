@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useWonder } from 'providers/WonderProvider';
 import MusicToggle from '@/components/ui/MusicToggle';
 import ProjectNavigation from '@/components/ui/ProjectNavigation';
-import FlovatarModal from '@/components/ui/FlovatarModal';
+import FlovatarModal from '@/components/ui/Flovatar/FlovatarModal';
 
 export default function New() {
 	const { beastz, flovatar } = useWonder();

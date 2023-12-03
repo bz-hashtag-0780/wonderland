@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import QuestResources from '../exploreTabs/contents/QuestResources';
-import QuestRewards from '../exploreTabs/contents/QuestRewards';
-import '../../flow-config.js';
-import { useAuth } from '../../providers/AuthProvider';
-import questing from '../../data/questing';
-import { useWonder } from '../../providers/WonderProvider';
-import RewardTableModal from './RewardTableModal';
-import Flovatar from '../exploreTabs/contents/Flovatar';
-import FlovatarQuestRewards from '../exploreTabs/contents/FlovatarQuestRewards';
-import FlovatarRewardTableModal from './Flovatar/FlovatarRewardTableModal';
+import QuestResources from '../../exploreTabs/contents/QuestResources';
+import QuestRewards from '../../exploreTabs/contents/QuestRewards';
+import '../../../flow-config.js';
+import { useAuth } from '../../../providers/AuthProvider';
+import questing from '../../../data/questing';
+import { useWonder } from '../../../providers/WonderProvider';
+import RewardTableModal from '../RewardTableModal';
+import Flovatar from '../../exploreTabs/contents/Flovatar';
+import FlovatarQuestRewards from '../../exploreTabs/contents/FlovatarQuestRewards';
+import FlovatarRewardTableModal from './FlovatarRewardTableModal';
 
 const FlovatarModal = ({ questingResources, isOpen, onClose }: any) => {
 	const { flovatarRewards } = useWonder();

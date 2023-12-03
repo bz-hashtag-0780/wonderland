@@ -17,7 +17,7 @@ export default function New() {
 	return (
 		<>
 			<div className="hidden lg:flex">
-				<MusicToggle audioUrl="/adventure.mp3" />
+				{/* <MusicToggle audioUrl="/adventure.mp3" /> */}
 			</div>
 			<div className="hidden lg:flex min-h-screen items-center justify-center bg-center bg-no-repeat bg-cover">
 				<MapWithMarkers

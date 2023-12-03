@@ -49,7 +49,7 @@ const RevealedModal = ({ isOpen, onClose, revealedRewards }: any) => {
 													rewardItemTemplateID: 1,
 													name: 'Unrevealed',
 													description: '',
-													image: '/images/basicBeasts/unknown.jpeg',
+													image: '/images/basicBeasts/unknown.png',
 												}
 											).emoji
 										}
@@ -67,7 +67,7 @@ const RevealedModal = ({ isOpen, onClose, revealedRewards }: any) => {
 													rewardItemTemplateID: 1,
 													name: 'Unrevealed',
 													description: '',
-													image: '/images/basicBeasts/unknown.jpeg',
+													image: '/images/basicBeasts/unknown.png',
 												}
 											).name
 										}

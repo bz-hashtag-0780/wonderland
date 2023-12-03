@@ -17,6 +17,13 @@ interface State {
 	rewardPerSecond: any;
 	getRewards: any;
 	flovatar: any;
+	fetchUserFlovatar: any;
+	flovatarQuestingStartDates: any;
+	flovatarAdjustedQuestingDates: any;
+	getFlovatarQuestingDates: any;
+	flovatarRewards: any;
+	flovatarRewardPerSecond: any;
+	getFlovatarRewards: any;
 }
 
 const WonderContext = createContext<State | undefined>(undefined);
@@ -41,7 +48,16 @@ const WonderProvider: React.FC<ProviderProps> = ({ children }) => {
 		getRewards,
 	} = useUserBeastz(user);
 
-	const { flovatar } = useUserFlovatar(user);
+	const {
+		flovatar,
+		fetchUserFlovatar,
+		flovatarQuestingStartDates,
+		flovatarAdjustedQuestingDates,
+		getFlovatarQuestingDates,
+		flovatarRewards,
+		flovatarRewardPerSecond,
+		getFlovatarRewards,
+	} = useUserFlovatar(user);
 
 	return (
 		<WonderContext.Provider
@@ -57,6 +73,13 @@ const WonderProvider: React.FC<ProviderProps> = ({ children }) => {
 				rewardPerSecond,
 				getRewards,
 				flovatar,
+				fetchUserFlovatar,
+				flovatarQuestingStartDates,
+				flovatarAdjustedQuestingDates,
+				getFlovatarQuestingDates,
+				flovatarRewards,
+				flovatarRewardPerSecond,
+				getFlovatarRewards,
 			}}
 		>
 			{children}

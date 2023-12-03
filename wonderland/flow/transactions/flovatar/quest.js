@@ -21,9 +21,9 @@ transaction(questManager: Address, questID: UInt64, nftID: UInt64) {
     }
 
     execute {
-        let nft <- self.collectionRef.withdraw(withdrawID: nftID)
+        let flovatar <- self.collectionRef.withdraw(withdrawID: nftID)
 
-        let resource <- self.questerRef.quest(questManager: questManager, questID: questID, questingResource: <-nft)
+        let resource <- self.questerRef.quest(questManager: questManager, questID: questID, questingResource: <-flovatar)
 
         let nft <- resource as! @NonFungibleToken.NFT
 

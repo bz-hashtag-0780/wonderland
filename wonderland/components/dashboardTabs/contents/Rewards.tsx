@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import rewardTemplates from 'data/rewardTemplates';
-import unknown from 'public/images/basicBeasts/unknown.jpeg';
+import unknown from 'public/images/basicBeasts/unknown.png';
 import {
 	send,
 	transaction,
@@ -60,7 +60,7 @@ const Rewards = ({ rewards }: any) => {
 												rewardItemTemplateID: 1,
 												name: 'Unrevealed',
 												description: '',
-												image: '/images/basicBeasts/unknown.jpeg',
+												image: '/images/basicBeasts/unknown.png',
 											}
 										).name
 									}
@@ -77,7 +77,7 @@ const Rewards = ({ rewards }: any) => {
 												rewardItemTemplateID: 1,
 												name: 'Unrevealed',
 												description: '',
-												image: '/images/basicBeasts/unknown.jpeg',
+												image: '/images/basicBeasts/unknown.png',
 											}
 										).image
 									}
@@ -125,7 +125,7 @@ const Rewards = ({ rewards }: any) => {
 												rewardItemTemplateID: 1,
 												name: 'Unrevealed',
 												description: '',
-												image: '/images/basicBeasts/unknown.jpeg',
+												image: '/images/basicBeasts/unknown.png',
 											}
 									  ).name
 									: 'Unrevealed'}

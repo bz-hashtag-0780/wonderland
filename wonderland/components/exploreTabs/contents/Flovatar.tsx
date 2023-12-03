@@ -32,11 +32,11 @@ const Flovatar = ({ questID }: any) => {
 
 	const {
 		flovatar,
-		questingStartDates,
-		adjustedQuestingDates,
-		getQuestingDates,
-		rewards,
-		rewardPerSecond,
+		flovatarQuestingStartDates,
+		flovatarAdjustedQuestingDates,
+		getFlovatarQuestingDates,
+		flovatarRewards,
+		flovatarRewardPerSecond,
 	} = useWonder();
 
 	const NFT = ({ item }: any) => (
@@ -47,13 +47,13 @@ const Flovatar = ({ questID }: any) => {
 			>
 				<div className="flex-auto flex flex-col w-full group relative">
 					<div className="rounded-xl overflow-hidden flex items-center relative">
-						{questingStartDates[item.uuid] != null && (
+						{flovatarQuestingStartDates[item.uuid] != null && (
 							<div className="flex w-full absolute z-10 top-2">
 								<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
 									<span style={{ fontSize: '10px' }}>⏳</span>
 									&nbsp;
 									{calculateDaysElapsed(
-										questingStartDates[item.uuid]
+										flovatarQuestingStartDates[item.uuid]
 									)}
 									d
 								</div>
@@ -74,18 +74,18 @@ const Flovatar = ({ questID }: any) => {
 							/>
 						</div>
 						<div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-							{!Object.keys(questingStartDates).includes(
+							{!Object.keys(flovatarQuestingStartDates).includes(
 								item.uuid.toString()
 							) ? (
 								<button
-									onClick={() => quest(item.uuid)}
+									onClick={() => quest(item.id)}
 									className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 								>
 									Quest
 								</button>
 							) : (
 								<button
-									onClick={() => quitQuest(item.uuid)}
+									onClick={() => quitQuest(item.id)}
 									className="justify-center bg-white bg-opacity-70 min-w-max px-4 py-1 hover:bg-opacity-100 flex items-center rounded-full text-sm drop-shadow text-black transition ease-in-out duration-100 group-hover:opacity-100"
 								>
 									Quit quest
@@ -100,13 +100,16 @@ const Flovatar = ({ questID }: any) => {
 							<span className="flex items-center gap-1 font-bold text-white-2 min-w-0 min-h-[28px]">
 								Flovatar #{item.id}
 							</span>
-							{adjustedQuestingDates[item.uuid] != null && (
+							{flovatarAdjustedQuestingDates[item.uuid] !=
+								null && (
 								<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
 									{calculateDaysElapsed(
-										adjustedQuestingDates[item.uuid]
+										flovatarAdjustedQuestingDates[item.uuid]
 									)}
 									/
-									{Math.floor(rewardPerSecond / 60 / 60 / 24)}
+									{Math.floor(
+										flovatarRewardPerSecond / 60 / 60 / 24
+									)}
 									d
 								</span>
 							)}
@@ -119,11 +122,12 @@ const Flovatar = ({ questID }: any) => {
 						<div className="flex items-center justify-between gap-x-2 flex-wrap h-7 overflow-hidden">
 							<span className="flex items-center gap-1 text-white-2 text-sm min-w-0 min-h-[28px]">
 								Rewards:{' '}
-								{rewards[item.uuid] != null
-									? Object.keys(rewards[item.uuid]).length
+								{flovatarRewards[item.uuid] != null
+									? Object.keys(flovatarRewards[item.uuid])
+											.length
 									: 0}
 							</span>
-							{rewards[item.uuid] != null && (
+							{flovatarRewards[item.uuid] != null && (
 								<button
 									onClick={() => {
 										setCurrentBeast(item);
@@ -184,7 +188,7 @@ const Flovatar = ({ questID }: any) => {
 						autoClose: 5000,
 					});
 				});
-			getQuestingDates();
+			getFlovatarQuestingDates();
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -202,12 +206,16 @@ const Flovatar = ({ questID }: any) => {
 
 		const nonQuestingResources = flovatar?.filter(
 			(questingResource: any) =>
-				!Object.keys(questingStartDates).includes(questingResource.uuid)
+				!Object.keys(flovatarQuestingStartDates).includes(
+					questingResource.uuid
+				)
 		);
+
+		console.log('nonQuestingResources', nonQuestingResources);
 
 		const toStake = nonQuestingResources
 			.slice(0, maxQuantity)
-			.map((item: any) => item.uuid);
+			.map((item: any) => item.id);
 
 		console.log('toStake', toStake);
 
@@ -242,7 +250,7 @@ const Flovatar = ({ questID }: any) => {
 						autoClose: 5000,
 					});
 				});
-			getQuestingDates();
+			getFlovatarQuestingDates();
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -288,7 +296,7 @@ const Flovatar = ({ questID }: any) => {
 						autoClose: 5000,
 					});
 				});
-			getQuestingDates();
+			getFlovatarQuestingDates();
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -301,19 +309,23 @@ const Flovatar = ({ questID }: any) => {
 	};
 
 	const sortedQuestingResources =
-		flovatar && questingStartDates
+		flovatar && flovatarQuestingStartDates
 			? flovatar?.sort((a: any, b: any) => {
 					// If 'a' is in questingResourceIDs and 'b' isn't, return -1 (to sort 'a' before 'b')
 					if (
-						Object.keys(questingStartDates).includes(a.id) &&
-						!Object.keys(questingStartDates).includes(b.id)
+						Object.keys(flovatarQuestingStartDates).includes(
+							a.id
+						) &&
+						!Object.keys(flovatarQuestingStartDates).includes(b.id)
 					) {
 						return -1;
 					}
 					// If 'b' is in questingResourceIDs and 'a' isn't, return 1 (to sort 'b' before 'a')
 					if (
-						Object.keys(questingStartDates).includes(b.id) &&
-						!Object.keys(questingStartDates).includes(a.id)
+						Object.keys(flovatarQuestingStartDates).includes(
+							b.id
+						) &&
+						!Object.keys(flovatarQuestingStartDates).includes(a.id)
 					) {
 						return 1;
 					}
@@ -344,7 +356,7 @@ const Flovatar = ({ questID }: any) => {
 						setOpenDetailsModal(false);
 						setCurrentBeast(null);
 					}}
-					rewards={rewards}
+					rewards={flovatarRewards}
 				/>
 			)}
 		</>

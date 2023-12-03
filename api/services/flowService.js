@@ -1344,8 +1344,8 @@ transaction(idsToDiscordHandles: {String: String}) {
 
 			var questRef: &Questing.Quest{Questing.Public}? = nil
 
-			if let questManagerRef = getAccount(questManager).getCapability<&QuestManager{QuestManagerPublic}>(Questing.QuestManagerPublicPath).borrow() {
-				questRef = questManagerRef.borrowQuest(id: id)
+			if let questManagerRef = getAccount(questManager).getCapability<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath).borrow() {
+				questRef = questManagerRef.borrowQuest(id: questID)
 			}
 
 			assert(questRef != nil, message: "Quest does not exist")
@@ -1487,8 +1487,8 @@ transaction(idsToDiscordHandles: {String: String}) {
 
 			var questRef: &Questing.Quest{Questing.Public}? = nil
 
-			if let questManagerRef = getAccount(questManager).getCapability<&QuestManager{QuestManagerPublic}>(Questing.QuestManagerPublicPath).borrow() {
-				questRef = questManagerRef.borrowQuest(id: id)
+			if let questManagerRef = getAccount(questManager).getCapability<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath).borrow() {
+				questRef = questManagerRef.borrowQuest(id: questID)
 			}
 
 			assert(questRef != nil, message: "Quest does not exist")
@@ -2131,6 +2131,74 @@ transaction() {
 					return;
 				}
 				console.log('Quest Created');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async changeFlovatarRewardPerSecond(rewardPerSecond) {
+		let transaction = `
+		import Questing from 0xQuesting
+
+		transaction(questID: UInt64, seconds: UFix64) {
+		
+			let questManagerRef: &Questing.QuestManager
+			let questRef: &Questing.Quest
+		
+			prepare(signer: AuthAccount) {
+		
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+				
+				self.questRef = self.questManagerRef.borrowEntireQuest(id: questID)??panic("Could not borrow quest reference")
+		
+			}
+		
+			execute {
+				self.questRef.changeRewardPerSecond(seconds: seconds)
+			}
+		
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(process.env.QUEST_ID_FLOVATAR, t.UInt64),
+				arg(rewardPerSecond, t.UFix64),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'RewardPerSecondChanged'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('reward per second has not been changed');
+					return;
+				}
+				console.log('Reward Per Second Changed');
 			}
 		} catch (e) {
 			this.QuestManagerKeys[keyIndex] = false;

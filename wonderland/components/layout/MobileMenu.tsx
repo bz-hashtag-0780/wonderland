@@ -4,16 +4,15 @@ import { useAuth } from 'providers/AuthProvider';
 
 const navItems = [
 	{ name: 'Home', href: '/' },
-	{ name: 'Dashboard', href: '/dashboard' },
-	{ name: 'Raids', href: '/raids' },
+	{ name: 'Explore', href: '/explore' },
 ];
 
-const ConnectButton = ({ logIn }: any) => (
+const ConnectButton = ({ action, text }: any) => (
 	<button
-		onClick={() => logIn()}
+		onClick={() => action()}
 		className="mt-4 rounded-full border border-white p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black"
 	>
-		Connect
+		{text}
 	</button>
 );
 
@@ -76,9 +75,9 @@ export default function MobileMenu() {
 						<NavItem key={item.name} item={item} />
 					))}
 					{!loggedIn ? (
-						<ConnectButton logIn={logIn} />
+						<ConnectButton action={logIn} text={'Connect'} />
 					) : (
-						<button onClick={() => logOut()}>Sign out</button>
+						<ConnectButton action={logOut} text={'Sign out'} />
 					)}
 				</div>
 			</div>

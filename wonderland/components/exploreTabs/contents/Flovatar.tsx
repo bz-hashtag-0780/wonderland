@@ -25,9 +25,10 @@ import ActionHeader from '../ActionHeader';
 import { InView } from 'react-intersection-observer';
 import { useWonder } from 'providers/WonderProvider';
 import QuestingResourceDetailsModal from '@/components/ui/QuestingResourceDetailsModal';
+import FlovatarDetailsModal from '@/components/ui/Flovatar/FlovatarDetailsModal';
 
 const Flovatar = ({ questID }: any) => {
-	const [currentBeast, setCurrentBeast] = useState(null);
+	const [currentFlovatar, setCurrentFlovatar] = useState(null);
 	const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
 	const {
@@ -130,7 +131,7 @@ const Flovatar = ({ questID }: any) => {
 							{flovatarRewards[item.uuid] != null && (
 								<button
 									onClick={() => {
-										setCurrentBeast(item);
+										setCurrentFlovatar(item);
 										setOpenDetailsModal(true);
 									}}
 									className="text-sm text-pink-primary border border-solid shadow \ border-white hover:bg-white hover:border-white hover:text-black \ px-1.5 py-0.5 rounded transition-[background-color,border-color,color] ease-in-out duration-100 xs:block"
@@ -350,11 +351,11 @@ const Flovatar = ({ questID }: any) => {
 				</div>
 			</div>
 			{openDetailsModal && (
-				<QuestingResourceDetailsModal
-					beast={currentBeast}
+				<FlovatarDetailsModal
+					flovatar={currentFlovatar}
 					onClose={() => {
 						setOpenDetailsModal(false);
-						setCurrentBeast(null);
+						setCurrentFlovatar(null);
 					}}
 					rewards={flovatarRewards}
 				/>

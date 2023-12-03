@@ -2,10 +2,7 @@ import Link from 'next/link';
 import { useAuth } from 'providers/AuthProvider';
 import UserLoggedInDropdown from './UserLoggedInDropdown';
 
-const navItems = [
-	{ name: 'New Dashboard', href: '/new' },
-	{ name: 'Raids', href: '/raids' },
-];
+const navItems = [{ name: 'Explore', href: '/explore' }];
 
 const ConnectButton = ({ logIn }: any) => (
 	<button

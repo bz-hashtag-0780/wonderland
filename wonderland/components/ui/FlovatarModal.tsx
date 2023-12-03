@@ -9,16 +9,14 @@ import questing from '../../data/questing';
 import { useWonder } from '../../providers/WonderProvider';
 import RewardTableModal from './RewardTableModal';
 import Flovatar from '../exploreTabs/contents/Flovatar';
+import FlovatarQuestRewards from '../exploreTabs/contents/FlovatarQuestRewards';
+import FlovatarRewardTableModal from './Flovatar/FlovatarRewardTableModal';
 
 const FlovatarModal = ({ questingResources, isOpen, onClose }: any) => {
-	const { rewards } = useWonder();
+	const { flovatarRewards } = useWonder();
 	const { loggedIn, logIn } = useAuth();
 	const [activeTab, setActiveTab] = useState('Flovatar');
 	const [isModalOpen, setModalOpen] = useState(false);
-
-	useEffect(() => {
-		console.log('rewards', rewards);
-	}, [rewards]);
 
 	const tabItems = [{ name: 'Flovatar' }, { name: 'Rewards' }];
 
@@ -45,7 +43,8 @@ const FlovatarModal = ({ questingResources, isOpen, onClose }: any) => {
 					{item.name === 'Flovatar'
 						? questingResources.length
 						: item.name === 'Rewards'
-						? extractRewards(questingResources, rewards).length
+						? extractRewards(questingResources, flovatarRewards)
+								.length
 						: 0}
 				</div>
 			</div>
@@ -54,7 +53,7 @@ const FlovatarModal = ({ questingResources, isOpen, onClose }: any) => {
 
 	function extractRewards(questingResources: any[], rewards: any) {
 		return questingResources.flatMap((questingResource: any) => {
-			const questRewards = rewards[questingResource.id];
+			const questRewards = rewards[questingResource.uuid];
 			if (!questRewards) {
 				return [];
 			}
@@ -64,7 +63,7 @@ const FlovatarModal = ({ questingResources, isOpen, onClose }: any) => {
 				nftID: questingResource.id,
 				rewardItemTemplateID: parseInt(reward.rewardTemplateID, 10),
 				revealed: reward.revealed,
-				type: 'BasicBeasts',
+				type: 'Flovatar',
 			}));
 		});
 	}
@@ -118,10 +117,10 @@ const FlovatarModal = ({ questingResources, isOpen, onClose }: any) => {
 										/>
 									)}
 									{activeTab === 'Rewards' && (
-										<QuestRewards
+										<FlovatarQuestRewards
 											rewards={extractRewards(
 												questingResources,
-												rewards
+												flovatarRewards
 											)}
 											questID={questing['flovatar']}
 										/>
@@ -134,7 +133,7 @@ const FlovatarModal = ({ questingResources, isOpen, onClose }: any) => {
 						</div>
 					</div>
 				</div>
-				<RewardTableModal
+				<FlovatarRewardTableModal
 					isOpen={isModalOpen}
 					onClose={() => setModalOpen(false)}
 				/>

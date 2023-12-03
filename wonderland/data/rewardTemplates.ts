@@ -39,6 +39,38 @@ const rewardTemplates = [
 		image: '/images/basicBeasts/poop.png',
 		emoji: '💩',
 	},
+	{
+		type: 'Flovatar',
+		rewardItemTemplateID: 5,
+		name: 'Traveler',
+		description: '',
+		image: '/images/flovatar/vial-1.png',
+		emoji: '🟣',
+	},
+	{
+		type: 'Flovatar',
+		rewardItemTemplateID: 6,
+		name: 'Super',
+		description: '',
+		image: '/images/flovatar/vial-2.png',
+		emoji: '🔵',
+	},
+	{
+		type: 'Flovatar',
+		rewardItemTemplateID: 7,
+		name: 'Unearthly',
+		description: '',
+		image: '/images/flovatar/vial-3.png',
+		emoji: '🟡',
+	},
+	{
+		type: 'Flovatar',
+		rewardItemTemplateID: 8,
+		name: 'Divine',
+		description: '',
+		image: '/images/flovatar/vial-4.png',
+		emoji: '⚛️',
+	},
 ];
 
 export default rewardTemplates;

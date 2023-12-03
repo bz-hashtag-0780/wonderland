@@ -19,7 +19,11 @@ const Project: React.FC<any> = ({ projectName, setModalOpen, svg }) => {
 	);
 };
 
-const ProjectNavigation = ({ setModalOpen }: any) => {
+const ProjectNavigation = ({
+	setModalOpen,
+	setFlovatarOpen,
+	setInceptionOpen,
+}: any) => {
 	return (
 		<nav className="absolute bottom-0 right-0 m-4">
 			<div className="flex relative  min-h-[100px]">
@@ -35,7 +39,7 @@ const ProjectNavigation = ({ setModalOpen }: any) => {
 					/>
 					<Project
 						projectName="FLOVATAR"
-						setModalOpen={setModalOpen}
+						setModalOpen={setFlovatarOpen}
 						svg={
 							<svg id="project-svg" viewBox="0 0 340.67 500">
 								<path d="M123.94,29.05C188.42,5.25,246.33-3.28,253.3,10,260.17,23.08,215,52.47,151.88,76.1a82.57,82.57,0,0,0-3.12-8.16c50.53-18.87,87.22-39,81.71-49.52C224.86,7.74,180.24,17,128.38,36.15S37,77.07,42.64,87.74c4.42,8.42,34,3.75,71.71-8l-6.22,10.75c-46.4,13.09-82.88,16-88.32,5.66C12.85,82.89,59.47,52.84,123.94,29.05Z" />
@@ -43,15 +47,15 @@ const ProjectNavigation = ({ setModalOpen }: any) => {
 							</svg>
 						}
 					/>
-					<Project
+					{/* <Project
 						projectName="INCEPTION"
-						setModalOpen={setModalOpen}
+						setModalOpen={setInceptionOpen}
 						svg={
 							<svg id="project-svg" viewBox="0 0 100 100">
 								<path d="M73.11,38.74c-3.35-4.31-6-10-6-18.91,0-4.07-3.59-8.15-7.66-12-4.79-4.31-5.75-5.74-9.58-5.74h0c-3.83,0-4.79,1.43-9.34,5.74-4.07,3.83-7.66,7.91-7.66,12,0,8.86-2.88,14.6-6,18.68L12.76,52.87,2.23,45.69V58.62S2.47,84,39.58,97.89c0,0-14.13-7.18-16.28-31.13-.24-1.67-.24-9.1-.24-10.29A119.77,119.77,0,0,0,36.71,74h0c-.72-1.2-1.44-2.64-2.16-3.83-5-10.54-4.07-18.2-1.67-23.47a22.77,22.77,0,0,1,7.42-8.86l9.58,9.58h0l9.58-9.58a22.77,22.77,0,0,1,7.42,8.86c2.4,5.27,3.59,12.93-1.43,23.23C64.73,71.31,64,72.51,63.29,74h0A119.77,119.77,0,0,0,76.94,56.47c0,1.19,0,8.62-.24,10.29C74.31,90.71,60.42,97.89,60.42,97.89,97.53,84,97.77,58.62,97.77,58.62V45.69L87.24,52.87Z"></path>
 							</svg>
 						}
-					/>
+					/> */}
 				</div>
 			</div>
 		</nav>

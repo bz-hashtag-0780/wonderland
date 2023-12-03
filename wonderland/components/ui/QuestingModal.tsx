@@ -15,10 +15,6 @@ const QuestingModal = ({ questingResources, isOpen, onClose }: any) => {
 	const [activeTab, setActiveTab] = useState('Beastz');
 	const [isModalOpen, setModalOpen] = useState(false);
 
-	useEffect(() => {
-		console.log('rewards', rewards);
-	}, [rewards]);
-
 	const tabItems = [{ name: 'Beastz' }, { name: 'Rewards' }];
 
 	const TabItem = ({ item }: any) => (

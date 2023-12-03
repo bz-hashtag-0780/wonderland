@@ -87,14 +87,12 @@ export default function useUserBeastz(user: any) {
 				restructuredRewards[key] = rewards[key].ownedNFTs;
 			}
 			setRewards(restructuredRewards);
-			console.log(restructuredRewards);
 		} catch (err) {
 			console.log(err);
 		}
 	};
 
 	const getRewardPerSecond = async () => {
-		console.log('quest id', questing['beastz']);
 		try {
 			let res = await query({
 				cadence: GET_REWARD_PER_SECOND,

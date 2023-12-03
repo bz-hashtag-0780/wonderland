@@ -13,6 +13,10 @@ fcl.config()
 	.put('0xQuesting', process.env.WONDERLAND_CONTRACT_ADDRESS)
 	.put('0xQuestReward', process.env.WONDERLAND_CONTRACT_ADDRESS)
 	.put('0xWonderlandRewardAlgorithm', process.env.WONDERLAND_CONTRACT_ADDRESS)
+	.put(
+		'0xWonderPartnerRewardAlgorithm',
+		process.env.WONDERLAND_CONTRACT_ADDRESS
+	)
 	.put('0xRewardAlgorithm', process.env.WONDERLAND_CONTRACT_ADDRESS)
 	.put('0xBasicBeasts', process.env.BASIC_BEASTS_CONTRACT_ADDRESS)
 	.put('0xMetadataViews', process.env.METADATA_VIEWS_CONTRACT_ADDRESS)
@@ -2199,6 +2203,161 @@ transaction() {
 					return;
 				}
 				console.log('Reward Per Second Changed');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async getFlovatarRewardPerSecond() {
+		let script = `
+		import Questing from 0xQuesting
+
+		access(all) fun main(questManager: Address, questID: UInt64): UFix64 {
+
+			var questRef: &Questing.Quest{Questing.Public}? = nil
+
+			if let questManagerRef = getAccount(questManager).getCapability<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath).borrow() {
+				questRef = questManagerRef.borrowQuest(id: questID)
+			}
+
+			assert(questRef != nil, message: "Quest does not exist")
+			
+			return questRef!.rewardPerSecond
+		}
+        `;
+
+		const rewardPerSecond = await fcl.query({
+			cadence: script,
+			args: (arg, t) => [
+				arg(process.env.QUEST_MANAGER_ADDRESS, t.Address),
+				arg(process.env.QUEST_ID_FLOVATAR, t.UInt64),
+			],
+		});
+
+		return rewardPerSecond;
+	}
+
+	static async getFlovatarRewardEligible() {
+		let script = `
+		import Questing from 0xQuesting
+
+		access(all) fun main(questManager: Address, questID: UInt64): [UInt64] {
+
+			var questRef: &Questing.Quest{Questing.Public}? = nil
+
+			if let questManagerRef = getAccount(questManager).getCapability<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath).borrow() {
+				questRef = questManagerRef.borrowQuest(id: questID)
+			}
+
+			assert(questRef != nil, message: "Quest does not exist")
+		
+			var IDs: [UInt64] = []
+			var adjustedQuestingDates = questRef!.getAllAdjustedQuestingStartDates()
+			var currentBlockTimestamp = getCurrentBlock().timestamp
+		
+			for id in adjustedQuestingDates.keys {
+				let timeQuested = currentBlockTimestamp - adjustedQuestingDates[id]!
+		
+				if timeQuested >= questRef!.rewardPerSecond {
+					IDs.append(id)
+				}
+			}
+			
+			return IDs
+		}
+        `;
+
+		const eligibleNFTs = await fcl.query({
+			cadence: script,
+			args: (arg, t) => [
+				arg(process.env.QUEST_MANAGER_ADDRESS, t.Address),
+				arg(process.env.QUEST_ID_FLOVATAR, t.UInt64),
+			],
+		});
+
+		return eligibleNFTs;
+	}
+
+	static async addFlovatarRewards(IDs) {
+		let transaction = `
+		import Questing from 0xQuesting
+		import QuestReward from 0xQuestReward
+		import WonderPartnerRewardAlgorithm from 0xWonderPartnerRewardAlgorithm
+		
+		transaction(questID: UInt64, minterID: UInt64, IDs: [UInt64]) {
+		
+			let questManagerRef: &Questing.QuestManager
+			let questRef: &Questing.Quest
+			let minterRef: &QuestReward.Minter
+		
+			prepare(signer: AuthAccount) {
+		
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+				
+				self.questRef = self.questManagerRef.borrowEntireQuest(id: questID)??panic("Could not borrow quest reference")
+		
+				self.minterRef = self.questManagerRef.borrowEntireMinter(id: minterID)??panic("Could not borrow minter reference")
+			}
+		
+			execute {
+				let rewardMapping: {Int: UInt32} = {
+					1: 5,
+					2: 6,
+					3: 7,
+					4: 8
+				}
+		
+				for id in IDs {
+					self.questRef.addReward(questingResourceID: id, 
+											minter: self.minterRef, 
+											rewardAlgo: WonderPartnerRewardAlgorithm.borrowAlgorithm(), 
+											rewardMapping: rewardMapping)
+				}
+			}
+		
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(process.env.QUEST_ID_FLOVATAR, t.UInt64),
+				arg(process.env.MINTER_ID_FLOVATAR, t.UInt64),
+				arg(IDs, t.Array(t.UInt64)),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'RewardAdded'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('no reward added');
+					return;
+				}
+				console.log('Reward Added');
 			}
 		} catch (e) {
 			this.QuestManagerKeys[keyIndex] = false;

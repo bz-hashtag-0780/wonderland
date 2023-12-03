@@ -24,6 +24,12 @@ flow project deploy --network emulator
 flow project deploy --network testnet
 ```
 
+### Deploy Contracts on Mainnet
+
+```
+flow project deploy --network mainnet
+```
+
 Notice:
 Stable Cadence may introduce breaking changes which require all the smart contracts to be updated accordingly
 

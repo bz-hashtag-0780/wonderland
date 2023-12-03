@@ -18,7 +18,6 @@ const MapWithMarkers = ({ setModalOpen, setFlovatarOpen }: any) => {
 		const updatePinPositions = () => {
 			const mapBounds = mapRef.current.getBoundingClientRect();
 			// Adjust these percentages for each pin's position relative to the map image
-			console.log('width & height', mapBounds.width, mapBounds.height);
 			setPinPositions([
 				{
 					x: mapBounds.width * 0.15,

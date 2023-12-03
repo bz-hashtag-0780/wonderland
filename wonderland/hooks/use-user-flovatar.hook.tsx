@@ -34,7 +34,6 @@ export default function useUserFlovatar(user: any) {
 				cadence: FETCH_FLOVATARS,
 				args: (arg: any, t: any) => [arg(user?.addr, t.Address)],
 			});
-			console.log('flovatar', collection);
 			setFlovatar(collection);
 		} catch (err) {
 			console.log(err);
@@ -87,14 +86,12 @@ export default function useUserFlovatar(user: any) {
 				restructuredRewards[key] = rewards[key].ownedNFTs;
 			}
 			setFlovatarRewards(restructuredRewards);
-			console.log(restructuredRewards);
 		} catch (err) {
 			console.log(err);
 		}
 	};
 
 	const getRewardPerSecond = async () => {
-		console.log('quest id', questing['flovatar']);
 		try {
 			let res = await query({
 				cadence: GET_REWARD_PER_SECOND,

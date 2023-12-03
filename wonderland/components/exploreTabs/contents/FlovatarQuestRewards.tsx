@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import rewardTemplates from 'data/rewardTemplates';
-import unknown from 'public/images/basicBeasts/unknown.png';
+import unknown from 'public/images/flovatar/vial-unrevealed.png';
 import {
 	send,
 	transaction,
@@ -22,23 +22,23 @@ import ActionHeader from '../ActionHeader';
 import RevealedModal from '@/components/ui/RevealedModal';
 import { filterAndGroupRewards } from '@/utils/filterAndGroupRewards';
 import { InView } from 'react-intersection-observer';
-import { REVEAL_QUEST_REWARD } from '@/flow/transactions/questing/reveal_quest_reward';
-import { REVEAL_MULTIPLE_QUEST_REWARDS } from '@/flow/transactions/questing/reveal_multiple_quest_rewards';
+import { REVEAL_QUEST_REWARD } from '@/flow/transactions/flovatar/reveal_quest_reward';
+import { REVEAL_MULTIPLE_QUEST_REWARDS } from '@/flow/transactions/flovatar/reveal_multiple_quest_rewards';
 import { useWonder } from 'providers/WonderProvider';
 
-const QuestRewards = ({ rewards, questID }: any) => {
+const FlovatarQuestRewards = ({ rewards, questID }: any) => {
 	const [revealed, setRevealed] = useState(false);
 	const [currentRevealed, setCurrentRevealed] = useState();
-	const { getRewards } = useWonder();
+	const { getFlovatarRewards } = useWonder();
 
 	const Reward = ({ item, count }: any) => (
 		<InView>
 			<div
 				onClick={() => console.log(item.revealed)}
-				className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded-xl overflow-hidden"
+				className="p-0 mb-4 bg-white bg-opacity-10 border border-solid border-white border-opacity-20 rounded overflow-hidden"
 			>
 				<div className="flex-auto flex flex-col w-full group relative">
-					<div className="rounded-xl overflow-hidden flex items-center relative">
+					<div className=" overflow-hidden flex items-center relative">
 						{item.revealed && (
 							<div className="flex w-full absolute z-10 top-2">
 								<div className="z-10 flex justify-center items-center absolute top-0 right-2 bg-white bg-opacity-80 rounded text-black text-xs font-semibold px-1.5 py-0.5">
@@ -56,14 +56,13 @@ const QuestRewards = ({ rewards, questID }: any) => {
 												(template: any) =>
 													template.rewardItemTemplateID ===
 														item.rewardItemTemplateID &&
-													template.type ===
-														'BasicBeasts'
+													template.type === 'Flovatar'
 											) || {
-												type: 'BasicBeasts',
+												type: 'Flovatar',
 												rewardItemTemplateID: 1,
 												name: 'Unrevealed',
 												description: '',
-												image: '/images/basicBeasts/unknown.png',
+												image: '/images/flovatar/vial-unrevealed.png',
 											}
 										).name
 									}
@@ -73,14 +72,13 @@ const QuestRewards = ({ rewards, questID }: any) => {
 												(template: any) =>
 													template.rewardItemTemplateID ===
 														item.rewardItemTemplateID &&
-													template.type ===
-														'BasicBeasts'
+													template.type === 'Flovatar'
 											) || {
-												type: 'BasicBeasts',
+												type: 'Flovatar',
 												rewardItemTemplateID: 1,
 												name: 'Unrevealed',
 												description: '',
-												image: '/images/basicBeasts/unknown.png',
+												image: '/images/flovatar/vial-unrevealed.png',
 											}
 										).image
 									}
@@ -121,14 +119,13 @@ const QuestRewards = ({ rewards, questID }: any) => {
 												(template: any) =>
 													template.rewardItemTemplateID ===
 														item.rewardItemTemplateID &&
-													template.type ===
-														'BasicBeasts'
+													template.type === 'Flovatar'
 											) || {
-												type: 'BasicBeasts',
+												type: 'Flovatar',
 												rewardItemTemplateID: 1,
 												name: 'Unrevealed',
 												description: '',
-												image: '/images/basicBeasts/unknown.png',
+												image: '/images/flovatar/vial-unrevealed.png',
 											}
 									  ).name
 									: 'Unrevealed'}
@@ -179,7 +176,7 @@ const QuestRewards = ({ rewards, questID }: any) => {
 						autoClose: 5000,
 					});
 				});
-			getRewards();
+			getFlovatarRewards();
 			setCurrentRevealed(
 				rewards.filter((reward: any) => reward.id == questRewardID)
 			);
@@ -235,7 +232,7 @@ const QuestRewards = ({ rewards, questID }: any) => {
 			await tx(res).onceExecuted();
 			setCurrentRevealed(toReveal);
 			setRevealed(true);
-			getRewards();
+			getFlovatarRewards();
 			await tx(res)
 				.onceSealed()
 				.then(() => {
@@ -246,7 +243,7 @@ const QuestRewards = ({ rewards, questID }: any) => {
 						autoClose: 5000,
 					});
 				});
-			getRewards();
+			getFlovatarRewards();
 		} catch (err) {
 			toast.update(id, {
 				render: () => <div>Error, try again later...</div>,
@@ -262,8 +259,8 @@ const QuestRewards = ({ rewards, questID }: any) => {
 		<div>
 			<ActionHeader buttonText="Reveal All" action={revealAll} />
 			<div>
-				<div className="hidden lg:flex mb-4 mt-3.5">
-					<div className="w-full grid grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-2">
+				<div className="hidden lg:flex flex mb-4 mt-3.5">
+					<div className="w-full grid grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-2">
 						<div className="w-full p-2.5 flex-grow rounded-lg border border-white border-opacity-12">
 							<div>Unrevealed</div>
 							<div className="text-xl">
@@ -275,60 +272,48 @@ const QuestRewards = ({ rewards, questID }: any) => {
 							</div>
 						</div>
 						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
-							<div>Sushi</div>
+							<div>Traveler</div>
 							<div className="text-xl">
 								{
 									rewards.filter(
 										(reward: any) =>
-											reward.rewardItemTemplateID === 0 &&
+											reward.rewardItemTemplateID === 5 &&
 											reward.revealed
 									).length
 								}
 							</div>
 						</div>
 						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
-							<div>Ice Cream</div>
+							<div>Super</div>
 							<div className="text-xl">
 								{
 									rewards.filter(
 										(reward: any) =>
-											reward.rewardItemTemplateID === 1 &&
+											reward.rewardItemTemplateID === 6 &&
 											reward.revealed
 									).length
 								}
 							</div>
 						</div>
 						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
-							<div>Noodles</div>
+							<div>Unearthly</div>
 							<div className="text-xl">
 								{
 									rewards.filter(
 										(reward: any) =>
-											reward.rewardItemTemplateID === 2 &&
+											reward.rewardItemTemplateID === 7 &&
 											reward.revealed
 									).length
 								}
 							</div>
 						</div>
 						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
-							<div>Empty Bottle</div>
+							<div>Divine</div>
 							<div className="text-xl">
 								{
 									rewards.filter(
 										(reward: any) =>
-											reward.rewardItemTemplateID === 3 &&
-											reward.revealed
-									).length
-								}
-							</div>
-						</div>
-						<div className="w-full p-2.5 flex-grow rounded-lg bg-white bg-opacity-10">
-							<div>Poop</div>
-							<div className="text-xl">
-								{
-									rewards.filter(
-										(reward: any) =>
-											reward.rewardItemTemplateID === 4 &&
+											reward.rewardItemTemplateID === 8 &&
 											reward.revealed
 									).length
 								}
@@ -365,4 +350,4 @@ const QuestRewards = ({ rewards, questID }: any) => {
 	);
 };
 
-export default QuestRewards;
+export default FlovatarQuestRewards;

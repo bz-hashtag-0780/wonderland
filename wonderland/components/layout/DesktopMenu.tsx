@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useAuth } from 'providers/AuthProvider';
 import UserLoggedInDropdown from './UserLoggedInDropdown';
+import Image from 'next/image';
 
 const navItems = [{ name: 'Explore', href: '/explore' }];
 
@@ -29,12 +30,18 @@ export default function DesktopMenu() {
 			<Link href="/">
 				<span className="cursor-pointer flex items-center font-display text-2xl">
 					<div className="flex items-center flex-shrink-0 text-white mr-6">
-						<span
+						{/* <span
 							className="rounded-full bg-white bg-opacity-30 hover:bg-opacity-50 transition-all p-1.5 px-2 font-semibold text-xl tracking-tight font-wonderland"
 							style={{ textShadow: '1px 1px #000' }}
 						>
 							W
-						</span>
+						</span> */}
+						<Image
+							src="/flowcdao_logo_500.png"
+							width={40}
+							height={40}
+							alt="Wonderland Logo"
+						/>
 					</div>
 				</span>
 			</Link>

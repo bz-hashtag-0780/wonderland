@@ -37,7 +37,7 @@ const MapWithMarkers = ({ setModalOpen, setFlovatarOpen }: any) => {
 			]);
 		};
 
-		setTimeout(updatePinPositions, 2000);
+		setTimeout(updatePinPositions, 200);
 		window.addEventListener('resize', updatePinPositions);
 
 		const draggable = Draggable.create(mapRef.current, {

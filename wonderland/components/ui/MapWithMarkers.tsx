@@ -10,7 +10,7 @@ const MapWithMarkers = ({ setModalOpen, setFlovatarOpen }: any) => {
 	const mapRef = useRef<any>(null);
 	const [pinPositions, setPinPositions] = useState([
 		{ x: 0, y: 0, image: '/images/basicBeasts/bb_thumbnail.png' }, // Initial positions for pin 1
-		{ x: 0, y: 0, image: '/images/inception_animals/ia_thumbnail.jpeg' }, // Initial positions for pin 2
+		{ x: 0, y: 0, image: '/images/inception_animals/ia_thumbnail.png' }, // Initial positions for pin 2
 		{ x: 0, y: 0, image: '/images/flovatar/flovatar_thumbnail.png' }, // Initial positions for pin 3
 	]);
 
@@ -27,7 +27,7 @@ const MapWithMarkers = ({ setModalOpen, setFlovatarOpen }: any) => {
 				{
 					x: mapBounds.width * 0.48,
 					y: mapBounds.height * 0.35,
-					image: '/images/inception_animals/ia_thumbnail.jpeg',
+					image: '/images/inception_animals/ia_thumbnail.png',
 				}, // Pin 2 position
 				{
 					x: mapBounds.width * 0.32,

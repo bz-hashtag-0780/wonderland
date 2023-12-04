@@ -29,7 +29,7 @@ export default function DesktopMenu() {
 		<div className="hidden lg:flex items-center justify-between w-full">
 			<Link href="/">
 				<span className="cursor-pointer flex items-center font-display text-2xl">
-					<div className="flex items-center flex-shrink-0 text-white mr-6">
+					<div className="flex items-center flex-shrink-0 text-white mr-6 opacity-90">
 						{/* <span
 							className="rounded-full bg-white bg-opacity-30 hover:bg-opacity-50 transition-all p-1.5 px-2 font-semibold text-xl tracking-tight font-wonderland"
 							style={{ textShadow: '1px 1px #000' }}

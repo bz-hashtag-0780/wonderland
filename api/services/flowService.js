@@ -2365,6 +2365,58 @@ transaction() {
 			return;
 		}
 	}
+
+	static async setup_ia_collection() {
+		let transaction = `
+		import NonFungibleToken from 0x1d7e57aa55817448
+import InceptionAvatar from 0x83ed64a1d4f3833f
+
+// This transaction configures an account to hold InceptionAvatar.
+
+transaction {
+    prepare(signer: AuthAccount) {
+        // if the account doesn't already have a collection
+        if signer.borrow<&InceptionAvatar.Collection>(from: InceptionAvatar.CollectionStoragePath) == nil {
+
+            // create a new empty collection
+            let collection <- InceptionAvatar.createEmptyCollection()
+            
+            // save it to the account
+            signer.save(<-collection, to: InceptionAvatar.CollectionStoragePath)
+
+            // create a public capability for the collection
+            signer.link<&InceptionAvatar.Collection{NonFungibleToken.CollectionPublic, InceptionAvatar.InceptionAvatarCollectionPublic}>(InceptionAvatar.CollectionPublicPath, target: InceptionAvatar.CollectionStoragePath)
+        }
+    }
+}
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+				console.log('IA Collection Created');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
 }
 
 module.exports = flowService;

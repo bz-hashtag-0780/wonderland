@@ -203,7 +203,7 @@ const Flovatar = ({ questID }: any) => {
 
 	const questAll = async () => {
 		const id = toast.loading('Initializing...');
-		const maxQuantity = 150; //tested with 150
+		const maxQuantity = 25; //tested with 25 (lowered)
 
 		const nonQuestingResources = flovatar?.filter(
 			(questingResource: any) =>

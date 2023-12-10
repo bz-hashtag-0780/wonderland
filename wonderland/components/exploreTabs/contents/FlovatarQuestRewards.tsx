@@ -19,7 +19,7 @@ import * as t from '@onflow/types';
 import { toast } from 'react-toastify';
 import { toastStatus } from '@/utils/toastStatus';
 import ActionHeader from '../ActionHeader';
-import RevealedModal from '@/components/ui/RevealedModal';
+import FlovatarRevealedModal from '@/components/ui/Flovatar/FlovatarRevealedModal';
 import { filterAndGroupRewards } from '@/utils/filterAndGroupRewards';
 import { InView } from 'react-intersection-observer';
 import { REVEAL_QUEST_REWARD } from '@/flow/transactions/flovatar/reveal_quest_reward';
@@ -341,7 +341,7 @@ const FlovatarQuestRewards = ({ rewards, questID }: any) => {
 				</div>
 			</div>
 
-			<RevealedModal
+			<FlovatarRevealedModal
 				isOpen={revealed}
 				onClose={() => setRevealed(false)}
 				revealedRewards={currentRevealed}

@@ -2524,8 +2524,8 @@ transaction {
 				// add reward templates
 				self.minterRef.addRewardTemplate(name: "Leaf", description: "This is a Leaf.", image: "https://i.imgur.com/ko65zHB.png")
 				self.minterRef.addRewardTemplate(name: "Toast", description: "This is a Toast.", image: "https://i.imgur.com/y28BjXB.png")
-				self.minterRef.addRewardTemplate(name: "Dango", description: "This is a Dango & it's yummy.", image: "https://i.imgur.com/WzOqfKO.png")
-				self.minterRef.addRewardTemplate(name: "Cigar", description: "This is a Cigar.", image: "https://i.imgur.com/5WZjO3T.png")
+				self.minterRef.addRewardTemplate(name: "Dango", description: "This is a Dango & it's yummy.", image: "https://i.imgur.com/uuWlG48.png")
+				self.minterRef.addRewardTemplate(name: "Cigar", description: "This is a Cigar.", image: "https://i.imgur.com/Hrrra62.png")
 			}
 
 		}
@@ -2565,6 +2565,79 @@ transaction {
 					return;
 				}
 				console.log('Reward Template Added');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async transferIA() {
+		let transaction = `
+		
+import InceptionAvatar from 0x83ed64a1d4f3833f
+import NonFungibleToken from 0x1d7e57aa55817448
+
+transaction() {
+
+    let transferToken: @NonFungibleToken.NFT
+
+    prepare(acct: AuthAccount) {
+
+        let collectionRef = acct.borrow<&InceptionAvatar.Collection>(from: InceptionAvatar.CollectionStoragePath)
+            ?? panic("Could not borrow a reference to the stored InceptionAvatar collection")
+
+        self.transferToken <- collectionRef.withdraw(withdrawID: 998)
+
+    }
+
+    execute {
+
+        let recipient = getAccount(0x5a16175a09403578)
+
+        let receiverRef = recipient.getCapability(InceptionAvatar.CollectionPublicPath)
+        .borrow<&{InceptionAvatar.InceptionAvatarCollectionPublic}>()
+        ?? panic("Could not get recipient's public InceptionAvatar collection reference")
+
+        receiverRef.deposit(token: <-self.transferToken)
+
+    }
+}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'QuestCreated'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('no quest created');
+					return;
+				}
+				console.log('Quest Created');
 			}
 		} catch (e) {
 			this.QuestManagerKeys[keyIndex] = false;

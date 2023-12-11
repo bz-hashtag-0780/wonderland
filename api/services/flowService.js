@@ -2417,6 +2417,161 @@ transaction {
 			return;
 		}
 	}
+
+	static async createIAQuest() {
+		let transaction = `
+		import Questing from 0xQuesting
+		import InceptionAvatar from 0x83ed64a1d4f3833f
+		
+		transaction() {
+		
+			let questManagerRef: &Questing.QuestManager
+			let type: Type
+		
+			prepare(signer: AuthAccount) {
+		
+				// create Quest Manager
+				if signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath) == nil {
+					signer.save(<-Questing.createQuestManager(), to: Questing.QuestManagerStoragePath)
+		
+					signer.unlink(Questing.QuestManagerPublicPath)
+
+					signer.link<&Questing.QuestManager{Questing.QuestManagerPublic}>(Questing.QuestManagerPublicPath, target: Questing.QuestManagerStoragePath)
+		
+				}
+		
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+		
+				// Get resource type from a random nft
+				let nftCollectionRef = signer.borrow<&InceptionAvatar.Collection>(from: InceptionAvatar.CollectionStoragePath)??panic("Couldn't borrow staking collection")
+		
+				let IDs = nftCollectionRef.getIDs()
+		
+				let nft <- nftCollectionRef.withdraw(withdrawID: IDs[0])
+		
+				self.type = nft.getType()
+		
+				nftCollectionRef.deposit(token: <-nft)
+		
+			}
+		
+			execute {
+				self.questManagerRef.createQuest(type: self.type)
+			}
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'Questing',
+					'QuestCreated'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('no quest created');
+					return;
+				}
+				console.log('Quest Created');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
+
+	static async addIARewardTemplate(minterID) {
+		let transaction = `
+		import Questing from 0xQuesting
+		import QuestReward from 0xQuestReward
+
+		transaction(minterID: UInt64) {
+
+			let questManagerRef: &Questing.QuestManager
+			let minterRef: &QuestReward.Minter
+
+			prepare(signer: AuthAccount) {
+				// borrow Quest Manager reference
+				self.questManagerRef = signer.borrow<&Questing.QuestManager>(from: Questing.QuestManagerStoragePath)??panic("Could not borrow Quest Manager reference")
+
+				// borrow Minter reference
+				self.minterRef = self.questManagerRef.borrowEntireMinter(id: minterID)??panic("Could not borrow Minter reference")
+			}
+
+			execute {
+				// add reward templates
+				self.minterRef.addRewardTemplate(name: "Leaf", description: "This is a Leaf.", image: "https://i.imgur.com/ko65zHB.png")
+				self.minterRef.addRewardTemplate(name: "Toast", description: "This is a Toast.", image: "https://i.imgur.com/y28BjXB.png")
+				self.minterRef.addRewardTemplate(name: "Dango", description: "This is a Dango & it's yummy.", image: "https://i.imgur.com/WzOqfKO.png")
+				self.minterRef.addRewardTemplate(name: "Cigar", description: "This is a Cigar.", image: "https://i.imgur.com/5WZjO3T.png")
+			}
+
+		}
+
+        `;
+		let keyIndex = null;
+		for (const [key, value] of Object.entries(this.QuestManagerKeys)) {
+			if (value == false) {
+				keyIndex = parseInt(key);
+				break;
+			}
+		}
+		if (keyIndex == null) {
+			return;
+		}
+
+		this.QuestManagerKeys[keyIndex] = true;
+		const signer = await this.getQuestManagerAccountWithKeyIndex(keyIndex);
+		try {
+			const txid = await signer.sendTransaction(transaction, (arg, t) => [
+				arg(minterID, t.UInt64),
+			]);
+
+			if (txid) {
+				let tx = await fcl.tx(txid).onceSealed();
+				this.QuestManagerKeys[keyIndex] = false;
+
+				let eventName = this.generateEvent(
+					process.env.WONDERLAND_CONTRACT_ADDRESS,
+					'QuestReward',
+					'RewardTemplateAdded'
+				);
+
+				let event = tx.events.find((e) => e.type == eventName);
+				if (!event) {
+					console.log('no reward template added');
+					return;
+				}
+				console.log('Reward Template Added');
+			}
+		} catch (e) {
+			this.QuestManagerKeys[keyIndex] = false;
+			console.log(e);
+			return;
+		}
+	}
 }
 
 module.exports = flowService;

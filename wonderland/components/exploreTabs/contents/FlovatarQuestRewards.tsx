@@ -194,7 +194,7 @@ const FlovatarQuestRewards = ({ rewards, questID }: any) => {
 
 	const revealAll = async () => {
 		const id = toast.loading('Initializing...');
-		const maxQuantity = 500; //tested
+		const maxQuantity = 5; //tested
 		const unrevealedRewards = rewards.filter(
 			(reward: any) => !reward.revealed
 		);
@@ -257,7 +257,7 @@ const FlovatarQuestRewards = ({ rewards, questID }: any) => {
 
 	return (
 		<div>
-			<ActionHeader buttonText="Reveal All" action={revealAll} />
+			<ActionHeader buttonText="Reveal 5" action={revealAll} />
 			<div>
 				<div className="hidden lg:flex flex mb-4 mt-3.5">
 					<div className="w-full grid grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-2">
